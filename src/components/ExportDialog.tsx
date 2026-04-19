@@ -66,7 +66,7 @@ export function ExportDialog({
   layers,
   result,
 }: ExportDialogProps) {
-  const { t } = useTranslation(['export', 'common']);
+  const { t, i18n } = useTranslation(['export', 'common', 'result']);
   const [locationName, setLocationName] = useState('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
@@ -145,7 +145,10 @@ export function ExportDialog({
     const timer = window.setTimeout(async () => {
       setSearching(true);
       try {
-        const hits = await searchPlaces(q, controller.signal);
+        const hits = await searchPlaces(q, {
+          signal: controller.signal,
+          language: i18n.resolvedLanguage ?? i18n.language,
+        });
         setSuggestions(hits);
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
@@ -160,7 +163,7 @@ export function ExportDialog({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [locationName, open]);
+  }, [i18n.language, i18n.resolvedLanguage, locationName, open]);
 
   // Show the live host on the strip so screenshots from a preview deploy don't
   // silently claim to come from production.
@@ -177,9 +180,15 @@ export function ExportDialog({
         stars: result.visible_named_stars.length,
         constellations: result.visible_constellations.length,
         deepSky: result.visible_deep_sky_objects.length,
+        labels: {
+          stars: t('result:details.tabs.stars'),
+          constellations: t('result:details.tabs.constellations'),
+          deepSky: t('result:details.tabs.dso'),
+        },
       },
     }),
     [
+      t,
       locationName,
       lat,
       lng,
@@ -224,7 +233,9 @@ export function ExportDialog({
         setLat(la.toFixed(4));
         setLng(lo.toFixed(4));
         try {
-          const hit = await reverseLookup(la, lo);
+          const hit = await reverseLookup(la, lo, {
+            language: i18n.resolvedLanguage ?? i18n.language,
+          });
           if (hit?.label) {
             skipNextSearchRef.current = true;
             setLocationName(hit.label);

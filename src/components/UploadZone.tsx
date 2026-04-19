@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState, type DragEvent } from 'react';
-import { motion } from 'framer-motion';
 import { ImageUp, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSky } from '@/state/store';
@@ -48,26 +47,12 @@ export function UploadZone() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="relative h-full w-full flex items-stretch justify-center p-4 sm:p-6"
-    >
+    <div className="relative h-full w-full flex items-stretch justify-center p-4 sm:p-6">
       <div
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         onClick={() => inputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
         className={cn(
           'group relative flex flex-col items-center justify-center gap-5 sm:gap-6',
           'rounded-[var(--radius-xl)] w-full max-w-[680px] mx-auto',
@@ -142,11 +127,14 @@ export function UploadZone() {
         </div>
 
         {error && (
-          <p className="text-[12px] text-[color:var(--color-danger)] absolute bottom-4 left-4 right-4 text-center">
+          <p
+            aria-live="polite"
+            className="text-[12px] text-[color:var(--color-danger)] absolute bottom-4 left-4 right-4 text-center"
+          >
             {error}
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

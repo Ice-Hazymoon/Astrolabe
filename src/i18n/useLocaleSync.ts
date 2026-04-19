@@ -15,20 +15,27 @@ export function useLocaleSync(): void {
   const { i18n } = useTranslation();
   const setLocale = useSky((s) => s.setLocale);
   const hasUserOverridden = useRef(false);
+  const syncingFromUi = useRef(false);
 
   useEffect(() => {
-    const current = useSky.getState();
-    // If the user has already picked a label locale that differs from the
-    // default derived from their browser's UI language, treat that as an
-    // explicit override and stop auto-syncing.
     const unsubscribe = useSky.subscribe((state, prev) => {
-      if (state.locale !== prev.locale) hasUserOverridden.current = true;
+      if (state.locale === prev.locale) return;
+      if (syncingFromUi.current) {
+        syncingFromUi.current = false;
+        return;
+      }
+
+      const activeUi = findUiLanguage(i18n.resolvedLanguage ?? i18n.language);
+      hasUserOverridden.current =
+        !!activeUi && state.locale !== activeUi.apiLocale;
     });
 
     const apply = (code: string) => {
       if (hasUserOverridden.current) return;
       const lang = findUiLanguage(code);
-      if (lang && lang.apiLocale !== current.locale) {
+      const currentLocale = useSky.getState().locale;
+      if (lang && lang.apiLocale !== currentLocale) {
+        syncingFromUi.current = true;
         setLocale(lang.apiLocale);
       }
     };

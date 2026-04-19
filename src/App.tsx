@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Suspense, lazy, useState } from 'react';
 import { Topbar } from './components/Topbar';
 import { Stage } from './components/Stage';
 import { ParameterSidebar } from './components/ParameterSidebar';
-import { ParameterDrawer } from './components/ParameterDrawer';
-import { HistoryStrip } from './components/HistoryStrip';
 import { useSEO } from './i18n/useSEO';
 import { useLocaleSync } from './i18n/useLocaleSync';
+
+const ParameterDrawer = lazy(() =>
+  import('./components/ParameterDrawer').then((m) => ({ default: m.ParameterDrawer }))
+);
+const HistoryStrip = lazy(() =>
+  import('./components/HistoryStrip').then((m) => ({ default: m.HistoryStrip }))
+);
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,21 +36,18 @@ export default function App() {
         <Stage />
         <ParameterSidebar />
       </div>
-      <AnimatePresence initial={false}>
-        {historyOpen && (
-          <motion.div
-            key="history-strip"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="shrink-0 overflow-hidden"
-          >
+      {historyOpen && (
+        <div className="shrink-0 overflow-hidden">
+          <Suspense fallback={null}>
             <HistoryStrip onClose={() => setHistoryOpen(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+          </Suspense>
+        </div>
+      )}
+      {drawerOpen && (
+        <Suspense fallback={null}>
+          <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

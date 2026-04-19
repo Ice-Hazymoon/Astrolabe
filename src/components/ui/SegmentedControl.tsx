@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { useId, useRef, type KeyboardEvent } from 'react';
+import { useRef, type KeyboardEvent } from 'react';
 import { cn } from '@/lib/cn';
 
 interface Option<T extends string> {
@@ -21,7 +20,6 @@ export function SegmentedControl<T extends string>({
   onChange,
   ariaLabel,
 }: SegmentedControlProps<T>) {
-  const layoutId = useId();
   const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
 
   const focusOption = (index: number) => {
@@ -76,18 +74,10 @@ export function SegmentedControl<T extends string>({
             className={cn(
               'relative flex-1 px-3 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-200',
               active
-                ? 'text-[color:var(--color-ink-0)]'
+                ? 'bg-[color:var(--color-star)]/95 text-[color:var(--color-ink-0)] shadow-[var(--shadow-soft)]'
                 : 'text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)]',
             )}
           >
-            {active && (
-              <motion.span
-                layoutId={`segmented-${layoutId}`}
-                aria-hidden
-                className="absolute inset-0 rounded-full bg-[color:var(--color-star)]/95 shadow-[var(--shadow-soft)]"
-                transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-              />
-            )}
             <span className="relative z-10">{option.label}</span>
           </button>
         );

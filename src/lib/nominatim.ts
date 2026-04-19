@@ -9,6 +9,11 @@
 
 const ENDPOINT = 'https://nominatim.openstreetmap.org';
 
+interface NominatimOptions {
+  signal?: AbortSignal;
+  language?: string;
+}
+
 export interface NominatimHit {
   /** Short label used in suggestion rows — city/neighbourhood when we can derive it. */
   label: string;
@@ -65,12 +70,33 @@ function shortLabel(address: NominatimAddress | undefined, fallback: string): st
   return primary ?? secondary ?? fallback;
 }
 
-export async function searchPlaces(query: string, signal?: AbortSignal): Promise<NominatimHit[]> {
+function acceptLanguage(language?: string): string {
+  const normalized = language?.trim();
+  if (!normalized) return 'en';
+
+  const lower = normalized.toLowerCase();
+  const primary = lower === 'zh-hans'
+    ? 'zh-CN'
+    : lower === 'zh-hant'
+      ? 'zh-TW'
+      : normalized;
+
+  const base = primary.split('-')[0];
+  if (base.toLowerCase() === primary.toLowerCase()) {
+    return `${primary},en;q=0.6`;
+  }
+  return `${primary},${base};q=0.8,en;q=0.6`;
+}
+
+export async function searchPlaces(
+  query: string,
+  { signal, language }: NominatimOptions = {},
+): Promise<NominatimHit[]> {
   const q = query.trim();
   if (q.length < 2) return [];
   const url =
     `${ENDPOINT}/search?format=json&limit=5&addressdetails=1` +
-    `&accept-language=${encodeURIComponent('zh-CN,zh;q=0.9,en;q=0.6')}` +
+    `&accept-language=${encodeURIComponent(acceptLanguage(language))}` +
     `&q=${encodeURIComponent(q)}`;
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`nominatim search ${res.status}`);
@@ -86,12 +112,12 @@ export async function searchPlaces(query: string, signal?: AbortSignal): Promise
 export async function reverseLookup(
   lat: number,
   lon: number,
-  signal?: AbortSignal,
+  { signal, language }: NominatimOptions = {},
 ): Promise<NominatimHit | null> {
   const url =
     `${ENDPOINT}/reverse?format=json&addressdetails=1&zoom=13` +
     `&lat=${lat}&lon=${lon}` +
-    `&accept-language=${encodeURIComponent('zh-CN,zh;q=0.9,en;q=0.6')}`;
+    `&accept-language=${encodeURIComponent(acceptLanguage(language))}`;
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) return null;
   const r = (await res.json()) as RawSearchHit | { error?: string };

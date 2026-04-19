@@ -390,7 +390,9 @@ export const OverlayCanvas = memo(function OverlayCanvas({
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid meet"
       className={className}
+      role="img"
       aria-label={t('overlayAria')}
+      focusable="false"
       style={{
         position: 'absolute',
         inset: 0,

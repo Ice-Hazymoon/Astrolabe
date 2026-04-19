@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => {
         includeAssets: [
           'favicon.svg',
           'icon-maskable.svg',
+          'apple-touch-icon.png',
+          'icon-192.png',
+          'icon-512.png',
+          'og-cover.png',
           'samples/input.jpg',
           'samples/output.png',
         ],
@@ -44,10 +48,15 @@ export default defineConfig(({ mode }) => {
           icons: [
             { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
             {
-              src: 'icon-maskable.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
-              purpose: 'maskable',
+              src: 'icon-192.png',
+              sizes: '192x192',
+              type: 'image/png',
+            },
+            {
+              src: 'icon-512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any maskable',
             },
           ],
         },

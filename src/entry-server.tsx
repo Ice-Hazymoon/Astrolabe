@@ -8,6 +8,7 @@ import { I18nextProvider } from 'react-i18next';
 import App from './App';
 import { createServerI18n } from './i18n/server';
 import { DEFAULT_UI_LANGUAGE, UI_LANGUAGES, findUiLanguage } from './i18n/languages';
+import { localizedUrl } from './i18n/url';
 import { SITE_URL } from './lib/config';
 
 // Re-export so the prerender script can iterate without a second import entry.
@@ -96,7 +97,7 @@ export function render(options: RenderOptions = {}): RenderedPage {
   const canonical = origin + path;
   const alternates = (options.alternates ?? []).map(({ code }) => ({
     hreflang: code,
-    href: `${origin}/?lang=${code}`,
+    href: localizedUrl(origin, code),
   }));
 
   const seoT = (key: string): string => i18n.t(key, { ns: 'seo' });

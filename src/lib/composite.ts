@@ -67,6 +67,11 @@ export interface StripMeta {
     stars: number;
     constellations: number;
     deepSky: number;
+    labels?: {
+      stars: string;
+      constellations: string;
+      deepSky: string;
+    };
   };
 }
 
@@ -235,9 +240,21 @@ function buildStats(
   const { H, fs, serif, mono, palette } = g;
   const span = gutterR - gutterL;
   const columns = [
-    { x: gutterL + span * 0.18, value: stats.stars, label: 'STARS' },
-    { x: gutterL + span * 0.5, value: stats.constellations, label: 'CONSTEL.' },
-    { x: gutterL + span * 0.82, value: stats.deepSky, label: 'DEEP SKY' },
+    {
+      x: gutterL + span * 0.18,
+      value: stats.stars,
+      label: stats.labels?.stars ?? 'STARS',
+    },
+    {
+      x: gutterL + span * 0.5,
+      value: stats.constellations,
+      label: stats.labels?.constellations ?? 'CONSTEL.',
+    },
+    {
+      x: gutterL + span * 0.82,
+      value: stats.deepSky,
+      label: stats.labels?.deepSky ?? 'DEEP SKY',
+    },
   ];
   const iconCy = Math.round(H * 0.3);
   const iconR = H * 0.07;

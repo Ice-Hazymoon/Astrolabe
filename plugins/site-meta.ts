@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite';
-import { UI_LANGUAGES } from '../src/i18n/languages';
+import { DEFAULT_UI_LANGUAGE, UI_LANGUAGES } from '../src/i18n/languages';
+import { localizedPath, localizedUrl } from '../src/i18n/url';
 
 interface SiteMetaOptions {
   siteUrl: string;
@@ -35,22 +36,45 @@ export function siteMetaPlugin({ siteUrl, siteName }: SiteMetaOptions): Plugin {
     },
 
     generateBundle() {
-      const alternates = UI_LANGUAGES.map(
-        (lang) =>
-          `    <xhtml:link rel="alternate" hreflang="${lang.code}" href="${origin}/?lang=${lang.code}" />`,
-      ).join('\n');
+      const alternates = () =>
+        [
+          `    <xhtml:link rel="alternate" hreflang="x-default" href="${origin}/" />`,
+          ...UI_LANGUAGES.map(
+            (lang) =>
+              `    <xhtml:link rel="alternate" hreflang="${lang.code}" href="${localizedUrl(origin, lang.code)}" />`,
+          ),
+        ].join('\n');
+
+      const urls = [
+        {
+          code: DEFAULT_UI_LANGUAGE,
+          path: localizedPath(DEFAULT_UI_LANGUAGE),
+          priority: '1.0',
+        },
+        ...UI_LANGUAGES
+          .filter((lang) => lang.code !== DEFAULT_UI_LANGUAGE)
+          .map((lang) => ({
+            code: lang.code,
+            path: localizedPath(lang.code),
+            priority: '0.9',
+          })),
+      ];
 
       const sitemap =
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n' +
         '        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
-        '  <url>\n' +
-        `    <loc>${origin}/</loc>\n` +
-        '    <changefreq>weekly</changefreq>\n' +
-        '    <priority>1.0</priority>\n' +
-        `    <xhtml:link rel="alternate" hreflang="x-default" href="${origin}/" />\n` +
-        `${alternates}\n` +
-        '  </url>\n' +
+        urls
+          .map(
+            ({ path, priority }) =>
+              '  <url>\n' +
+              `    <loc>${origin}${path}</loc>\n` +
+              '    <changefreq>weekly</changefreq>\n' +
+              `    <priority>${priority}</priority>\n` +
+              `${alternates()}\n` +
+              '  </url>\n',
+          )
+          .join('') +
         '</urlset>\n';
 
       this.emitFile({

@@ -112,6 +112,10 @@ function injectHead(html, head, lang, dir, origin) {
   return out;
 }
 
+function localizedPath(code) {
+  return code === DEFAULT_LANG ? '/' : `/lang/${code}/`;
+}
+
 async function renderLang(lang, origin, alternates, path) {
   const page = render({ lang, url: path, origin, alternates });
   const withHead = injectHead(template, page.head, page.lang, page.dir, origin);
@@ -128,13 +132,13 @@ const defaultHtml = await renderLang(DEFAULT_LANG, origin, alternates, '/');
 writeFileSync(templatePath, defaultHtml);
 console.log(`[prerender] dist/index.html (${DEFAULT_LANG})`);
 
-// Per-language mirrors under /lang/<code>/index.html — these are the targets
-// of the hreflang alternate links. Each serves the same SPA bundle but pre-
-// renders with that language's head and React tree.
-for (const lang of LANGS) {
+// Per-language mirrors under /lang/<code>/index.html for non-default locales —
+// these are the targets of the hreflang alternate links. The default language
+// lives only at `/` so we do not ship a duplicate `/lang/en/` variant.
+for (const lang of LANGS.filter((entry) => entry.code !== DEFAULT_LANG)) {
   const outDir = resolve(distDir, 'lang', lang.code);
   mkdirSync(outDir, { recursive: true });
-  const html = await renderLang(lang.code, origin, alternates, `/lang/${lang.code}/`);
+  const html = await renderLang(lang.code, origin, alternates, localizedPath(lang.code));
   writeFileSync(resolve(outDir, 'index.html'), html);
   console.log(`[prerender] dist/lang/${lang.code}/index.html`);
 }
@@ -146,4 +150,4 @@ try {
   /* ignore */
 }
 
-console.log(`[prerender] done — ${LANGS.length + 1} pages`);
+console.log(`[prerender] done — ${LANGS.length} pages`);

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UI_LANGUAGES, findUiLanguage } from './languages';
+import { DEFAULT_UI_LANGUAGE, UI_LANGUAGES, findUiLanguage } from './languages';
+import { localizedUrl } from './url';
 import { SITE_URL, resolveOrigin } from '@/lib/config';
 
 /** Site origin used in canonical + OG URLs. Prefers the live browser origin so
@@ -51,6 +52,8 @@ export function useSEO(): void {
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const origin = siteOrigin();
+    const activeLang = findUiLanguage(i18n.resolvedLanguage ?? i18n.language)?.code ?? DEFAULT_UI_LANGUAGE;
+    const canonical = localizedUrl(origin, activeLang);
     const title = t('title');
     const description = t('description');
     const keywords = t('keywords');
@@ -69,7 +72,7 @@ export function useSEO(): void {
     upsertMeta('meta[property="og:description"]', 'property', 'og:description', description);
     upsertMeta('meta[property="og:site_name"]', 'property', 'og:site_name', siteName);
     upsertMeta('meta[property="og:type"]', 'property', 'og:type', 'website');
-    upsertMeta('meta[property="og:url"]', 'property', 'og:url', origin + '/');
+    upsertMeta('meta[property="og:url"]', 'property', 'og:url', canonical);
     upsertMeta('meta[property="og:image"]', 'property', 'og:image', origin + '/og-cover.png');
     upsertMeta('meta[property="og:image:alt"]', 'property', 'og:image:alt', ogImageAlt);
     upsertMeta('meta[property="og:image:width"]', 'property', 'og:image:width', '1200');
@@ -96,13 +99,13 @@ export function useSEO(): void {
     upsertMeta('meta[name="twitter:image:alt"]', 'name', 'twitter:image:alt', ogImageAlt);
 
     // Canonical + hreflang alternates (one per supported UI language + x-default)
-    upsertLink('canonical', { href: origin + '/' });
+    upsertLink('canonical', { href: canonical });
     document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((n) => n.remove());
     for (const lang of UI_LANGUAGES) {
       const link = document.createElement('link');
       link.rel = 'alternate';
       link.hreflang = lang.code;
-      link.href = `${origin}/?lang=${lang.code}`;
+      link.href = localizedUrl(origin, lang.code);
       document.head.appendChild(link);
     }
     const xDefault = document.createElement('link');
