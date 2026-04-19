@@ -1,0 +1,48 @@
+{
+  "title": "Parámetros",
+  "eyebrow": "Superposición",
+  "presets": {
+    "header": "Preajuste de visualización",
+    "ariaLabel": "Preajuste de visualización",
+    "balanced": { "label": "Equilibrado", "hint": "Densidad recomendada" },
+    "detailed": { "label": "Detallado", "hint": "Más cielo profundo y constelaciones" },
+    "max": { "label": "Completo", "hint": "Mostrar todas las detecciones" }
+  },
+  "labelLocale": {
+    "header": "Idioma de las etiquetas",
+    "ariaLabel": "Idioma de las etiquetas",
+    "driftHint": "Cambiarlo requiere volver a analizar"
+  },
+  "layers": {
+    "header": "Capas",
+    "groups": {
+      "constellation": "Constelaciones",
+      "stars": "Estrellas",
+      "deepSky": "Cielo profundo"
+    },
+    "items": {
+      "constellation_lines": "Líneas de las constelaciones",
+      "constellation_labels": "Nombres de las constelaciones",
+      "contextual_constellation_labels": "Pistas de constelaciones adyacentes",
+      "star_markers": "Marcadores de estrellas",
+      "star_labels": "Nombres de estrellas",
+      "deep_sky_markers": "Marcadores de cielo profundo",
+      "deep_sky_labels": "Nombres del cielo profundo",
+      "label_leaders": "Líneas guía de etiquetas"
+    }
+  },
+  "detail": {
+    "header": "Densidad",
+    "starLimit": "Máx. etiquetas de estrellas",
+    "starMagnitude": "Umbral de magnitud estelar",
+    "dsoLimit": "Máx. etiquetas de cielo profundo",
+    "dsoMagnitude": "Umbral de magnitud de cielo profundo",
+    "showAllConstellations": "Mostrar todos los nombres de constelaciones",
+    "detailedDsoLabels": "Usar nombres completos de cielo profundo",
+    "live": "Los cambios se aplican al instante."
+  },
+  "reanalyze": {
+    "message": "Idioma de etiquetas cambiado — vuelve a analizar para aplicarlo.",
+    "button": "Reanalizar"
+  }
+}

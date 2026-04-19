@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaksi",
+    "Gal": "Galaksi",
+    "GC": "Gugus bola",
+    "GCl": "Gugus bola",
+    "OC": "Gugus terbuka",
+    "OCl": "Gugus terbuka",
+    "Open Cluster": "Gugus terbuka",
+    "N": "Nebula difus",
+    "Neb": "Nebula difus",
+    "PN": "Nebula planeter",
+    "RN": "Nebula pantul",
+    "RfN": "Nebula pantul",
+    "EN": "Nebula emisi",
+    "DN": "Nebula gelap",
+    "HII": "Wilayah HII",
+    "Cl+N": "Gugus dengan nebula",
+    "SR": "Sisa supernova",
+    "SNR": "Sisa supernova",
+    "Q": "Kuasar",
+    "C": "Awan bintang",
+    "AST": "Asterisme",
+    "Ast": "Asterisme"
+  }
+}

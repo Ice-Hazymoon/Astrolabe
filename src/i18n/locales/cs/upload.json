@@ -1,0 +1,13 @@
+{
+  "title": "Nahrajte fotografii noční oblohy",
+  "description": "Přetáhněte nebo klepnutím vyberte obrázek JPG, PNG nebo WebP.",
+  "descriptionSecondLine": "Rozpoznáme souhvězdí, hvězdy a objekty vzdáleného vesmíru na snímku.",
+  "buttons": {
+    "choose": "Vybrat obrázek",
+    "sample": "Vyzkoušet vzorek"
+  },
+  "errors": {
+    "unsupportedType": "Nahrajte prosím obrázek ve formátu JPG, PNG nebo WebP"
+  },
+  "altFallback": "Nahraný obrázek"
+}

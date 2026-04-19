@@ -1,0 +1,48 @@
+{
+  "title": "Parametry",
+  "eyebrow": "Překryv",
+  "presets": {
+    "header": "Předvolba zobrazení",
+    "ariaLabel": "Předvolba zobrazení",
+    "balanced": { "label": "Vyvážené", "hint": "Doporučená hustota" },
+    "detailed": { "label": "Detailní", "hint": "Více vzdáleného vesmíru a souhvězdí" },
+    "max": { "label": "Úplné", "hint": "Zobrazit všechny detekce" }
+  },
+  "labelLocale": {
+    "header": "Jazyk popisků",
+    "ariaLabel": "Jazyk popisků",
+    "driftHint": "Změna vyžaduje opětovnou analýzu"
+  },
+  "layers": {
+    "header": "Vrstvy",
+    "groups": {
+      "constellation": "Souhvězdí",
+      "stars": "Hvězdy",
+      "deepSky": "Vzdálený vesmír"
+    },
+    "items": {
+      "constellation_lines": "Čáry souhvězdí",
+      "constellation_labels": "Názvy souhvězdí",
+      "contextual_constellation_labels": "Nápovědy sousedních souhvězdí",
+      "star_markers": "Značky hvězd",
+      "star_labels": "Názvy hvězd",
+      "deep_sky_markers": "Značky vzdáleného vesmíru",
+      "deep_sky_labels": "Názvy objektů vzdáleného vesmíru",
+      "label_leaders": "Odkazové čáry popisků"
+    }
+  },
+  "detail": {
+    "header": "Hustota",
+    "starLimit": "Max. popisků hvězd",
+    "starMagnitude": "Práh hvězdné velikosti",
+    "dsoLimit": "Max. popisků vzdáleného vesmíru",
+    "dsoMagnitude": "Práh velikosti vzdáleného vesmíru",
+    "showAllConstellations": "Zobrazit všechny názvy souhvězdí",
+    "detailedDsoLabels": "Použít úplné názvy vzdáleného vesmíru",
+    "live": "Změny se aplikují okamžitě."
+  },
+  "reanalyze": {
+    "message": "Jazyk popisků byl změněn — pro použití spusťte opětovnou analýzu.",
+    "button": "Analyzovat znovu"
+  }
+}

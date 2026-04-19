@@ -1,0 +1,13 @@
+{
+  "title": "Lade dein Nachthimmel-Foto hoch",
+  "description": "Ziehe ein JPG-, PNG- oder WebP-Bild hinein oder tippe zum Auswählen.",
+  "descriptionSecondLine": "Wir identifizieren die Sternbilder, Sterne und Deep-Sky-Objekte darauf.",
+  "buttons": {
+    "choose": "Bild auswählen",
+    "sample": "Beispiel ausprobieren"
+  },
+  "errors": {
+    "unsupportedType": "Bitte lade ein JPG-, PNG- oder WebP-Bild hoch"
+  },
+  "altFallback": "Hochgeladenes Bild"
+}

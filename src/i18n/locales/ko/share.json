@@ -1,0 +1,14 @@
+{
+  "title": "작품이 준비됐어요",
+  "description": "Stellaris는 애정으로 만든, 누구나 무료로 사용할 수 있는 프로젝트예요. 마음에 든다면 별을 좋아하는 친구에게도 나눠 주세요.",
+  "captionWithLocation": "{{location}}의 밤하늘 — Stellaris가 주석",
+  "captionDefault": "Stellaris · 별 주석",
+  "targets": {
+    "x": "X에 공유",
+    "threads": "Threads에 공유",
+    "facebook": "Facebook에 공유",
+    "linkedin": "LinkedIn에 공유"
+  },
+  "footerNote": "한 번의 공유가 Stellaris를 계속 무료로 자라게 해요 — 커뮤니티의 일원이 되어 주셔서 고마워요.",
+  "madeWith": "Made with"
+}

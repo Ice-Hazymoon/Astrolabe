@@ -1,0 +1,13 @@
+{
+  "title": "Gece gökyüzü fotoğrafınızı yükleyin",
+  "description": "JPG, PNG veya WebP görsel bırakın ya da seçmek için dokunun.",
+  "descriptionSecondLine": "İçindeki takımyıldızları, yıldızları ve derin gök cisimlerini tanımlayalım.",
+  "buttons": {
+    "choose": "Görsel seç",
+    "sample": "Örnek dene"
+  },
+  "errors": {
+    "unsupportedType": "Lütfen JPG, PNG veya WebP bir görsel yükleyin"
+  },
+  "altFallback": "Yüklenen görsel"
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Je afbeelding is klaar",
+  "description": "Stellaris is met liefde gemaakt en gratis voor iedereen. Als dit resultaat je heeft blij gemaakt, deel het dan met een mede-sterrenkijker.",
+  "captionWithLocation": "Een hemel boven {{location}} — geannoteerd met Stellaris",
+  "captionDefault": "Stellaris · Sterannotator",
+  "targets": {
+    "x": "Delen op X",
+    "threads": "Delen op Threads",
+    "facebook": "Delen op Facebook",
+    "linkedin": "Delen op LinkedIn"
+  },
+  "footerNote": "Elke keer dat je deelt, helpt Stellaris gratis te blijven groeien — bedankt dat je deel uitmaakt van de gemeenschap.",
+  "madeWith": "Gemaakt met"
+}

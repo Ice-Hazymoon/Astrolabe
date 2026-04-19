@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Orijinal görsel",
+  "altAnnotated": "Etiketlenmiş sonuç",
+  "toggleAnnotated": "Etiketleri göster",
+  "toggleOriginal": "Orijinali göster",
+  "export": "Dışa aktar",
+  "details": {
+    "header": "Analiz sonucu",
+    "tabs": {
+      "stars": "Yıldızlar",
+      "constellations": "Takımyıldızlar",
+      "dso": "Derin gök"
+    },
+    "empty": "Mevcut parametrelerle eşleşen sonuç yok",
+    "mainStarsCount": "{{count}} ana yıldız",
+    "mainStarsCount_other": "{{count}} ana yıldız",
+    "stats": {
+      "fieldCenter": "Alan merkezi",
+      "fieldSize": "Görüş alanı",
+      "elapsed": "Çözüm süresi"
+    }
+  }
+}

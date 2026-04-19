@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Yıldız Etiketleyici",
+  "topbar": {
+    "openHistory": "Geçmişi aç",
+    "closeHistory": "Geçmişi kapat",
+    "restart": "Baştan başla",
+    "settings": "Parametreler",
+    "parametersTitle": "Parametreler"
+  }
+}

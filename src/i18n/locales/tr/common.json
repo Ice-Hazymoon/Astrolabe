@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Kapat",
+    "cancel": "İptal",
+    "retry": "Yeniden dene",
+    "reset": "Baştan başla",
+    "save": "Kaydet",
+    "loading": "Yükleniyor…"
+  },
+  "status": {
+    "ready": "Hazır",
+    "preparing": "Hazırlanıyor",
+    "done": "Tamamlandı",
+    "unknownError": "Bilinmeyen hata"
+  },
+  "language": {
+    "label": "Dil",
+    "uiLabel": "Arayüz dili",
+    "apiLabel": "Etiket dili",
+    "switchAria": "Dil seçin"
+  },
+  "common": {
+    "and": "ve",
+    "or": "veya"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "title": "上傳你的星空照片",
+  "description": "拖入或點擊選擇 JPG、PNG 或 WebP 圖像。",
+  "descriptionSecondLine": "我們會辨識其中的星座、恆星與深空天體。",
+  "buttons": {
+    "choose": "選擇圖像",
+    "sample": "使用範例"
+  },
+  "errors": {
+    "unsupportedType": "請上傳 JPG、PNG 或 WebP 圖像"
+  },
+  "altFallback": "上傳的圖像"
+}

@@ -1,0 +1,11 @@
+{
+  "zoomIn": "拡大",
+  "zoomOut": "縮小",
+  "reset": "表示をリセット",
+  "fullscreenEnter": "全画面表示",
+  "fullscreenExit": "全画面を終了",
+  "loadFailed": "画像の読み込みに失敗しました",
+  "sourceBlobInvalid": "セッションの Blob は無効になりました",
+  "sourceDataInvalid": "データ URL をデコードできませんでした",
+  "overlayAria": "星座オーバーレイ"
+}

@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "เครื่องมือระบุดาว",
+  "topbar": {
+    "openHistory": "เปิดประวัติ",
+    "closeHistory": "ปิดประวัติ",
+    "restart": "เริ่มใหม่",
+    "settings": "พารามิเตอร์",
+    "parametersTitle": "พารามิเตอร์"
+  }
+}

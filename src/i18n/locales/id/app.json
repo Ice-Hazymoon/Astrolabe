@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Penanda Bintang",
+  "topbar": {
+    "openHistory": "Buka riwayat",
+    "closeHistory": "Tutup riwayat",
+    "restart": "Mulai dari awal",
+    "settings": "Parameter",
+    "parametersTitle": "Parameter"
+  }
+}

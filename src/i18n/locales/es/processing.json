@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Subiendo imagen",
+    "extract": "Extrayendo fuentes",
+    "solve": "Resolución astrométrica",
+    "match": "Cotejando catálogo",
+    "finalize": "Finalizando datos"
+  },
+  "cancel": "Cancelar"
+}

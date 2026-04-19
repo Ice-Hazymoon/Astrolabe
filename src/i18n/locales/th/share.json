@@ -1,0 +1,14 @@
+{
+  "title": "ภาพของคุณพร้อมแล้ว",
+  "description": "Stellaris สร้างด้วยใจรักและใช้งานฟรีสำหรับทุกคน หากผลลัพธ์นี้ทำให้คุณยิ้ม แบ่งปันกับเพื่อนคนรักดวงดาวด้วยกันนะ",
+  "captionWithLocation": "ท้องฟ้าเหนือ {{location}} — อธิบายด้วย Stellaris",
+  "captionDefault": "Stellaris · เครื่องมือระบุดาว",
+  "targets": {
+    "x": "แชร์ไปยัง X",
+    "threads": "แชร์ไปยัง Threads",
+    "facebook": "แชร์ไปยัง Facebook",
+    "linkedin": "แชร์ไปยัง LinkedIn"
+  },
+  "footerNote": "ทุกการแชร์ช่วยให้ Stellaris เติบโตต่อไปได้ฟรี — ขอบคุณที่เป็นส่วนหนึ่งของชุมชน",
+  "madeWith": "สร้างด้วย"
+}

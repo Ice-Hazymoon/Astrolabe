@@ -1,0 +1,8 @@
+{
+  "title": "Analisis gagal",
+  "fallbackMessage": "Terjadi kesalahan tak terduga selama analisis",
+  "buttons": {
+    "retry": "Coba lagi",
+    "reset": "Mulai dari awal"
+  }
+}

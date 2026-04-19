@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaktyka",
+    "Gal": "Galaktyka",
+    "GC": "Gromada kulista",
+    "GCl": "Gromada kulista",
+    "OC": "Gromada otwarta",
+    "OCl": "Gromada otwarta",
+    "Open Cluster": "Gromada otwarta",
+    "N": "Mgławica rozproszona",
+    "Neb": "Mgławica rozproszona",
+    "PN": "Mgławica planetarna",
+    "RN": "Mgławica refleksyjna",
+    "RfN": "Mgławica refleksyjna",
+    "EN": "Mgławica emisyjna",
+    "DN": "Mgławica ciemna",
+    "HII": "Obszar HII",
+    "Cl+N": "Gromada z mgławicą",
+    "SR": "Pozostałość po supernowej",
+    "SNR": "Pozostałość po supernowej",
+    "Q": "Kwazar",
+    "C": "Obłok gwiezdny",
+    "AST": "Asteryzm",
+    "Ast": "Asteryzm"
+  }
+}

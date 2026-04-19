@@ -1,0 +1,48 @@
+{
+  "title": "參數",
+  "eyebrow": "Overlay",
+  "presets": {
+    "header": "顯示預設",
+    "ariaLabel": "顯示預設",
+    "balanced": { "label": "均衡", "hint": "建議的視覺密度" },
+    "detailed": { "label": "詳細", "hint": "顯示更多深空與星座" },
+    "max": { "label": "完整", "hint": "顯示全部識別結果" }
+  },
+  "labelLocale": {
+    "header": "標籤語言",
+    "ariaLabel": "標籤語言",
+    "driftHint": "切換後需重新解析"
+  },
+  "layers": {
+    "header": "圖層",
+    "groups": {
+      "constellation": "星座",
+      "stars": "恆星",
+      "deepSky": "深空"
+    },
+    "items": {
+      "constellation_lines": "星座連線",
+      "constellation_labels": "星座名稱",
+      "contextual_constellation_labels": "鄰近星座提示",
+      "star_markers": "恆星標記",
+      "star_labels": "恆星名稱",
+      "deep_sky_markers": "深空天體",
+      "deep_sky_labels": "深空名稱",
+      "label_leaders": "標籤引線"
+    }
+  },
+  "detail": {
+    "header": "密度",
+    "starLimit": "恆星數量上限",
+    "starMagnitude": "恆星亮度門檻",
+    "dsoLimit": "深空數量上限",
+    "dsoMagnitude": "深空亮度門檻",
+    "showAllConstellations": "顯示全部星座名稱",
+    "detailedDsoLabels": "使用完整的深空名稱",
+    "live": "調整後立即生效。"
+  },
+  "reanalyze": {
+    "message": "標籤語言已變更，重新解析後生效。",
+    "button": "重新解析"
+  }
+}

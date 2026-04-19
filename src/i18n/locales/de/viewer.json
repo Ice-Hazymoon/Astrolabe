@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Vergrößern",
+  "zoomOut": "Verkleinern",
+  "reset": "An Ansicht anpassen",
+  "fullscreenEnter": "Vollbild aktivieren",
+  "fullscreenExit": "Vollbild beenden",
+  "loadFailed": "Bild konnte nicht geladen werden",
+  "sourceBlobInvalid": "Sitzungs-Blob ist nicht mehr gültig",
+  "sourceDataInvalid": "Daten-URL konnte nicht decodiert werden",
+  "overlayAria": "Sternbild-Überlagerung"
+}

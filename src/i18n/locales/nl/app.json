@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Sterannotator",
+  "topbar": {
+    "openHistory": "Geschiedenis openen",
+    "closeHistory": "Geschiedenis sluiten",
+    "restart": "Opnieuw beginnen",
+    "settings": "Parameters",
+    "parametersTitle": "Parameters"
+  }
+}

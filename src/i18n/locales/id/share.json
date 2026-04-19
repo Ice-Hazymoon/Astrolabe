@@ -1,0 +1,14 @@
+{
+  "title": "Gambarmu siap",
+  "description": "Stellaris adalah karya cinta dan gratis untuk semua. Jika hasil ini membuatmu tersenyum, bagikan dengan sesama pencinta bintang.",
+  "captionWithLocation": "Langit di atas {{location}} — dianotasi dengan Stellaris",
+  "captionDefault": "Stellaris · Penanda Bintang",
+  "targets": {
+    "x": "Bagikan ke X",
+    "threads": "Bagikan ke Threads",
+    "facebook": "Bagikan ke Facebook",
+    "linkedin": "Bagikan ke LinkedIn"
+  },
+  "footerNote": "Setiap pembagian membantu Stellaris tetap gratis dan tumbuh — terima kasih sudah menjadi bagian komunitas.",
+  "madeWith": "Dibuat dengan"
+}

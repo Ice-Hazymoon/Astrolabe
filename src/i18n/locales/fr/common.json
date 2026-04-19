@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "reset": "Recommencer",
+    "save": "Enregistrer",
+    "loading": "Chargement…"
+  },
+  "status": {
+    "ready": "Prêt",
+    "preparing": "Préparation",
+    "done": "Terminé",
+    "unknownError": "Erreur inconnue"
+  },
+  "language": {
+    "label": "Langue",
+    "uiLabel": "Langue de l'interface",
+    "apiLabel": "Langue des étiquettes",
+    "switchAria": "Choisir la langue"
+  },
+  "common": {
+    "and": "et",
+    "or": "ou"
+  }
+}

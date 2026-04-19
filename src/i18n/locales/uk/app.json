@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Анотатор зір",
+  "topbar": {
+    "openHistory": "Відкрити історію",
+    "closeHistory": "Закрити історію",
+    "restart": "Почати спочатку",
+    "settings": "Параметри",
+    "parametersTitle": "Параметри"
+  }
+}

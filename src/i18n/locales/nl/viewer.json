@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Inzoomen",
+  "zoomOut": "Uitzoomen",
+  "reset": "Passend maken",
+  "fullscreenEnter": "Volledig scherm",
+  "fullscreenExit": "Volledig scherm verlaten",
+  "loadFailed": "Afbeelding kon niet worden geladen",
+  "sourceBlobInvalid": "Sessiegegevens zijn niet meer geldig",
+  "sourceDataInvalid": "Data-URL kon niet worden gedecodeerd",
+  "overlayAria": "Sterrenbeeldoverlay"
+}

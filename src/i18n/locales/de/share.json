@@ -1,0 +1,14 @@
+{
+  "title": "Dein Bild ist bereit",
+  "description": "Stellaris ist ein Herzensprojekt und kostenlos für alle. Wenn dich dieses Ergebnis zum Lächeln bringt, teile es mit einem Sternengucker.",
+  "captionWithLocation": "Ein Himmel über {{location}} — beschriftet mit Stellaris",
+  "captionDefault": "Stellaris · Sternbeschriftung",
+  "targets": {
+    "x": "Auf X teilen",
+    "threads": "Auf Threads teilen",
+    "facebook": "Auf Facebook teilen",
+    "linkedin": "Auf LinkedIn teilen"
+  },
+  "footerNote": "Jeder Beitrag hält Stellaris kostenlos am Leben — danke, dass du Teil der Community bist.",
+  "madeWith": "Erstellt mit"
+}

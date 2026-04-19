@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Oryginalny obraz",
+  "altAnnotated": "Wynik z adnotacjami",
+  "toggleAnnotated": "Pokaż adnotacje",
+  "toggleOriginal": "Pokaż oryginał",
+  "export": "Eksport",
+  "details": {
+    "header": "Wynik analizy",
+    "tabs": {
+      "stars": "Gwiazdy",
+      "constellations": "Gwiazdozbiory",
+      "dso": "Dalekie niebo"
+    },
+    "empty": "Brak dopasowań do bieżących parametrów",
+    "mainStarsCount": "{{count}} główna gwiazda",
+    "mainStarsCount_other": "{{count}} głównych gwiazd",
+    "stats": {
+      "fieldCenter": "Środek pola",
+      "fieldSize": "Pole widzenia",
+      "elapsed": "Czas rozwiązania"
+    }
+  }
+}

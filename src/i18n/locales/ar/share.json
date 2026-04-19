@@ -1,0 +1,14 @@
+{
+  "title": "صورتك جاهزة",
+  "description": "Stellaris عمل من القلب ومجاني للجميع. إذا رسمت هذه النتيجة ابتسامة على وجهك، فشاركها مع محبّي النجوم.",
+  "captionWithLocation": "سماء فوق {{location}} — موضّحة باستخدام Stellaris",
+  "captionDefault": "Stellaris · أداة توضيح النجوم",
+  "targets": {
+    "x": "مشاركة على X",
+    "threads": "مشاركة على Threads",
+    "facebook": "مشاركة على Facebook",
+    "linkedin": "مشاركة على LinkedIn"
+  },
+  "footerNote": "كل مشاركة تساعد Stellaris على البقاء مجانيًا والنمو — شكرًا لكونك جزءًا من المجتمع.",
+  "madeWith": "صُنع بـ"
+}

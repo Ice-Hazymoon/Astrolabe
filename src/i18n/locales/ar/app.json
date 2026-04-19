@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "أداة توضيح النجوم",
+  "topbar": {
+    "openHistory": "فتح السجل",
+    "closeHistory": "إغلاق السجل",
+    "restart": "ابدأ من جديد",
+    "settings": "المعاملات",
+    "parametersTitle": "المعاملات"
+  }
+}

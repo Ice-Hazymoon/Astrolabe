@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Zoom avanti",
+  "zoomOut": "Zoom indietro",
+  "reset": "Adatta alla vista",
+  "fullscreenEnter": "Schermo intero",
+  "fullscreenExit": "Esci da schermo intero",
+  "loadFailed": "Impossibile caricare l'immagine",
+  "sourceBlobInvalid": "Il blob di sessione non è più valido",
+  "sourceDataInvalid": "Impossibile decodificare l'URL dei dati",
+  "overlayAria": "Sovrapposizione delle costellazioni"
+}

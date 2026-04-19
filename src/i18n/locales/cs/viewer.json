@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Přiblížit",
+  "zoomOut": "Oddálit",
+  "reset": "Přizpůsobit zobrazení",
+  "fullscreenEnter": "Přejít na celou obrazovku",
+  "fullscreenExit": "Ukončit celou obrazovku",
+  "loadFailed": "Obrázek se nepodařilo načíst",
+  "sourceBlobInvalid": "Data relace již nejsou platná",
+  "sourceDataInvalid": "Data URL nebylo možné dekódovat",
+  "overlayAria": "Překryv souhvězdí"
+}

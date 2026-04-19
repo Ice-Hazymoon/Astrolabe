@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galáxia",
+    "Gal": "Galáxia",
+    "GC": "Aglomerado globular",
+    "GCl": "Aglomerado globular",
+    "OC": "Aglomerado aberto",
+    "OCl": "Aglomerado aberto",
+    "Open Cluster": "Aglomerado aberto",
+    "N": "Nebulosa difusa",
+    "Neb": "Nebulosa difusa",
+    "PN": "Nebulosa planetária",
+    "RN": "Nebulosa de reflexão",
+    "RfN": "Nebulosa de reflexão",
+    "EN": "Nebulosa de emissão",
+    "DN": "Nebulosa escura",
+    "HII": "Região HII",
+    "Cl+N": "Aglomerado com nebulosa",
+    "SR": "Remanescente de supernova",
+    "SNR": "Remanescente de supernova",
+    "Q": "Quasar",
+    "C": "Nuvem estelar",
+    "AST": "Asterismo",
+    "Ast": "Asterismo"
+  }
+}

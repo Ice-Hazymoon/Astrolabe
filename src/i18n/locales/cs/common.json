@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Zavřít",
+    "cancel": "Zrušit",
+    "retry": "Zkusit znovu",
+    "reset": "Začít znovu",
+    "save": "Uložit",
+    "loading": "Načítání…"
+  },
+  "status": {
+    "ready": "Připraveno",
+    "preparing": "Příprava",
+    "done": "Hotovo",
+    "unknownError": "Neznámá chyba"
+  },
+  "language": {
+    "label": "Jazyk",
+    "uiLabel": "Jazyk rozhraní",
+    "apiLabel": "Jazyk popisků",
+    "switchAria": "Vyberte jazyk"
+  },
+  "common": {
+    "and": "a",
+    "or": "nebo"
+  }
+}

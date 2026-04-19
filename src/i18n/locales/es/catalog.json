@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaxia",
+    "Gal": "Galaxia",
+    "GC": "Cúmulo globular",
+    "GCl": "Cúmulo globular",
+    "OC": "Cúmulo abierto",
+    "OCl": "Cúmulo abierto",
+    "Open Cluster": "Cúmulo abierto",
+    "N": "Nebulosa difusa",
+    "Neb": "Nebulosa difusa",
+    "PN": "Nebulosa planetaria",
+    "RN": "Nebulosa de reflexión",
+    "RfN": "Nebulosa de reflexión",
+    "EN": "Nebulosa de emisión",
+    "DN": "Nebulosa oscura",
+    "HII": "Región HII",
+    "Cl+N": "Cúmulo con nebulosidad",
+    "SR": "Remanente de supernova",
+    "SNR": "Remanente de supernova",
+    "Q": "Cuásar",
+    "C": "Nube estelar",
+    "AST": "Asterismo",
+    "Ast": "Asterismo"
+  }
+}

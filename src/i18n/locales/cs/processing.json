@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Nahrávání obrázku",
+    "extract": "Extrakce zdrojů",
+    "solve": "Astrometrické řešení",
+    "match": "Porovnání s katalogem",
+    "finalize": "Dokončování dat"
+  },
+  "cancel": "Zrušit"
+}

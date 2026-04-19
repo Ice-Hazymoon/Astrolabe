@@ -1,0 +1,13 @@
+{
+  "title": "Sube tu foto del cielo nocturno",
+  "description": "Arrastra o toca para seleccionar una imagen JPG, PNG o WebP.",
+  "descriptionSecondLine": "Identificaremos las constelaciones, estrellas y objetos de cielo profundo que aparezcan.",
+  "buttons": {
+    "choose": "Elegir imagen",
+    "sample": "Probar un ejemplo"
+  },
+  "errors": {
+    "unsupportedType": "Sube una imagen JPG, PNG o WebP"
+  },
+  "altFallback": "Imagen subida"
+}

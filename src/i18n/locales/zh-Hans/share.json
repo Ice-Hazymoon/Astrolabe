@@ -1,0 +1,14 @@
+{
+  "title": "作品已就绪",
+  "description": "Stellaris 是一个用爱制作的免费项目。如果你喜欢这张作品，把它分享给同好吧。",
+  "captionWithLocation": "一张来自 {{location}} 的星空 — Stellaris 解算",
+  "captionDefault": "Stellaris · 星空标注",
+  "targets": {
+    "x": "分享到 X",
+    "threads": "分享到 Threads",
+    "facebook": "分享到 Facebook",
+    "linkedin": "分享到 LinkedIn"
+  },
+  "footerNote": "每一次分享都让 Stellaris 保持自由生长 —— 感谢你成为社区的一份子。",
+  "madeWith": "Made with"
+}

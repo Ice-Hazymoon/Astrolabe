@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "retry": "Opnieuw proberen",
+    "reset": "Opnieuw beginnen",
+    "save": "Opslaan",
+    "loading": "Laden…"
+  },
+  "status": {
+    "ready": "Klaar",
+    "preparing": "Voorbereiden",
+    "done": "Voltooid",
+    "unknownError": "Onbekende fout"
+  },
+  "language": {
+    "label": "Taal",
+    "uiLabel": "Interfacetaal",
+    "apiLabel": "Labeltaal",
+    "switchAria": "Kies taal"
+  },
+  "common": {
+    "and": "en",
+    "or": "of"
+  }
+}

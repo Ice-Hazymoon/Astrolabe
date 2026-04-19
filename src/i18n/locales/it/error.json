@@ -1,0 +1,8 @@
+{
+  "title": "Analisi non riuscita",
+  "fallbackMessage": "Si è verificato un errore imprevisto durante l'analisi",
+  "buttons": {
+    "retry": "Riprova",
+    "reset": "Ricomincia"
+  }
+}

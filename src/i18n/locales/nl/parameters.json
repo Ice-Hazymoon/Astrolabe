@@ -1,0 +1,48 @@
+{
+  "title": "Parameters",
+  "eyebrow": "Overlay",
+  "presets": {
+    "header": "Weergavevoorinstelling",
+    "ariaLabel": "Weergavevoorinstelling",
+    "balanced": { "label": "Gebalanceerd", "hint": "Aanbevolen dichtheid" },
+    "detailed": { "label": "Gedetailleerd", "hint": "Meer deep-sky en sterrenbeelden" },
+    "max": { "label": "Volledig", "hint": "Toon elke detectie" }
+  },
+  "labelLocale": {
+    "header": "Labeltaal",
+    "ariaLabel": "Labeltaal",
+    "driftHint": "Wisselen vereist heranalyse"
+  },
+  "layers": {
+    "header": "Lagen",
+    "groups": {
+      "constellation": "Sterrenbeelden",
+      "stars": "Sterren",
+      "deepSky": "Deep sky"
+    },
+    "items": {
+      "constellation_lines": "Sterrenbeeldlijnen",
+      "constellation_labels": "Namen van sterrenbeelden",
+      "contextual_constellation_labels": "Hints voor naburige sterrenbeelden",
+      "star_markers": "Stermarkeringen",
+      "star_labels": "Sternamen",
+      "deep_sky_markers": "Deep-sky-markeringen",
+      "deep_sky_labels": "Namen van deep-sky-objecten",
+      "label_leaders": "Leidlijnen van labels"
+    }
+  },
+  "detail": {
+    "header": "Dichtheid",
+    "starLimit": "Max. sterlabels",
+    "starMagnitude": "Drempel sterrenmagnitude",
+    "dsoLimit": "Max. deep-sky-labels",
+    "dsoMagnitude": "Drempel deep-sky-magnitude",
+    "showAllConstellations": "Alle namen van sterrenbeelden tonen",
+    "detailedDsoLabels": "Volledige deep-sky-namen gebruiken",
+    "live": "Wijzigingen worden direct toegepast."
+  },
+  "reanalyze": {
+    "message": "Labeltaal gewijzigd — voer opnieuw analyse uit om toe te passen.",
+    "button": "Opnieuw analyseren"
+  }
+}

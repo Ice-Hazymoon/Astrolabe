@@ -1,0 +1,9 @@
+{
+  "title": "Historique",
+  "empty": "Aucune analyse pour l'instant — téléversez une image pour commencer",
+  "clearAll": "Effacer l'historique",
+  "collapse": "Réduire l'historique",
+  "restore": "Restaurer · {{name}}",
+  "untitled": "Sans titre",
+  "remove": "Supprimer"
+}

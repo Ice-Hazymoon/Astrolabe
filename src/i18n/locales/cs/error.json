@@ -1,0 +1,8 @@
+{
+  "title": "Analýza selhala",
+  "fallbackMessage": "Během analýzy došlo k neočekávané chybě",
+  "buttons": {
+    "retry": "Zkusit znovu",
+    "reset": "Začít znovu"
+  }
+}

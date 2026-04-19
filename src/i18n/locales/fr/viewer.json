@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Zoom avant",
+  "zoomOut": "Zoom arrière",
+  "reset": "Ajuster à la vue",
+  "fullscreenEnter": "Passer en plein écran",
+  "fullscreenExit": "Quitter le plein écran",
+  "loadFailed": "Échec du chargement de l'image",
+  "sourceBlobInvalid": "Le blob de session n'est plus valide",
+  "sourceDataInvalid": "L'URL de données n'a pas pu être décodée",
+  "overlayAria": "Superposition des constellations"
+}

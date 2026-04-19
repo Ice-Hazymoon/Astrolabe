@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "Signierter Export",
+  "description": "Füge Beobachtungsort und Koordinaten hinzu, um einen teilbaren Druck dieses sternbeschrifteten Fotos zu erstellen. Gesichtsfeld {{field}}.",
+  "previewAlt": "Vorschau",
+  "location": {
+    "header": "Beobachtungsort",
+    "placeholder": "Ortsname eingeben (Suche unterstützt)",
+    "searching": "Suche läuft…",
+    "useCurrent": "Aktuellen Standort verwenden",
+    "locating": "Standortsuche"
+  },
+  "coordinates": {
+    "latitude": "Breitengrad",
+    "longitude": "Längengrad"
+  },
+  "hints": {
+    "default": "Ort und Koordinaten sind beide optional — Ausgefülltes wird unten im Bild eingestempelt.",
+    "geoUnsupported": "Dieses Gerät unterstützt keine Standortbestimmung",
+    "geoDenied": "Standortberechtigung verweigert",
+    "geoFailed": "Standortermittlung fehlgeschlagen, bitte erneut versuchen",
+    "exportFailed": "Export fehlgeschlagen, bitte erneut versuchen"
+  },
+  "buttons": {
+    "cancel": "Abbrechen",
+    "save": "Bild speichern",
+    "saving": "Wird erstellt…"
+  }
+}

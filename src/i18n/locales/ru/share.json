@@ -1,0 +1,14 @@
+{
+  "title": "Ваше изображение готово",
+  "description": "Stellaris создан с любовью и бесплатен для всех. Если результат вас порадовал, поделитесь им с друзьями-звездочётами.",
+  "captionWithLocation": "Небо над {{location}} — аннотировано Stellaris",
+  "captionDefault": "Stellaris · Аннотатор звёзд",
+  "targets": {
+    "x": "Поделиться в X",
+    "threads": "Поделиться в Threads",
+    "facebook": "Поделиться в Facebook",
+    "linkedin": "Поделиться в LinkedIn"
+  },
+  "footerNote": "Каждый репост помогает Stellaris оставаться бесплатным — спасибо, что вы с нами.",
+  "madeWith": "Создано с"
+}

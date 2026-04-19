@@ -1,0 +1,23 @@
+{
+  "altOriginal": "原始圖像",
+  "altAnnotated": "標註結果",
+  "toggleAnnotated": "查看標註",
+  "toggleOriginal": "查看原圖",
+  "export": "匯出",
+  "details": {
+    "header": "解算結果",
+    "tabs": {
+      "stars": "恆星",
+      "constellations": "星座",
+      "dso": "深空"
+    },
+    "empty": "目前參數下未識別到內容",
+    "mainStarsCount": "{{count}} 顆主星",
+    "mainStarsCount_other": "{{count}} 顆主星",
+    "stats": {
+      "fieldCenter": "視場中心",
+      "fieldSize": "視場範圍",
+      "elapsed": "解算耗時"
+    }
+  }
+}

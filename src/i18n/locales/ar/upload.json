@@ -1,0 +1,13 @@
+{
+  "title": "ارفع صورة سمائك الليلية",
+  "description": "أسقط الصورة أو انقر لاختيار ملف JPG أو PNG أو WebP.",
+  "descriptionSecondLine": "سنتعرف على الأبراج والنجوم والأجرام العميقة داخل الصورة.",
+  "buttons": {
+    "choose": "اختيار صورة",
+    "sample": "جرّب نموذجًا"
+  },
+  "errors": {
+    "unsupportedType": "يرجى رفع صورة بصيغة JPG أو PNG أو WebP"
+  },
+  "altFallback": "الصورة المرفوعة"
+}

@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Originalbild",
+  "altAnnotated": "Beschriftetes Ergebnis",
+  "toggleAnnotated": "Beschriftung anzeigen",
+  "toggleOriginal": "Original anzeigen",
+  "export": "Exportieren",
+  "details": {
+    "header": "Analyseergebnis",
+    "tabs": {
+      "stars": "Sterne",
+      "constellations": "Sternbilder",
+      "dso": "Deep Sky"
+    },
+    "empty": "Keine Treffer für die aktuellen Parameter",
+    "mainStarsCount": "{{count}} Hauptstern",
+    "mainStarsCount_other": "{{count}} Hauptsterne",
+    "stats": {
+      "fieldCenter": "Bildfeldmitte",
+      "fieldSize": "Gesichtsfeld",
+      "elapsed": "Lösungszeit"
+    }
+  }
+}

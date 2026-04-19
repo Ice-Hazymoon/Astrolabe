@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "上传图像",
+    "extract": "提取光源",
+    "solve": "解算视场",
+    "match": "匹配星表",
+    "finalize": "整理数据"
+  },
+  "cancel": "取消"
+}

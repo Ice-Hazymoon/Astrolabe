@@ -1,0 +1,14 @@
+// Reserved for SCSS-side tokens (mixins, math helpers, breakpoint maps).
+// Tailwind v4 owns the CSS custom property surface via @theme in global.scss.
+
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+@mixin breakpoint($size) {
+  @if $size == sm { @media (min-width: $bp-sm) { @content; } }
+  @else if $size == md { @media (min-width: $bp-md) { @content; } }
+  @else if $size == lg { @media (min-width: $bp-lg) { @content; } }
+  @else if $size == xl { @media (min-width: $bp-xl) { @content; } }
+}

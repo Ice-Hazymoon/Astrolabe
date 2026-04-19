@@ -1,0 +1,48 @@
+{
+  "title": "المعاملات",
+  "eyebrow": "الطبقات",
+  "presets": {
+    "header": "إعداد العرض",
+    "ariaLabel": "إعداد العرض",
+    "balanced": { "label": "متوازن", "hint": "الكثافة الموصى بها" },
+    "detailed": { "label": "مفصّل", "hint": "مزيد من الأجرام العميقة والأبراج" },
+    "max": { "label": "كامل", "hint": "إظهار كل ما تم اكتشافه" }
+  },
+  "labelLocale": {
+    "header": "لغة التسميات",
+    "ariaLabel": "لغة التسميات",
+    "driftHint": "يتطلب التبديل إعادة التحليل"
+  },
+  "layers": {
+    "header": "الطبقات",
+    "groups": {
+      "constellation": "الأبراج",
+      "stars": "النجوم",
+      "deepSky": "الأجرام العميقة"
+    },
+    "items": {
+      "constellation_lines": "خطوط الأبراج",
+      "constellation_labels": "أسماء الأبراج",
+      "contextual_constellation_labels": "إشارات الأبراج المجاورة",
+      "star_markers": "علامات النجوم",
+      "star_labels": "أسماء النجوم",
+      "deep_sky_markers": "علامات الأجرام العميقة",
+      "deep_sky_labels": "أسماء الأجرام العميقة",
+      "label_leaders": "خطوط ربط التسميات"
+    }
+  },
+  "detail": {
+    "header": "الكثافة",
+    "starLimit": "الحد الأقصى لتسميات النجوم",
+    "starMagnitude": "عتبة قدر النجوم",
+    "dsoLimit": "الحد الأقصى لتسميات الأجرام العميقة",
+    "dsoMagnitude": "عتبة قدر الأجرام العميقة",
+    "showAllConstellations": "إظهار جميع أسماء الأبراج",
+    "detailedDsoLabels": "استخدام الأسماء الكاملة للأجرام العميقة",
+    "live": "تُطبَّق التغييرات فورًا."
+  },
+  "reanalyze": {
+    "message": "تغيّرت لغة التسميات — أعد التحليل للتطبيق.",
+    "button": "إعادة التحليل"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaxy",
+    "Gal": "Galaxy",
+    "GC": "Globular cluster",
+    "GCl": "Globular cluster",
+    "OC": "Open cluster",
+    "OCl": "Open cluster",
+    "Open Cluster": "Open cluster",
+    "N": "Diffuse nebula",
+    "Neb": "Diffuse nebula",
+    "PN": "Planetary nebula",
+    "RN": "Reflection nebula",
+    "RfN": "Reflection nebula",
+    "EN": "Emission nebula",
+    "DN": "Dark nebula",
+    "HII": "HII region",
+    "Cl+N": "Cluster with nebulosity",
+    "SR": "Supernova remnant",
+    "SNR": "Supernova remnant",
+    "Q": "Quasar",
+    "C": "Star cloud",
+    "AST": "Asterism",
+    "Ast": "Asterism"
+  }
+}

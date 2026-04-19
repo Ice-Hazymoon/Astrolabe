@@ -1,0 +1,11 @@
+{
+  "zoomIn": "放大",
+  "zoomOut": "缩小",
+  "reset": "还原",
+  "fullscreenEnter": "全屏查看",
+  "fullscreenExit": "退出全屏",
+  "loadFailed": "图像加载失败",
+  "sourceBlobInvalid": "会话内 Blob 已失效",
+  "sourceDataInvalid": "数据 URL 解码失败",
+  "overlayAria": "星座叠加层"
+}

@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Star Annotator",
+  "topbar": {
+    "openHistory": "Open history",
+    "closeHistory": "Close history",
+    "restart": "Start over",
+    "settings": "Parameters",
+    "parametersTitle": "Parameters"
+  }
+}

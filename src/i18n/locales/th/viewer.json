@@ -1,0 +1,11 @@
+{
+  "zoomIn": "ซูมเข้า",
+  "zoomOut": "ซูมออก",
+  "reset": "พอดีหน้าจอ",
+  "fullscreenEnter": "เข้าสู่เต็มจอ",
+  "fullscreenExit": "ออกจากเต็มจอ",
+  "loadFailed": "โหลดภาพไม่สำเร็จ",
+  "sourceBlobInvalid": "ข้อมูลเซสชันไม่ถูกต้องอีกต่อไป",
+  "sourceDataInvalid": "ถอดรหัส Data URL ไม่สำเร็จ",
+  "overlayAria": "เลเยอร์กลุ่มดาว"
+}

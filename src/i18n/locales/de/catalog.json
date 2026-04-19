@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaxie",
+    "Gal": "Galaxie",
+    "GC": "Kugelsternhaufen",
+    "GCl": "Kugelsternhaufen",
+    "OC": "Offener Sternhaufen",
+    "OCl": "Offener Sternhaufen",
+    "Open Cluster": "Offener Sternhaufen",
+    "N": "Diffuser Nebel",
+    "Neb": "Diffuser Nebel",
+    "PN": "Planetarischer Nebel",
+    "RN": "Reflexionsnebel",
+    "RfN": "Reflexionsnebel",
+    "EN": "Emissionsnebel",
+    "DN": "Dunkelnebel",
+    "HII": "HII-Region",
+    "Cl+N": "Sternhaufen mit Nebel",
+    "SR": "Supernova-Überrest",
+    "SNR": "Supernova-Überrest",
+    "Q": "Quasar",
+    "C": "Sternwolke",
+    "AST": "Asterismus",
+    "Ast": "Asterismus"
+  }
+}

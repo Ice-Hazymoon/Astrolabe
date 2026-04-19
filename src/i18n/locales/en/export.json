@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "Signed export",
+  "description": "Add the observing location and coordinates to create a shareable print of this star-annotated photograph. Field of view {{field}}.",
+  "previewAlt": "Preview",
+  "location": {
+    "header": "Observing location",
+    "placeholder": "Enter a place name (search supported)",
+    "searching": "Searching…",
+    "useCurrent": "Use current location",
+    "locating": "Locating"
+  },
+  "coordinates": {
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "hints": {
+    "default": "Both location and coordinates are optional — anything filled in is stamped at the bottom of the image.",
+    "geoUnsupported": "This device does not support geolocation",
+    "geoDenied": "Location permission denied",
+    "geoFailed": "Location lookup failed, please try again",
+    "exportFailed": "Export failed, please retry"
+  },
+  "buttons": {
+    "cancel": "Cancel",
+    "save": "Save image",
+    "saving": "Generating…"
+  }
+}

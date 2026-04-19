@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Zoom in",
+  "zoomOut": "Zoom out",
+  "reset": "Fit to view",
+  "fullscreenEnter": "Enter fullscreen",
+  "fullscreenExit": "Exit fullscreen",
+  "loadFailed": "Image failed to load",
+  "sourceBlobInvalid": "Session blob is no longer valid",
+  "sourceDataInvalid": "Data URL could not be decoded",
+  "overlayAria": "Constellation overlay"
+}

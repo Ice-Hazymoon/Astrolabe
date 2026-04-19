@@ -1,0 +1,9 @@
+{
+  "title": "기록",
+  "empty": "아직 분석 기록이 없어요 — 이미지를 업로드하여 시작하세요",
+  "clearAll": "기록 비우기",
+  "collapse": "기록 접기",
+  "restore": "복원 · {{name}}",
+  "untitled": "제목 없음",
+  "remove": "삭제"
+}

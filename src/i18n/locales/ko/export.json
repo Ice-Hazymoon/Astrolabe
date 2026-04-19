@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "서명 내보내기",
+  "description": "관측 장소와 좌표를 더해 공유할 수 있는 별 주석 사진을 만들어 보세요. 시야 {{field}}.",
+  "previewAlt": "미리 보기",
+  "location": {
+    "header": "관측 장소",
+    "placeholder": "장소 이름 입력 (검색 지원)",
+    "searching": "검색 중…",
+    "useCurrent": "현재 위치 사용",
+    "locating": "위치 확인 중"
+  },
+  "coordinates": {
+    "latitude": "위도",
+    "longitude": "경도"
+  },
+  "hints": {
+    "default": "장소와 좌표는 모두 선택 사항입니다 — 입력한 내용은 이미지 아래에 새겨집니다.",
+    "geoUnsupported": "이 기기는 위치 정보를 지원하지 않습니다",
+    "geoDenied": "위치 권한이 거부되었습니다",
+    "geoFailed": "위치 확인에 실패했습니다. 다시 시도해 주세요",
+    "exportFailed": "내보내기에 실패했습니다. 다시 시도해 주세요"
+  },
+  "buttons": {
+    "cancel": "취소",
+    "save": "이미지 저장",
+    "saving": "생성 중…"
+  }
+}

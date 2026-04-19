@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Anotador de estrellas",
+  "topbar": {
+    "openHistory": "Abrir historial",
+    "closeHistory": "Cerrar historial",
+    "restart": "Empezar de nuevo",
+    "settings": "Parámetros",
+    "parametersTitle": "Parámetros"
+  }
+}

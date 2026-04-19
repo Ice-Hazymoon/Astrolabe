@@ -1,0 +1,14 @@
+{
+  "title": "Görseliniz hazır",
+  "description": "Stellaris bir gönül işi ve herkes için ücretsiz. Bu sonuç sizi gülümsettiyse, bir gökyüzü tutkunuyla paylaşın.",
+  "captionWithLocation": "{{location}} üzerindeki bir gökyüzü — Stellaris ile etiketlendi",
+  "captionDefault": "Stellaris · Yıldız Etiketleyici",
+  "targets": {
+    "x": "X'te paylaş",
+    "threads": "Threads'te paylaş",
+    "facebook": "Facebook'ta paylaş",
+    "linkedin": "LinkedIn'de paylaş"
+  },
+  "footerNote": "Her paylaşım Stellaris'in büyümesine yardım eder — topluluğun parçası olduğunuz için teşekkürler.",
+  "madeWith": "Şununla yapıldı"
+}

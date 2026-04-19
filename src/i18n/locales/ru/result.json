@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Исходное изображение",
+  "altAnnotated": "Результат с аннотациями",
+  "toggleAnnotated": "Показать аннотации",
+  "toggleOriginal": "Показать оригинал",
+  "export": "Экспорт",
+  "details": {
+    "header": "Результат анализа",
+    "tabs": {
+      "stars": "Звёзды",
+      "constellations": "Созвездия",
+      "dso": "Дальний космос"
+    },
+    "empty": "Нет совпадений с текущими параметрами",
+    "mainStarsCount": "{{count}} главная звезда",
+    "mainStarsCount_other": "{{count}} главных звёзд",
+    "stats": {
+      "fieldCenter": "Центр поля",
+      "fieldSize": "Поле зрения",
+      "elapsed": "Время решения"
+    }
+  }
+}

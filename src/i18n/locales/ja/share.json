@@ -1,0 +1,14 @@
+{
+  "title": "作品が完成しました",
+  "description": "Stellaris は愛情を込めて作った、誰でも無料で使えるツールです。この結果が気に入ったら、ぜひ星空好きの仲間にシェアしてください。",
+  "captionWithLocation": "{{location}} の空 — Stellaris が注釈",
+  "captionDefault": "Stellaris · 星空アノテーター",
+  "targets": {
+    "x": "X でシェア",
+    "threads": "Threads でシェア",
+    "facebook": "Facebook でシェア",
+    "linkedin": "LinkedIn でシェア"
+  },
+  "footerNote": "一つひとつのシェアが Stellaris を無料のまま成長させてくれます。コミュニティの一員でいてくれてありがとう。",
+  "madeWith": "Made with"
+}

@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "retry": "Riprova",
+    "reset": "Ricomincia",
+    "save": "Salva",
+    "loading": "Caricamento…"
+  },
+  "status": {
+    "ready": "Pronto",
+    "preparing": "Preparazione",
+    "done": "Fatto",
+    "unknownError": "Errore sconosciuto"
+  },
+  "language": {
+    "label": "Lingua",
+    "uiLabel": "Lingua dell'interfaccia",
+    "apiLabel": "Lingua delle etichette",
+    "switchAria": "Scegli la lingua"
+  },
+  "common": {
+    "and": "e",
+    "or": "o"
+  }
+}

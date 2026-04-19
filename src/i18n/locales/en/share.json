@@ -1,0 +1,14 @@
+{
+  "title": "Your image is ready",
+  "description": "Stellaris is a labor of love and free for everyone. If this result made you smile, share it with a fellow stargazer.",
+  "captionWithLocation": "A sky over {{location}} — annotated with Stellaris",
+  "captionDefault": "Stellaris · Star Annotator",
+  "targets": {
+    "x": "Share to X",
+    "threads": "Share to Threads",
+    "facebook": "Share to Facebook",
+    "linkedin": "Share to LinkedIn"
+  },
+  "footerNote": "Every share keeps Stellaris free to grow — thank you for being part of the community.",
+  "madeWith": "Made with"
+}

@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Tutup",
+    "cancel": "Batal",
+    "retry": "Coba lagi",
+    "reset": "Mulai dari awal",
+    "save": "Simpan",
+    "loading": "Memuat…"
+  },
+  "status": {
+    "ready": "Siap",
+    "preparing": "Menyiapkan",
+    "done": "Selesai",
+    "unknownError": "Kesalahan tidak diketahui"
+  },
+  "language": {
+    "label": "Bahasa",
+    "uiLabel": "Bahasa antarmuka",
+    "apiLabel": "Bahasa label",
+    "switchAria": "Pilih bahasa"
+  },
+  "common": {
+    "and": "dan",
+    "or": "atau"
+  }
+}

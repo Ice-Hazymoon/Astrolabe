@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Збільшити",
+  "zoomOut": "Зменшити",
+  "reset": "За розміром",
+  "fullscreenEnter": "Повноекранний режим",
+  "fullscreenExit": "Вийти з повноекранного режиму",
+  "loadFailed": "Не вдалося завантажити зображення",
+  "sourceBlobInvalid": "Дані сесії більше недійсні",
+  "sourceDataInvalid": "Не вдалося декодувати Data URL",
+  "overlayAria": "Накладення сузір’їв"
+}

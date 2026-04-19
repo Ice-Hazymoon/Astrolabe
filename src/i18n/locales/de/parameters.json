@@ -1,0 +1,48 @@
+{
+  "title": "Parameter",
+  "eyebrow": "Overlay",
+  "presets": {
+    "header": "Anzeige-Voreinstellung",
+    "ariaLabel": "Anzeige-Voreinstellung",
+    "balanced": { "label": "Ausgewogen", "hint": "Empfohlene Dichte" },
+    "detailed": { "label": "Detailliert", "hint": "Mehr Deep-Sky und Sternbilder" },
+    "max": { "label": "Vollständig", "hint": "Alle Erkennungen zeigen" }
+  },
+  "labelLocale": {
+    "header": "Beschriftungssprache",
+    "ariaLabel": "Beschriftungssprache",
+    "driftHint": "Ein Wechsel erfordert eine erneute Analyse"
+  },
+  "layers": {
+    "header": "Ebenen",
+    "groups": {
+      "constellation": "Sternbilder",
+      "stars": "Sterne",
+      "deepSky": "Deep Sky"
+    },
+    "items": {
+      "constellation_lines": "Sternbildlinien",
+      "constellation_labels": "Sternbildnamen",
+      "contextual_constellation_labels": "Hinweise auf angrenzende Sternbilder",
+      "star_markers": "Sternmarkierungen",
+      "star_labels": "Sternnamen",
+      "deep_sky_markers": "Deep-Sky-Markierungen",
+      "deep_sky_labels": "Deep-Sky-Namen",
+      "label_leaders": "Beschriftungs-Führungslinien"
+    }
+  },
+  "detail": {
+    "header": "Dichte",
+    "starLimit": "Max. Sternbeschriftungen",
+    "starMagnitude": "Schwellenwert Sternhelligkeit",
+    "dsoLimit": "Max. Deep-Sky-Beschriftungen",
+    "dsoMagnitude": "Schwellenwert Deep-Sky-Helligkeit",
+    "showAllConstellations": "Alle Sternbildnamen anzeigen",
+    "detailedDsoLabels": "Vollständige Deep-Sky-Namen verwenden",
+    "live": "Änderungen werden sofort übernommen."
+  },
+  "reanalyze": {
+    "message": "Beschriftungssprache geändert — bitte neu analysieren, um sie anzuwenden.",
+    "button": "Neu analysieren"
+  }
+}

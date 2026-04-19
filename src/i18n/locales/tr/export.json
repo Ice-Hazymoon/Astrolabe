@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Dışa aktar",
+  "title": "İmzalı çıktı",
+  "description": "Bu yıldız etiketli fotoğrafın paylaşılabilir bir baskısını oluşturmak için gözlem yerini ve koordinatları ekleyin. Görüş alanı {{field}}.",
+  "previewAlt": "Önizleme",
+  "location": {
+    "header": "Gözlem yeri",
+    "placeholder": "Bir yer adı girin (arama desteklenir)",
+    "searching": "Aranıyor…",
+    "useCurrent": "Mevcut konumu kullan",
+    "locating": "Konum belirleniyor"
+  },
+  "coordinates": {
+    "latitude": "Enlem",
+    "longitude": "Boylam"
+  },
+  "hints": {
+    "default": "Konum ve koordinatların ikisi de isteğe bağlıdır — doldurulan her şey görselin altına yazılır.",
+    "geoUnsupported": "Bu cihaz konum belirlemeyi desteklemiyor",
+    "geoDenied": "Konum izni reddedildi",
+    "geoFailed": "Konum bulunamadı, lütfen tekrar deneyin",
+    "exportFailed": "Dışa aktarma başarısız, lütfen tekrar deneyin"
+  },
+  "buttons": {
+    "cancel": "İptal",
+    "save": "Görseli kaydet",
+    "saving": "Oluşturuluyor…"
+  }
+}

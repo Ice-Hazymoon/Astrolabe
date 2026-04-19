@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "retry": "再試行",
+    "reset": "最初からやり直す",
+    "save": "保存",
+    "loading": "読み込み中…"
+  },
+  "status": {
+    "ready": "準備完了",
+    "preparing": "準備中",
+    "done": "完了",
+    "unknownError": "不明なエラー"
+  },
+  "language": {
+    "label": "言語",
+    "uiLabel": "表示言語",
+    "apiLabel": "ラベル言語",
+    "switchAria": "言語を選択"
+  },
+  "common": {
+    "and": "と",
+    "or": "または"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Bild wird hochgeladen",
+    "extract": "Quellen werden extrahiert",
+    "solve": "Plate Solving",
+    "match": "Katalogabgleich",
+    "finalize": "Daten werden finalisiert"
+  },
+  "cancel": "Abbrechen"
+}

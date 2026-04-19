@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Оригінальне зображення",
+  "altAnnotated": "Результат з анотаціями",
+  "toggleAnnotated": "Показати анотації",
+  "toggleOriginal": "Показати оригінал",
+  "export": "Експорт",
+  "details": {
+    "header": "Результат аналізу",
+    "tabs": {
+      "stars": "Зорі",
+      "constellations": "Сузір’я",
+      "dso": "Далекий космос"
+    },
+    "empty": "Немає збігів за поточними параметрами",
+    "mainStarsCount": "{{count}} головна зоря",
+    "mainStarsCount_other": "{{count}} головних зір",
+    "stats": {
+      "fieldCenter": "Центр поля",
+      "fieldSize": "Поле зору",
+      "elapsed": "Час розв’язання"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "落款匯出",
+  "description": "加入觀測地與座標，為這張星空標註生成一張可分享的作品。視場 {{field}}。",
+  "previewAlt": "預覽",
+  "location": {
+    "header": "觀測地",
+    "placeholder": "輸入地點名稱（支援搜尋）",
+    "searching": "搜尋中…",
+    "useCurrent": "使用目前位置",
+    "locating": "定位中"
+  },
+  "coordinates": {
+    "latitude": "緯度",
+    "longitude": "經度"
+  },
+  "hints": {
+    "default": "地點與座標皆可留空 —— 已填資訊會自動落款於圖像底部。",
+    "geoUnsupported": "此裝置不支援定位",
+    "geoDenied": "已拒絕定位權限",
+    "geoFailed": "定位失敗，請稍後再試",
+    "exportFailed": "匯出失敗，請重試"
+  },
+  "buttons": {
+    "cancel": "取消",
+    "save": "儲存圖像",
+    "saving": "生成中…"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "落款导出",
+  "description": "加入观测地与坐标，为这张星空标注生成一张可以分享的作品。视场 {{field}}。",
+  "previewAlt": "预览",
+  "location": {
+    "header": "观测地",
+    "placeholder": "输入地点名称（支持搜索）",
+    "searching": "正在搜索…",
+    "useCurrent": "使用当前位置",
+    "locating": "正在定位"
+  },
+  "coordinates": {
+    "latitude": "纬度",
+    "longitude": "经度"
+  },
+  "hints": {
+    "default": "地点与坐标均可留空 —— 已填信息会自动落款到图像底部。",
+    "geoUnsupported": "此设备不支持定位",
+    "geoDenied": "已拒绝定位权限",
+    "geoFailed": "定位失败，请稍后再试",
+    "exportFailed": "导出失败，请重试"
+  },
+  "buttons": {
+    "cancel": "取消",
+    "save": "保存图像",
+    "saving": "生成中…"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Аннотатор звёзд",
+  "topbar": {
+    "openHistory": "Открыть историю",
+    "closeHistory": "Закрыть историю",
+    "restart": "Начать заново",
+    "settings": "Параметры",
+    "parametersTitle": "Параметры"
+  }
+}

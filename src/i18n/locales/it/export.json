@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Esporta",
+  "title": "Esportazione firmata",
+  "description": "Aggiungi il luogo di osservazione e le coordinate per creare una stampa condivisibile di questa fotografia annotata. Campo visivo {{field}}.",
+  "previewAlt": "Anteprima",
+  "location": {
+    "header": "Luogo di osservazione",
+    "placeholder": "Inserisci il nome di un luogo (ricerca disponibile)",
+    "searching": "Ricerca…",
+    "useCurrent": "Usa posizione attuale",
+    "locating": "Rilevamento posizione"
+  },
+  "coordinates": {
+    "latitude": "Latitudine",
+    "longitude": "Longitudine"
+  },
+  "hints": {
+    "default": "Luogo e coordinate sono entrambi facoltativi — ciò che compili verrà impresso sul bordo inferiore dell'immagine.",
+    "geoUnsupported": "Questo dispositivo non supporta la geolocalizzazione",
+    "geoDenied": "Autorizzazione alla posizione negata",
+    "geoFailed": "Rilevamento della posizione non riuscito, riprova",
+    "exportFailed": "Esportazione non riuscita, riprova"
+  },
+  "buttons": {
+    "cancel": "Annulla",
+    "save": "Salva immagine",
+    "saving": "Generazione…"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "retry": "إعادة المحاولة",
+    "reset": "ابدأ من جديد",
+    "save": "حفظ",
+    "loading": "جارٍ التحميل…"
+  },
+  "status": {
+    "ready": "جاهز",
+    "preparing": "جارٍ التحضير",
+    "done": "تم",
+    "unknownError": "خطأ غير معروف"
+  },
+  "language": {
+    "label": "اللغة",
+    "uiLabel": "لغة الواجهة",
+    "apiLabel": "لغة التسميات",
+    "switchAria": "اختر اللغة"
+  },
+  "common": {
+    "and": "و",
+    "or": "أو"
+  }
+}

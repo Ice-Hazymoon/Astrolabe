@@ -1,0 +1,48 @@
+{
+  "title": "Parametry",
+  "eyebrow": "Nakładka",
+  "presets": {
+    "header": "Ustawienie wyświetlania",
+    "ariaLabel": "Ustawienie wyświetlania",
+    "balanced": { "label": "Zrównoważone", "hint": "Zalecana gęstość" },
+    "detailed": { "label": "Szczegółowe", "hint": "Więcej obiektów dalekiego nieba i gwiazdozbiorów" },
+    "max": { "label": "Pełne", "hint": "Pokaż wszystkie wykrycia" }
+  },
+  "labelLocale": {
+    "header": "Język etykiet",
+    "ariaLabel": "Język etykiet",
+    "driftHint": "Zmiana wymaga ponownej analizy"
+  },
+  "layers": {
+    "header": "Warstwy",
+    "groups": {
+      "constellation": "Gwiazdozbiory",
+      "stars": "Gwiazdy",
+      "deepSky": "Dalekie niebo"
+    },
+    "items": {
+      "constellation_lines": "Linie gwiazdozbiorów",
+      "constellation_labels": "Nazwy gwiazdozbiorów",
+      "contextual_constellation_labels": "Podpowiedzi sąsiednich gwiazdozbiorów",
+      "star_markers": "Znaczniki gwiazd",
+      "star_labels": "Nazwy gwiazd",
+      "deep_sky_markers": "Znaczniki obiektów dalekiego nieba",
+      "deep_sky_labels": "Nazwy obiektów dalekiego nieba",
+      "label_leaders": "Linie prowadzące etykiet"
+    }
+  },
+  "detail": {
+    "header": "Gęstość",
+    "starLimit": "Maks. etykiet gwiazd",
+    "starMagnitude": "Próg wielkości gwiazdowej",
+    "dsoLimit": "Maks. etykiet obiektów dalekiego nieba",
+    "dsoMagnitude": "Próg wielkości obiektów dalekiego nieba",
+    "showAllConstellations": "Pokaż wszystkie nazwy gwiazdozbiorów",
+    "detailedDsoLabels": "Używaj pełnych nazw obiektów dalekiego nieba",
+    "live": "Zmiany są stosowane natychmiast."
+  },
+  "reanalyze": {
+    "message": "Zmieniono język etykiet — uruchom ponowną analizę, aby zastosować.",
+    "button": "Analizuj ponownie"
+  }
+}

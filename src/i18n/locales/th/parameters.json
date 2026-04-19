@@ -1,0 +1,48 @@
+{
+  "title": "พารามิเตอร์",
+  "eyebrow": "โอเวอร์เลย์",
+  "presets": {
+    "header": "ค่าที่ตั้งไว้สำหรับการแสดงผล",
+    "ariaLabel": "ค่าที่ตั้งไว้สำหรับการแสดงผล",
+    "balanced": { "label": "สมดุล", "hint": "ความหนาแน่นที่แนะนำ" },
+    "detailed": { "label": "ละเอียด", "hint": "แสดงวัตถุท้องฟ้าลึกและกลุ่มดาวมากขึ้น" },
+    "max": { "label": "สมบูรณ์", "hint": "แสดงทุกการตรวจจับ" }
+  },
+  "labelLocale": {
+    "header": "ภาษาป้ายกำกับ",
+    "ariaLabel": "ภาษาป้ายกำกับ",
+    "driftHint": "การเปลี่ยนต้องมีการวิเคราะห์ใหม่"
+  },
+  "layers": {
+    "header": "เลเยอร์",
+    "groups": {
+      "constellation": "กลุ่มดาว",
+      "stars": "ดาวฤกษ์",
+      "deepSky": "วัตถุท้องฟ้าลึก"
+    },
+    "items": {
+      "constellation_lines": "เส้นกลุ่มดาว",
+      "constellation_labels": "ชื่อกลุ่มดาว",
+      "contextual_constellation_labels": "กลุ่มดาวข้างเคียง",
+      "star_markers": "จุดหมายดาว",
+      "star_labels": "ชื่อดาว",
+      "deep_sky_markers": "จุดหมายวัตถุท้องฟ้าลึก",
+      "deep_sky_labels": "ชื่อวัตถุท้องฟ้าลึก",
+      "label_leaders": "เส้นโยงป้ายกำกับ"
+    }
+  },
+  "detail": {
+    "header": "ความหนาแน่น",
+    "starLimit": "ป้ายดาวสูงสุด",
+    "starMagnitude": "เกณฑ์ความสว่างดาว",
+    "dsoLimit": "ป้ายวัตถุท้องฟ้าลึกสูงสุด",
+    "dsoMagnitude": "เกณฑ์ความสว่างวัตถุท้องฟ้าลึก",
+    "showAllConstellations": "แสดงชื่อกลุ่มดาวทั้งหมด",
+    "detailedDsoLabels": "ใช้ชื่อวัตถุท้องฟ้าลึกเต็ม",
+    "live": "การเปลี่ยนแปลงมีผลทันที"
+  },
+  "reanalyze": {
+    "message": "เปลี่ยนภาษาป้ายกำกับแล้ว — วิเคราะห์ใหม่เพื่อใช้งาน",
+    "button": "วิเคราะห์อีกครั้ง"
+  }
+}

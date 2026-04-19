@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Mengunggah gambar",
+    "extract": "Mengekstraksi sumber",
+    "solve": "Pemecahan plat",
+    "match": "Mencocokkan katalog",
+    "finalize": "Menyelesaikan data"
+  },
+  "cancel": "Batal"
+}

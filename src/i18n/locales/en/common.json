@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "reset": "Start over",
+    "save": "Save",
+    "loading": "Loading…"
+  },
+  "status": {
+    "ready": "Ready",
+    "preparing": "Preparing",
+    "done": "Done",
+    "unknownError": "Unknown error"
+  },
+  "language": {
+    "label": "Language",
+    "uiLabel": "Interface language",
+    "apiLabel": "Label language",
+    "switchAria": "Choose language"
+  },
+  "common": {
+    "and": "and",
+    "or": "or"
+  }
+}

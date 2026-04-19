@@ -1,0 +1,9 @@
+{
+  "title": "History",
+  "empty": "No analyses yet — upload an image to begin",
+  "clearAll": "Clear history",
+  "collapse": "Collapse history",
+  "restore": "Restore · {{name}}",
+  "untitled": "Untitled",
+  "remove": "Remove"
+}

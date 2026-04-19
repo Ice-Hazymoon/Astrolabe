@@ -1,0 +1,13 @@
+{
+  "title": "Unggah foto langit malammu",
+  "description": "Jatuhkan atau ketuk untuk memilih gambar JPG, PNG, atau WebP.",
+  "descriptionSecondLine": "Kami akan mengenali rasi bintang, bintang, dan objek langit dalamnya.",
+  "buttons": {
+    "choose": "Pilih gambar",
+    "sample": "Coba contoh"
+  },
+  "errors": {
+    "unsupportedType": "Silakan unggah gambar JPG, PNG, atau WebP"
+  },
+  "altFallback": "Gambar yang diunggah"
+}

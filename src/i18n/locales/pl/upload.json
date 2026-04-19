@@ -1,0 +1,13 @@
+{
+  "title": "Prześlij zdjęcie nocnego nieba",
+  "description": "Przeciągnij lub dotknij, aby wybrać plik JPG, PNG lub WebP.",
+  "descriptionSecondLine": "Rozpoznamy gwiazdozbiory, gwiazdy i obiekty dalekiego nieba na zdjęciu.",
+  "buttons": {
+    "choose": "Wybierz obraz",
+    "sample": "Wypróbuj przykład"
+  },
+  "errors": {
+    "unsupportedType": "Prześlij obraz w formacie JPG, PNG lub WebP"
+  },
+  "altFallback": "Przesłany obraz"
+}

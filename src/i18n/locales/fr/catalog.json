@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaxie",
+    "Gal": "Galaxie",
+    "GC": "Amas globulaire",
+    "GCl": "Amas globulaire",
+    "OC": "Amas ouvert",
+    "OCl": "Amas ouvert",
+    "Open Cluster": "Amas ouvert",
+    "N": "Nébuleuse diffuse",
+    "Neb": "Nébuleuse diffuse",
+    "PN": "Nébuleuse planétaire",
+    "RN": "Nébuleuse par réflexion",
+    "RfN": "Nébuleuse par réflexion",
+    "EN": "Nébuleuse par émission",
+    "DN": "Nébuleuse sombre",
+    "HII": "Région HII",
+    "Cl+N": "Amas avec nébulosité",
+    "SR": "Rémanent de supernova",
+    "SNR": "Rémanent de supernova",
+    "Q": "Quasar",
+    "C": "Nuage stellaire",
+    "AST": "Astérisme",
+    "Ast": "Astérisme"
+  }
+}

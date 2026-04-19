@@ -1,0 +1,9 @@
+{
+  "title": "歷史",
+  "empty": "還沒有解算紀錄 — 上傳一張圖片開始",
+  "clearAll": "清空歷史",
+  "collapse": "收合歷史",
+  "restore": "還原歷史 · {{name}}",
+  "untitled": "未命名",
+  "remove": "移除"
+}

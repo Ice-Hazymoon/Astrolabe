@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Exportar",
+  "title": "Exportação assinada",
+  "description": "Adicione o local de observação e as coordenadas para criar uma impressão partilhável desta fotografia anotada. Campo de visão {{field}}.",
+  "previewAlt": "Pré-visualização",
+  "location": {
+    "header": "Local de observação",
+    "placeholder": "Introduza o nome de um local (com pesquisa)",
+    "searching": "A pesquisar…",
+    "useCurrent": "Usar localização atual",
+    "locating": "A localizar"
+  },
+  "coordinates": {
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "hints": {
+    "default": "O local e as coordenadas são ambos opcionais — o que preencher ficará carimbado na base da imagem.",
+    "geoUnsupported": "Este dispositivo não suporta geolocalização",
+    "geoDenied": "Permissão de localização negada",
+    "geoFailed": "Falha ao obter a localização, tente novamente",
+    "exportFailed": "A exportação falhou, tente novamente"
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "save": "Guardar imagem",
+    "saving": "A gerar…"
+  }
+}

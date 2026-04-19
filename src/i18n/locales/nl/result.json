@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Originele afbeelding",
+  "altAnnotated": "Resultaat met annotaties",
+  "toggleAnnotated": "Annotaties bekijken",
+  "toggleOriginal": "Origineel bekijken",
+  "export": "Exporteren",
+  "details": {
+    "header": "Analyseresultaat",
+    "tabs": {
+      "stars": "Sterren",
+      "constellations": "Sterrenbeelden",
+      "dso": "Deep sky"
+    },
+    "empty": "Geen overeenkomsten met de huidige parameters",
+    "mainStarsCount": "{{count}} hoofdster",
+    "mainStarsCount_other": "{{count}} hoofdsterren",
+    "stats": {
+      "fieldCenter": "Veldcentrum",
+      "fieldSize": "Gezichtsveld",
+      "elapsed": "Oplostijd"
+    }
+  }
+}

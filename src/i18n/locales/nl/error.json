@@ -1,0 +1,8 @@
+{
+  "title": "Analyse mislukt",
+  "fallbackMessage": "Er is een onverwachte fout opgetreden tijdens de analyse",
+  "buttons": {
+    "retry": "Opnieuw proberen",
+    "reset": "Opnieuw beginnen"
+  }
+}

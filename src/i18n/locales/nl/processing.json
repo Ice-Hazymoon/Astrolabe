@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Afbeelding uploaden",
+    "extract": "Bronnen extraheren",
+    "solve": "Astrometrisch oplossen",
+    "match": "Catalogus matchen",
+    "finalize": "Gegevens afronden"
+  },
+  "cancel": "Annuleren"
+}

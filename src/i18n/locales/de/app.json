@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "Sternbeschriftung",
+  "topbar": {
+    "openHistory": "Verlauf öffnen",
+    "closeHistory": "Verlauf schließen",
+    "restart": "Neu beginnen",
+    "settings": "Parameter",
+    "parametersTitle": "Parameter"
+  }
+}

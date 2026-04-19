@@ -1,0 +1,9 @@
+{
+  "title": "历史",
+  "empty": "还没有解算记录 — 上传一张图片开始",
+  "clearAll": "清空历史",
+  "collapse": "收起历史",
+  "restore": "恢复历史 · {{name}}",
+  "untitled": "未命名",
+  "remove": "移除"
+}

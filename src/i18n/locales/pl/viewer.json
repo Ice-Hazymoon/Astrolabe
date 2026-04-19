@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Powiększ",
+  "zoomOut": "Pomniejsz",
+  "reset": "Dopasuj do widoku",
+  "fullscreenEnter": "Tryb pełnoekranowy",
+  "fullscreenExit": "Wyjdź z trybu pełnoekranowego",
+  "loadFailed": "Nie udało się załadować obrazu",
+  "sourceBlobInvalid": "Dane sesji nie są już prawidłowe",
+  "sourceDataInvalid": "Nie udało się odkodować Data URL",
+  "overlayAria": "Nakładka gwiazdozbiorów"
+}

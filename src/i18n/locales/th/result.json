@@ -1,0 +1,23 @@
+{
+  "altOriginal": "ภาพต้นฉบับ",
+  "altAnnotated": "ผลลัพธ์ที่มีคำอธิบาย",
+  "toggleAnnotated": "ดูคำอธิบาย",
+  "toggleOriginal": "ดูภาพต้นฉบับ",
+  "export": "ส่งออก",
+  "details": {
+    "header": "ผลการวิเคราะห์",
+    "tabs": {
+      "stars": "ดาวฤกษ์",
+      "constellations": "กลุ่มดาว",
+      "dso": "วัตถุท้องฟ้าลึก"
+    },
+    "empty": "ไม่มีสิ่งใดตรงกับพารามิเตอร์ปัจจุบัน",
+    "mainStarsCount": "ดาวหลัก {{count}} ดวง",
+    "mainStarsCount_other": "ดาวหลัก {{count}} ดวง",
+    "stats": {
+      "fieldCenter": "ศูนย์กลางพื้นที่",
+      "fieldSize": "ขอบเขตการมอง",
+      "elapsed": "เวลาที่ใช้แก้"
+    }
+  }
+}

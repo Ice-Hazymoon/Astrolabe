@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaxie",
+    "Gal": "Galaxie",
+    "GC": "Kulová hvězdokupa",
+    "GCl": "Kulová hvězdokupa",
+    "OC": "Otevřená hvězdokupa",
+    "OCl": "Otevřená hvězdokupa",
+    "Open Cluster": "Otevřená hvězdokupa",
+    "N": "Difuzní mlhovina",
+    "Neb": "Difuzní mlhovina",
+    "PN": "Planetární mlhovina",
+    "RN": "Reflexní mlhovina",
+    "RfN": "Reflexní mlhovina",
+    "EN": "Emisní mlhovina",
+    "DN": "Temná mlhovina",
+    "HII": "Oblast HII",
+    "Cl+N": "Hvězdokupa s mlhovinou",
+    "SR": "Pozůstatek supernovy",
+    "SNR": "Pozůstatek supernovy",
+    "Q": "Kvasar",
+    "C": "Hvězdný oblak",
+    "AST": "Asterismus",
+    "Ast": "Asterismus"
+  }
+}

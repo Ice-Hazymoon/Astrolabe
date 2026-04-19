@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Gambar asli",
+  "altAnnotated": "Hasil beranotasi",
+  "toggleAnnotated": "Lihat anotasi",
+  "toggleOriginal": "Lihat asli",
+  "export": "Ekspor",
+  "details": {
+    "header": "Hasil analisis",
+    "tabs": {
+      "stars": "Bintang",
+      "constellations": "Rasi bintang",
+      "dso": "Langit dalam"
+    },
+    "empty": "Tidak ada yang cocok dengan parameter saat ini",
+    "mainStarsCount": "{{count}} bintang utama",
+    "mainStarsCount_other": "{{count}} bintang utama",
+    "stats": {
+      "fieldCenter": "Pusat bidang",
+      "fieldSize": "Bidang pandang",
+      "elapsed": "Waktu pemecahan"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "altOriginal": "元画像",
+  "altAnnotated": "注釈付き画像",
+  "toggleAnnotated": "注釈を表示",
+  "toggleOriginal": "元画像を表示",
+  "export": "書き出し",
+  "details": {
+    "header": "解析結果",
+    "tabs": {
+      "stars": "恒星",
+      "constellations": "星座",
+      "dso": "深宇宙"
+    },
+    "empty": "現在のパラメーターに該当する結果はありません",
+    "mainStarsCount": "主要恒星 {{count}} 個",
+    "mainStarsCount_other": "主要恒星 {{count}} 個",
+    "stats": {
+      "fieldCenter": "視野中心",
+      "fieldSize": "視野範囲",
+      "elapsed": "解析時間"
+    }
+  }
+}

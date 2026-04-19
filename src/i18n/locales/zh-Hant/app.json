@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "星空標註",
+  "topbar": {
+    "openHistory": "開啟歷史紀錄",
+    "closeHistory": "關閉歷史紀錄",
+    "restart": "重新開始",
+    "settings": "參數設定",
+    "parametersTitle": "參數"
+  }
+}

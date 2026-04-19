@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Przesyłanie obrazu",
+    "extract": "Wydobywanie źródeł",
+    "solve": "Rozwiązywanie astrometryczne",
+    "match": "Dopasowywanie katalogu",
+    "finalize": "Finalizowanie danych"
+  },
+  "cancel": "Anuluj"
+}

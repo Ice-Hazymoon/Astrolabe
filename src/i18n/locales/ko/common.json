@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "닫기",
+    "cancel": "취소",
+    "retry": "다시 시도",
+    "reset": "처음부터 다시",
+    "save": "저장",
+    "loading": "불러오는 중…"
+  },
+  "status": {
+    "ready": "준비 완료",
+    "preparing": "준비 중",
+    "done": "완료",
+    "unknownError": "알 수 없는 오류"
+  },
+  "language": {
+    "label": "언어",
+    "uiLabel": "인터페이스 언어",
+    "apiLabel": "라벨 언어",
+    "switchAria": "언어 선택"
+  },
+  "common": {
+    "and": "및",
+    "or": "또는"
+  }
+}

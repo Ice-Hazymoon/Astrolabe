@@ -1,0 +1,48 @@
+{
+  "title": "Parameters",
+  "eyebrow": "Overlay",
+  "presets": {
+    "header": "Display preset",
+    "ariaLabel": "Display preset",
+    "balanced": { "label": "Balanced", "hint": "Recommended density" },
+    "detailed": { "label": "Detailed", "hint": "More deep-sky and constellations" },
+    "max": { "label": "Complete", "hint": "Show every detection" }
+  },
+  "labelLocale": {
+    "header": "Label language",
+    "ariaLabel": "Label language",
+    "driftHint": "Switching requires re-analysis"
+  },
+  "layers": {
+    "header": "Layers",
+    "groups": {
+      "constellation": "Constellations",
+      "stars": "Stars",
+      "deepSky": "Deep sky"
+    },
+    "items": {
+      "constellation_lines": "Constellation lines",
+      "constellation_labels": "Constellation names",
+      "contextual_constellation_labels": "Adjacent constellation hints",
+      "star_markers": "Star markers",
+      "star_labels": "Star names",
+      "deep_sky_markers": "Deep-sky markers",
+      "deep_sky_labels": "Deep-sky names",
+      "label_leaders": "Label leader lines"
+    }
+  },
+  "detail": {
+    "header": "Density",
+    "starLimit": "Max star labels",
+    "starMagnitude": "Star magnitude threshold",
+    "dsoLimit": "Max deep-sky labels",
+    "dsoMagnitude": "Deep-sky magnitude threshold",
+    "showAllConstellations": "Show all constellation names",
+    "detailedDsoLabels": "Use full deep-sky names",
+    "live": "Changes apply immediately."
+  },
+  "reanalyze": {
+    "message": "Label language changed — re-analyze to apply.",
+    "button": "Re-analyze"
+  }
+}

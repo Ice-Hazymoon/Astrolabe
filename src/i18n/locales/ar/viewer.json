@@ -1,0 +1,11 @@
+{
+  "zoomIn": "تكبير",
+  "zoomOut": "تصغير",
+  "reset": "ملاءمة العرض",
+  "fullscreenEnter": "الدخول إلى وضع ملء الشاشة",
+  "fullscreenExit": "الخروج من وضع ملء الشاشة",
+  "loadFailed": "تعذّر تحميل الصورة",
+  "sourceBlobInvalid": "بيانات الجلسة لم تعد صالحة",
+  "sourceDataInvalid": "تعذّر فك ترميز عنوان البيانات",
+  "overlayAria": "طبقة الأبراج"
+}

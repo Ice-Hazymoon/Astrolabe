@@ -1,0 +1,23 @@
+{
+  "altOriginal": "원본 이미지",
+  "altAnnotated": "주석 결과",
+  "toggleAnnotated": "주석 보기",
+  "toggleOriginal": "원본 보기",
+  "export": "내보내기",
+  "details": {
+    "header": "분석 결과",
+    "tabs": {
+      "stars": "별",
+      "constellations": "별자리",
+      "dso": "심우주"
+    },
+    "empty": "현재 설정에 해당하는 결과가 없습니다",
+    "mainStarsCount": "주요 별 {{count}}개",
+    "mainStarsCount_other": "주요 별 {{count}}개",
+    "stats": {
+      "fieldCenter": "시야 중심",
+      "fieldSize": "시야 범위",
+      "elapsed": "분석 소요 시간"
+    }
+  }
+}

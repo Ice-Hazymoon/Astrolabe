@@ -1,0 +1,13 @@
+{
+  "title": "Upload je foto van de nachtelijke hemel",
+  "description": "Sleep erop of tik om een JPG, PNG of WebP te kiezen.",
+  "descriptionSecondLine": "We herkennen de sterrenbeelden, sterren en deep-sky-objecten op de foto.",
+  "buttons": {
+    "choose": "Afbeelding kiezen",
+    "sample": "Probeer een voorbeeld"
+  },
+  "errors": {
+    "unsupportedType": "Upload een JPG-, PNG- of WebP-afbeelding"
+  },
+  "altFallback": "Geüploade afbeelding"
+}

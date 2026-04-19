@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Immagine originale",
+  "altAnnotated": "Risultato annotato",
+  "toggleAnnotated": "Mostra annotazioni",
+  "toggleOriginal": "Mostra originale",
+  "export": "Esporta",
+  "details": {
+    "header": "Risultato dell'analisi",
+    "tabs": {
+      "stars": "Stelle",
+      "constellations": "Costellazioni",
+      "dso": "Cielo profondo"
+    },
+    "empty": "Nessun risultato per i parametri attuali",
+    "mainStarsCount": "{{count}} stella principale",
+    "mainStarsCount_other": "{{count}} stelle principali",
+    "stats": {
+      "fieldCenter": "Centro del campo",
+      "fieldSize": "Campo visivo",
+      "elapsed": "Tempo di risoluzione"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "Podepsaný export",
+  "description": "Přidejte místo pozorování a souřadnice a vytvořte tisknutelnou verzi této hvězdně anotované fotografie. Zorné pole {{field}}.",
+  "previewAlt": "Náhled",
+  "location": {
+    "header": "Místo pozorování",
+    "placeholder": "Zadejte název místa (vyhledávání podporováno)",
+    "searching": "Vyhledávání…",
+    "useCurrent": "Použít aktuální polohu",
+    "locating": "Zjišťování polohy"
+  },
+  "coordinates": {
+    "latitude": "Zeměpisná šířka",
+    "longitude": "Zeměpisná délka"
+  },
+  "hints": {
+    "default": "Místo i souřadnice jsou volitelné — vše vyplněné se otiskne na spodní okraj obrázku.",
+    "geoUnsupported": "Toto zařízení nepodporuje geolokaci",
+    "geoDenied": "Přístup k poloze byl odepřen",
+    "geoFailed": "Nepodařilo se zjistit polohu, zkuste to znovu",
+    "exportFailed": "Export selhal, zkuste to prosím znovu"
+  },
+  "buttons": {
+    "cancel": "Zrušit",
+    "save": "Uložit obrázek",
+    "saving": "Generování…"
+  }
+}

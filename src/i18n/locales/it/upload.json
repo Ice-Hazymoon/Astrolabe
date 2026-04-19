@@ -1,0 +1,13 @@
+{
+  "title": "Carica la tua foto del cielo notturno",
+  "description": "Trascina o tocca per selezionare un'immagine JPG, PNG o WebP.",
+  "descriptionSecondLine": "Identificheremo le costellazioni, le stelle e gli oggetti del cielo profondo presenti.",
+  "buttons": {
+    "choose": "Scegli immagine",
+    "sample": "Prova un esempio"
+  },
+  "errors": {
+    "unsupportedType": "Carica un'immagine JPG, PNG o WebP"
+  },
+  "altFallback": "Immagine caricata"
+}

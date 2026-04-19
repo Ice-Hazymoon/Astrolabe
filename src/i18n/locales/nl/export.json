@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Exporteren",
+  "title": "Ondertekende export",
+  "description": "Voeg de waarneemlocatie en coördinaten toe om een deelbare afdruk te maken van deze ster-geannoteerde foto. Gezichtsveld {{field}}.",
+  "previewAlt": "Voorbeeld",
+  "location": {
+    "header": "Waarneemlocatie",
+    "placeholder": "Voer een plaatsnaam in (zoeken ondersteund)",
+    "searching": "Zoeken…",
+    "useCurrent": "Huidige locatie gebruiken",
+    "locating": "Locatie bepalen"
+  },
+  "coordinates": {
+    "latitude": "Breedtegraad",
+    "longitude": "Lengtegraad"
+  },
+  "hints": {
+    "default": "Zowel locatie als coördinaten zijn optioneel — alles wat je invult wordt onderaan de afbeelding vermeld.",
+    "geoUnsupported": "Dit apparaat ondersteunt geen geolocatie",
+    "geoDenied": "Locatietoestemming geweigerd",
+    "geoFailed": "Locatiebepaling mislukt, probeer het opnieuw",
+    "exportFailed": "Exporteren mislukt, probeer het opnieuw"
+  },
+  "buttons": {
+    "cancel": "Annuleren",
+    "save": "Afbeelding opslaan",
+    "saving": "Genereren…"
+  }
+}

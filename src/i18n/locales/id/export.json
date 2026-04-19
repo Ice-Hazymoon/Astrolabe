@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Ekspor",
+  "title": "Ekspor bertanda",
+  "description": "Tambahkan lokasi pengamatan dan koordinat untuk membuat cetakan berbagi dari foto berbintang ini. Bidang pandang {{field}}.",
+  "previewAlt": "Pratinjau",
+  "location": {
+    "header": "Lokasi pengamatan",
+    "placeholder": "Masukkan nama tempat (pencarian didukung)",
+    "searching": "Mencari…",
+    "useCurrent": "Gunakan lokasi saat ini",
+    "locating": "Menentukan lokasi"
+  },
+  "coordinates": {
+    "latitude": "Lintang",
+    "longitude": "Bujur"
+  },
+  "hints": {
+    "default": "Lokasi dan koordinat keduanya opsional — yang diisi akan dicantumkan di bagian bawah gambar.",
+    "geoUnsupported": "Perangkat ini tidak mendukung geolokasi",
+    "geoDenied": "Izin lokasi ditolak",
+    "geoFailed": "Pencarian lokasi gagal, silakan coba lagi",
+    "exportFailed": "Ekspor gagal, silakan coba lagi"
+  },
+  "buttons": {
+    "cancel": "Batal",
+    "save": "Simpan gambar",
+    "saving": "Membuat…"
+  }
+}

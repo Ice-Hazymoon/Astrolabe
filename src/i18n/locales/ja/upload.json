@@ -1,0 +1,13 @@
+{
+  "title": "星空写真をアップロード",
+  "description": "JPG・PNG・WebP 画像をドラッグまたはタップで選択してください。",
+  "descriptionSecondLine": "写っている星座・恒星・深宇宙天体を自動で識別します。",
+  "buttons": {
+    "choose": "画像を選ぶ",
+    "sample": "サンプルを試す"
+  },
+  "errors": {
+    "unsupportedType": "JPG・PNG・WebP 形式の画像をアップロードしてください"
+  },
+  "altFallback": "アップロードされた画像"
+}

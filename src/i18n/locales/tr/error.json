@@ -1,0 +1,8 @@
+{
+  "title": "Analiz başarısız",
+  "fallbackMessage": "Analiz sırasında beklenmeyen bir hata oluştu",
+  "buttons": {
+    "retry": "Yeniden dene",
+    "reset": "Baştan başla"
+  }
+}

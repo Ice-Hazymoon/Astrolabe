@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "关闭",
+    "cancel": "取消",
+    "retry": "重试",
+    "reset": "重新开始",
+    "save": "保存",
+    "loading": "加载中…"
+  },
+  "status": {
+    "ready": "准备就绪",
+    "preparing": "准备中",
+    "done": "完成",
+    "unknownError": "未知错误"
+  },
+  "language": {
+    "label": "语言",
+    "uiLabel": "界面语言",
+    "apiLabel": "标签语言",
+    "switchAria": "选择语言"
+  },
+  "common": {
+    "and": "与",
+    "or": "或"
+  }
+}

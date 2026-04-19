@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Sterrenstelsel",
+    "Gal": "Sterrenstelsel",
+    "GC": "Bolhoop",
+    "GCl": "Bolhoop",
+    "OC": "Open sterrenhoop",
+    "OCl": "Open sterrenhoop",
+    "Open Cluster": "Open sterrenhoop",
+    "N": "Diffuse nevel",
+    "Neb": "Diffuse nevel",
+    "PN": "Planetaire nevel",
+    "RN": "Reflectienevel",
+    "RfN": "Reflectienevel",
+    "EN": "Emissienevel",
+    "DN": "Donkere nevel",
+    "HII": "HII-gebied",
+    "Cl+N": "Sterrenhoop met nevel",
+    "SR": "Supernovarest",
+    "SNR": "Supernovarest",
+    "Q": "Quasar",
+    "C": "Sterrenwolk",
+    "AST": "Asterisme",
+    "Ast": "Asterisme"
+  }
+}

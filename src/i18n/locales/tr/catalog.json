@@ -1,0 +1,26 @@
+{
+  "dsoTypes": {
+    "G": "Galaksi",
+    "Gal": "Galaksi",
+    "GC": "Küresel yıldız kümesi",
+    "GCl": "Küresel yıldız kümesi",
+    "OC": "Açık yıldız kümesi",
+    "OCl": "Açık yıldız kümesi",
+    "Open Cluster": "Açık yıldız kümesi",
+    "N": "Yaygın nebula",
+    "Neb": "Yaygın nebula",
+    "PN": "Gezegenimsi nebula",
+    "RN": "Yansıma nebula",
+    "RfN": "Yansıma nebula",
+    "EN": "Emisyon nebula",
+    "DN": "Karanlık nebula",
+    "HII": "HII bölgesi",
+    "Cl+N": "Nebulalı küme",
+    "SR": "Süpernova kalıntısı",
+    "SNR": "Süpernova kalıntısı",
+    "Q": "Kuasar",
+    "C": "Yıldız bulutu",
+    "AST": "Asterizm",
+    "Ast": "Asterizm"
+  }
+}

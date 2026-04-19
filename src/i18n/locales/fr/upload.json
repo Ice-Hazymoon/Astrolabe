@@ -1,0 +1,13 @@
+{
+  "title": "Téléversez votre photo du ciel étoilé",
+  "description": "Déposez ou touchez pour sélectionner une image JPG, PNG ou WebP.",
+  "descriptionSecondLine": "Nous identifierons les constellations, les étoiles et les objets du ciel profond qui s'y trouvent.",
+  "buttons": {
+    "choose": "Choisir une image",
+    "sample": "Essayer un exemple"
+  },
+  "errors": {
+    "unsupportedType": "Veuillez téléverser une image JPG, PNG ou WebP"
+  },
+  "altFallback": "Image téléversée"
+}

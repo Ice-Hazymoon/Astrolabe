@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "A enviar imagem",
+    "extract": "A extrair fontes",
+    "solve": "Plate solving",
+    "match": "A cruzar catálogo",
+    "finalize": "A finalizar dados"
+  },
+  "cancel": "Cancelar"
+}

@@ -1,0 +1,48 @@
+{
+  "title": "Parameter",
+  "eyebrow": "Lapisan",
+  "presets": {
+    "header": "Praset tampilan",
+    "ariaLabel": "Praset tampilan",
+    "balanced": { "label": "Seimbang", "hint": "Kepadatan disarankan" },
+    "detailed": { "label": "Terperinci", "hint": "Lebih banyak langit dalam dan rasi bintang" },
+    "max": { "label": "Lengkap", "hint": "Tampilkan setiap deteksi" }
+  },
+  "labelLocale": {
+    "header": "Bahasa label",
+    "ariaLabel": "Bahasa label",
+    "driftHint": "Pergantian memerlukan analisis ulang"
+  },
+  "layers": {
+    "header": "Lapisan",
+    "groups": {
+      "constellation": "Rasi bintang",
+      "stars": "Bintang",
+      "deepSky": "Langit dalam"
+    },
+    "items": {
+      "constellation_lines": "Garis rasi bintang",
+      "constellation_labels": "Nama rasi bintang",
+      "contextual_constellation_labels": "Petunjuk rasi bintang sekitarnya",
+      "star_markers": "Penanda bintang",
+      "star_labels": "Nama bintang",
+      "deep_sky_markers": "Penanda langit dalam",
+      "deep_sky_labels": "Nama langit dalam",
+      "label_leaders": "Garis penunjuk label"
+    }
+  },
+  "detail": {
+    "header": "Kepadatan",
+    "starLimit": "Maks. label bintang",
+    "starMagnitude": "Ambang magnitudo bintang",
+    "dsoLimit": "Maks. label langit dalam",
+    "dsoMagnitude": "Ambang magnitudo langit dalam",
+    "showAllConstellations": "Tampilkan semua nama rasi bintang",
+    "detailedDsoLabels": "Gunakan nama langit dalam lengkap",
+    "live": "Perubahan diterapkan segera."
+  },
+  "reanalyze": {
+    "message": "Bahasa label berubah — analisis ulang untuk menerapkan.",
+    "button": "Analisis ulang"
+  }
+}

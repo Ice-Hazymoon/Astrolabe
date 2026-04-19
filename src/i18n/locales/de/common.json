@@ -1,0 +1,26 @@
+{
+  "actions": {
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
+    "reset": "Neu beginnen",
+    "save": "Speichern",
+    "loading": "Wird geladen…"
+  },
+  "status": {
+    "ready": "Bereit",
+    "preparing": "Vorbereitung",
+    "done": "Fertig",
+    "unknownError": "Unbekannter Fehler"
+  },
+  "language": {
+    "label": "Sprache",
+    "uiLabel": "Oberflächensprache",
+    "apiLabel": "Beschriftungssprache",
+    "switchAria": "Sprache wählen"
+  },
+  "common": {
+    "and": "und",
+    "or": "oder"
+  }
+}

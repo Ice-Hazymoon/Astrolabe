@@ -1,0 +1,14 @@
+{
+  "title": "Twój obraz jest gotowy",
+  "description": "Stellaris powstaje z pasji i jest bezpłatny dla każdego. Jeśli wynik Cię ucieszył, podziel się nim z innymi miłośnikami gwiazd.",
+  "captionWithLocation": "Niebo nad {{location}} — z adnotacjami Stellaris",
+  "captionDefault": "Stellaris · Anotator gwiazd",
+  "targets": {
+    "x": "Udostępnij na X",
+    "threads": "Udostępnij na Threads",
+    "facebook": "Udostępnij na Facebooku",
+    "linkedin": "Udostępnij na LinkedIn"
+  },
+  "footerNote": "Każde udostępnienie pomaga Stellaris pozostać bezpłatnym — dziękujemy, że jesteś częścią społeczności.",
+  "madeWith": "Stworzono z"
+}

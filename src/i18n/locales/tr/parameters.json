@@ -1,0 +1,48 @@
+{
+  "title": "Parametreler",
+  "eyebrow": "Katman",
+  "presets": {
+    "header": "Görüntü ön ayarı",
+    "ariaLabel": "Görüntü ön ayarı",
+    "balanced": { "label": "Dengeli", "hint": "Önerilen yoğunluk" },
+    "detailed": { "label": "Ayrıntılı", "hint": "Daha fazla derin gök ve takımyıldız" },
+    "max": { "label": "Eksiksiz", "hint": "Her algılamayı göster" }
+  },
+  "labelLocale": {
+    "header": "Etiket dili",
+    "ariaLabel": "Etiket dili",
+    "driftHint": "Değiştirmek için yeniden analiz gerekir"
+  },
+  "layers": {
+    "header": "Katmanlar",
+    "groups": {
+      "constellation": "Takımyıldızlar",
+      "stars": "Yıldızlar",
+      "deepSky": "Derin gök"
+    },
+    "items": {
+      "constellation_lines": "Takımyıldız çizgileri",
+      "constellation_labels": "Takımyıldız adları",
+      "contextual_constellation_labels": "Komşu takımyıldız ipuçları",
+      "star_markers": "Yıldız işaretleri",
+      "star_labels": "Yıldız adları",
+      "deep_sky_markers": "Derin gök işaretleri",
+      "deep_sky_labels": "Derin gök adları",
+      "label_leaders": "Etiket bağlantı çizgileri"
+    }
+  },
+  "detail": {
+    "header": "Yoğunluk",
+    "starLimit": "Maks. yıldız etiketi",
+    "starMagnitude": "Yıldız parlaklık eşiği",
+    "dsoLimit": "Maks. derin gök etiketi",
+    "dsoMagnitude": "Derin gök parlaklık eşiği",
+    "showAllConstellations": "Tüm takımyıldız adlarını göster",
+    "detailedDsoLabels": "Tam derin gök adlarını kullan",
+    "live": "Değişiklikler anında uygulanır."
+  },
+  "reanalyze": {
+    "message": "Etiket dili değişti — uygulamak için yeniden analiz edin.",
+    "button": "Yeniden analiz et"
+  }
+}

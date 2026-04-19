@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Uploading image",
+    "extract": "Extracting sources",
+    "solve": "Plate solving",
+    "match": "Matching catalog",
+    "finalize": "Finalizing data"
+  },
+  "cancel": "Cancel"
+}

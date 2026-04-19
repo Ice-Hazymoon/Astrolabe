@@ -1,0 +1,9 @@
+{
+  "title": "Historia",
+  "empty": "Nie ma jeszcze żadnych analiz — prześlij obraz, aby rozpocząć",
+  "clearAll": "Wyczyść historię",
+  "collapse": "Zwiń historię",
+  "restore": "Przywróć · {{name}}",
+  "untitled": "Bez nazwy",
+  "remove": "Usuń"
+}

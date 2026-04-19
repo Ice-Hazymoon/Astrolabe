@@ -1,0 +1,14 @@
+{
+  "title": "Váš obrázek je připraven",
+  "description": "Stellaris vzniká s láskou a je zdarma pro každého. Pokud vás výsledek potěšil, podělte se s dalším milovníkem hvězd.",
+  "captionWithLocation": "Obloha nad {{location}} — s anotacemi Stellaris",
+  "captionDefault": "Stellaris · Anotátor hvězd",
+  "targets": {
+    "x": "Sdílet na X",
+    "threads": "Sdílet na Threads",
+    "facebook": "Sdílet na Facebook",
+    "linkedin": "Sdílet na LinkedIn"
+  },
+  "footerNote": "Každé sdílení pomáhá Stellaris zůstat zdarma — děkujeme, že jste součástí komunity.",
+  "madeWith": "Vytvořeno s"
+}

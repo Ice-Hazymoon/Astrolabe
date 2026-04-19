@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Eksport",
+  "title": "Podpisany eksport",
+  "description": "Dodaj miejsce obserwacji i współrzędne, aby stworzyć gotowy do udostępnienia wydruk tego zdjęcia z adnotacjami. Pole widzenia {{field}}.",
+  "previewAlt": "Podgląd",
+  "location": {
+    "header": "Miejsce obserwacji",
+    "placeholder": "Wpisz nazwę miejsca (wyszukiwanie obsługiwane)",
+    "searching": "Szukanie…",
+    "useCurrent": "Użyj bieżącej lokalizacji",
+    "locating": "Lokalizowanie"
+  },
+  "coordinates": {
+    "latitude": "Szerokość",
+    "longitude": "Długość"
+  },
+  "hints": {
+    "default": "Lokalizacja i współrzędne są opcjonalne — wszystko, co wypełnisz, pojawi się na dole obrazu.",
+    "geoUnsupported": "To urządzenie nie obsługuje geolokalizacji",
+    "geoDenied": "Odmówiono dostępu do lokalizacji",
+    "geoFailed": "Nie udało się ustalić lokalizacji, spróbuj ponownie",
+    "exportFailed": "Eksport nie powiódł się, spróbuj ponownie"
+  },
+  "buttons": {
+    "cancel": "Anuluj",
+    "save": "Zapisz obraz",
+    "saving": "Generowanie…"
+  }
+}

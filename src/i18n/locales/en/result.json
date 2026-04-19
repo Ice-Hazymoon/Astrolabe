@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Original image",
+  "altAnnotated": "Annotated result",
+  "toggleAnnotated": "View annotation",
+  "toggleOriginal": "View original",
+  "export": "Export",
+  "details": {
+    "header": "Analysis result",
+    "tabs": {
+      "stars": "Stars",
+      "constellations": "Constellations",
+      "dso": "Deep sky"
+    },
+    "empty": "Nothing matches the current parameters",
+    "mainStarsCount": "{{count}} main star",
+    "mainStarsCount_other": "{{count}} main stars",
+    "stats": {
+      "fieldCenter": "Field center",
+      "fieldSize": "Field of view",
+      "elapsed": "Solve time"
+    }
+  }
+}

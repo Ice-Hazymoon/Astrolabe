@@ -1,0 +1,48 @@
+{
+  "title": "Paramètres",
+  "eyebrow": "Superposition",
+  "presets": {
+    "header": "Préréglage d'affichage",
+    "ariaLabel": "Préréglage d'affichage",
+    "balanced": { "label": "Équilibré", "hint": "Densité recommandée" },
+    "detailed": { "label": "Détaillé", "hint": "Plus de ciel profond et de constellations" },
+    "max": { "label": "Complet", "hint": "Afficher toutes les détections" }
+  },
+  "labelLocale": {
+    "header": "Langue des étiquettes",
+    "ariaLabel": "Langue des étiquettes",
+    "driftHint": "Le changement nécessite une nouvelle analyse"
+  },
+  "layers": {
+    "header": "Calques",
+    "groups": {
+      "constellation": "Constellations",
+      "stars": "Étoiles",
+      "deepSky": "Ciel profond"
+    },
+    "items": {
+      "constellation_lines": "Lignes des constellations",
+      "constellation_labels": "Noms des constellations",
+      "contextual_constellation_labels": "Indices des constellations adjacentes",
+      "star_markers": "Repères des étoiles",
+      "star_labels": "Noms des étoiles",
+      "deep_sky_markers": "Repères du ciel profond",
+      "deep_sky_labels": "Noms du ciel profond",
+      "label_leaders": "Lignes de rappel des étiquettes"
+    }
+  },
+  "detail": {
+    "header": "Densité",
+    "starLimit": "Nombre max d'étiquettes d'étoiles",
+    "starMagnitude": "Seuil de magnitude stellaire",
+    "dsoLimit": "Nombre max d'étiquettes du ciel profond",
+    "dsoMagnitude": "Seuil de magnitude du ciel profond",
+    "showAllConstellations": "Afficher tous les noms de constellations",
+    "detailedDsoLabels": "Utiliser les noms complets du ciel profond",
+    "live": "Les modifications s'appliquent immédiatement."
+  },
+  "reanalyze": {
+    "message": "Langue des étiquettes modifiée — relancez l'analyse pour l'appliquer.",
+    "button": "Réanalyser"
+  }
+}

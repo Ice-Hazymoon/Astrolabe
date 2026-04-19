@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "이미지 업로드 중",
+    "extract": "광원 추출 중",
+    "solve": "플레이트 솔빙 중",
+    "match": "성표 매칭 중",
+    "finalize": "데이터 정리 중"
+  },
+  "cancel": "취소"
+}

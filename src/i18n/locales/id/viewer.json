@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Perbesar",
+  "zoomOut": "Perkecil",
+  "reset": "Sesuaikan tampilan",
+  "fullscreenEnter": "Masuk layar penuh",
+  "fullscreenExit": "Keluar layar penuh",
+  "loadFailed": "Gagal memuat gambar",
+  "sourceBlobInvalid": "Data sesi sudah tidak valid",
+  "sourceDataInvalid": "Data URL tidak dapat didekode",
+  "overlayAria": "Lapisan rasi bintang"
+}

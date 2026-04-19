@@ -1,0 +1,48 @@
+{
+  "title": "パラメーター",
+  "eyebrow": "Overlay",
+  "presets": {
+    "header": "表示プリセット",
+    "ariaLabel": "表示プリセット",
+    "balanced": { "label": "バランス", "hint": "推奨の密度" },
+    "detailed": { "label": "詳細", "hint": "深宇宙や星座を多めに表示" },
+    "max": { "label": "すべて", "hint": "検出結果をすべて表示" }
+  },
+  "labelLocale": {
+    "header": "ラベル言語",
+    "ariaLabel": "ラベル言語",
+    "driftHint": "切り替えると再解析が必要です"
+  },
+  "layers": {
+    "header": "レイヤー",
+    "groups": {
+      "constellation": "星座",
+      "stars": "恒星",
+      "deepSky": "深宇宙"
+    },
+    "items": {
+      "constellation_lines": "星座線",
+      "constellation_labels": "星座名",
+      "contextual_constellation_labels": "周辺の星座ヒント",
+      "star_markers": "恒星マーカー",
+      "star_labels": "恒星名",
+      "deep_sky_markers": "深宇宙マーカー",
+      "deep_sky_labels": "深宇宙天体名",
+      "label_leaders": "ラベル引き出し線"
+    }
+  },
+  "detail": {
+    "header": "密度",
+    "starLimit": "恒星ラベルの上限",
+    "starMagnitude": "恒星の等級しきい値",
+    "dsoLimit": "深宇宙ラベルの上限",
+    "dsoMagnitude": "深宇宙の等級しきい値",
+    "showAllConstellations": "すべての星座名を表示",
+    "detailedDsoLabels": "深宇宙天体の完全名を使用",
+    "live": "変更はすぐに反映されます。"
+  },
+  "reanalyze": {
+    "message": "ラベル言語が変更されました。再解析すると反映されます。",
+    "button": "再解析"
+  }
+}

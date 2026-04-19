@@ -1,0 +1,11 @@
+{
+  "brand": "Stellaris",
+  "tagline": "별 주석",
+  "topbar": {
+    "openHistory": "기록 열기",
+    "closeHistory": "기록 닫기",
+    "restart": "처음부터 다시",
+    "settings": "매개변수",
+    "parametersTitle": "매개변수"
+  }
+}

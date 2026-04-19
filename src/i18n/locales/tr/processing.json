@@ -1,0 +1,10 @@
+{
+  "phases": {
+    "upload": "Görsel yükleniyor",
+    "extract": "Kaynaklar çıkarılıyor",
+    "solve": "Astrometrik çözüm",
+    "match": "Katalog eşleştiriliyor",
+    "finalize": "Veriler tamamlanıyor"
+  },
+  "cancel": "İptal"
+}

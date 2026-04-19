@@ -1,0 +1,13 @@
+{
+  "title": "Envie a sua foto do céu noturno",
+  "description": "Arraste ou toque para selecionar uma imagem JPG, PNG ou WebP.",
+  "descriptionSecondLine": "Identificaremos as constelações, estrelas e objetos de céu profundo que aparecem.",
+  "buttons": {
+    "choose": "Escolher imagem",
+    "sample": "Experimentar um exemplo"
+  },
+  "errors": {
+    "unsupportedType": "Envie uma imagem JPG, PNG ou WebP"
+  },
+  "altFallback": "Imagem enviada"
+}

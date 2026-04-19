@@ -1,0 +1,23 @@
+{
+  "altOriginal": "Původní obrázek",
+  "altAnnotated": "Výsledek s anotacemi",
+  "toggleAnnotated": "Zobrazit anotace",
+  "toggleOriginal": "Zobrazit originál",
+  "export": "Export",
+  "details": {
+    "header": "Výsledek analýzy",
+    "tabs": {
+      "stars": "Hvězdy",
+      "constellations": "Souhvězdí",
+      "dso": "Vzdálený vesmír"
+    },
+    "empty": "Žádné shody s aktuálními parametry",
+    "mainStarsCount": "{{count}} hlavní hvězda",
+    "mainStarsCount_other": "{{count}} hlavních hvězd",
+    "stats": {
+      "fieldCenter": "Střed pole",
+      "fieldSize": "Zorné pole",
+      "elapsed": "Čas řešení"
+    }
+  }
+}

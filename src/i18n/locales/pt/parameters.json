@@ -1,0 +1,48 @@
+{
+  "title": "Parâmetros",
+  "eyebrow": "Sobreposição",
+  "presets": {
+    "header": "Predefinição de apresentação",
+    "ariaLabel": "Predefinição de apresentação",
+    "balanced": { "label": "Equilibrado", "hint": "Densidade recomendada" },
+    "detailed": { "label": "Detalhado", "hint": "Mais céu profundo e constelações" },
+    "max": { "label": "Completo", "hint": "Mostrar todas as deteções" }
+  },
+  "labelLocale": {
+    "header": "Idioma das etiquetas",
+    "ariaLabel": "Idioma das etiquetas",
+    "driftHint": "Alterar exige uma nova análise"
+  },
+  "layers": {
+    "header": "Camadas",
+    "groups": {
+      "constellation": "Constelações",
+      "stars": "Estrelas",
+      "deepSky": "Céu profundo"
+    },
+    "items": {
+      "constellation_lines": "Linhas das constelações",
+      "constellation_labels": "Nomes das constelações",
+      "contextual_constellation_labels": "Pistas de constelações adjacentes",
+      "star_markers": "Marcadores de estrelas",
+      "star_labels": "Nomes das estrelas",
+      "deep_sky_markers": "Marcadores de céu profundo",
+      "deep_sky_labels": "Nomes do céu profundo",
+      "label_leaders": "Linhas de chamada das etiquetas"
+    }
+  },
+  "detail": {
+    "header": "Densidade",
+    "starLimit": "Máx. de etiquetas de estrelas",
+    "starMagnitude": "Limite de magnitude estelar",
+    "dsoLimit": "Máx. de etiquetas de céu profundo",
+    "dsoMagnitude": "Limite de magnitude do céu profundo",
+    "showAllConstellations": "Mostrar todos os nomes de constelações",
+    "detailedDsoLabels": "Usar nomes completos do céu profundo",
+    "live": "As alterações aplicam-se de imediato."
+  },
+  "reanalyze": {
+    "message": "Idioma das etiquetas alterado — analise novamente para aplicar.",
+    "button": "Reanalisar"
+  }
+}

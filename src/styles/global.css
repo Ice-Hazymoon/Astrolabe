@@ -1,0 +1,225 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Manrope', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Spectral', 'Noto Serif SC', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Dark stargazing palette in OKLCH — cool midnight backgrounds, warm starlight accents */
+  --color-ink-0: oklch(0.13 0.018 260);
+  --color-ink-1: oklch(0.16 0.02 260);
+  --color-ink-2: oklch(0.20 0.022 260);
+  --color-ink-3: oklch(0.26 0.024 258);
+  --color-ink-4: oklch(0.34 0.028 256);
+
+  --color-line: oklch(0.30 0.024 258 / 0.7);
+  --color-line-soft: oklch(0.30 0.024 258 / 0.35);
+
+  --color-text: oklch(0.96 0.005 260);
+  --color-text-soft: oklch(0.78 0.012 260);
+  --color-text-muted: oklch(0.58 0.015 258);
+  --color-text-faint: oklch(0.42 0.018 256);
+
+  --color-star: oklch(0.86 0.13 78);     /* warm sodium-amber, like Capella */
+  --color-star-dim: oklch(0.62 0.12 75);
+  --color-nebula: oklch(0.68 0.16 320);  /* deep magenta nebula */
+  --color-aurora: oklch(0.75 0.16 165);  /* faint cyan-green */
+  --color-danger: oklch(0.68 0.18 25);
+
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.625rem;
+
+  --shadow-soft: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 18px 40px -24px oklch(0 0 0 / 0.6);
+  --shadow-lift: 0 1px 0 oklch(1 0 0 / 0.06) inset, 0 28px 60px -28px oklch(0 0 0 / 0.7);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+:root {
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  font-variant-numeric: tabular-nums;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-ink-0);
+  color: var(--color-text);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  user-select: text;
+}
+
+::selection {
+  background: oklch(0.86 0.13 78 / 0.3);
+  color: var(--color-text);
+}
+
+/* Custom scrollbar — only shows where strictly needed */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.4 0.02 258 / 0.4);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.5 0.02 258 / 0.6);
+}
+
+button,
+[role='button'] {
+  cursor: pointer;
+}
+
+/* Default focus ring lives in @layer base so component-level overrides
+ * (Tailwind utilities like `focus-visible:outline-none`, or containers that
+ * surface their own focus-within ring) win the cascade naturally instead of
+ * needing !important. */
+@layer base {
+  button:focus-visible,
+  [role='button']:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid oklch(0.86 0.13 78 / 0.6);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+/* Subtle starfield ambient backdrop on the body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1.2px 1.2px at 12% 22%, oklch(0.95 0.005 260 / 0.55), transparent 60%),
+    radial-gradient(1px 1px at 80% 18%, oklch(0.95 0.005 260 / 0.4), transparent 60%),
+    radial-gradient(1.4px 1.4px at 25% 78%, oklch(0.86 0.13 78 / 0.4), transparent 60%),
+    radial-gradient(0.8px 0.8px at 55% 65%, oklch(0.95 0.005 260 / 0.35), transparent 60%),
+    radial-gradient(1.6px 1.6px at 90% 88%, oklch(0.95 0.005 260 / 0.45), transparent 60%),
+    radial-gradient(1px 1px at 65% 35%, oklch(0.95 0.005 260 / 0.3), transparent 60%),
+    radial-gradient(1.2px 1.2px at 40% 92%, oklch(0.86 0.13 78 / 0.3), transparent 60%),
+    radial-gradient(0.8px 0.8px at 8% 60%, oklch(0.95 0.005 260 / 0.3), transparent 60%);
+  opacity: 0.6;
+  z-index: 0;
+  animation: drift 90s linear infinite;
+}
+
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-1%, -1%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-family: var(--font-display);
+    font-feature-settings: 'liga', 'dlig', 'onum';
+    letter-spacing: -0.01em;
+  }
+  .text-mono {
+    font-family: var(--font-mono);
+    font-feature-settings: 'tnum', 'ss03';
+  }
+  .text-eyebrow {
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+  .surface {
+    background: linear-gradient(180deg, oklch(0.18 0.02 260 / 0.92), oklch(0.16 0.02 260 / 0.92));
+    border: 1px solid var(--color-line-soft);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
+  .focus-ring {
+    @apply ring-1 ring-[color:var(--color-line)] ring-offset-0;
+  }
+  .hairline {
+    background: var(--color-line-soft);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  40%, 60% {
+    opacity: 0.9;
+    transform: scale(1.4);
+  }
+}
+
+.twinkle-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 999px;
+  background: radial-gradient(circle, oklch(1 0 0 / 0.95) 0%, oklch(0.86 0.13 78 / 0.6) 45%, transparent 75%);
+  filter: blur(0.4px);
+  opacity: 0;
+  animation: twinkle 4.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .twinkle-dot { animation: none; opacity: 0.7; }
+}

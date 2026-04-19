@@ -1,0 +1,23 @@
+{
+  "altOriginal": "الصورة الأصلية",
+  "altAnnotated": "النتيجة الموضحة",
+  "toggleAnnotated": "عرض التوضيح",
+  "toggleOriginal": "عرض الأصل",
+  "export": "تصدير",
+  "details": {
+    "header": "نتيجة التحليل",
+    "tabs": {
+      "stars": "النجوم",
+      "constellations": "الأبراج",
+      "dso": "الأجرام العميقة"
+    },
+    "empty": "لا يوجد ما يطابق المعاملات الحالية",
+    "mainStarsCount": "{{count}} نجم رئيسي",
+    "mainStarsCount_other": "{{count}} نجم رئيسي",
+    "stats": {
+      "fieldCenter": "مركز المجال",
+      "fieldSize": "مجال الرؤية",
+      "elapsed": "زمن الحل"
+    }
+  }
+}

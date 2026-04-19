@@ -1,0 +1,13 @@
+{
+  "title": "อัปโหลดภาพท้องฟ้ายามค่ำคืนของคุณ",
+  "description": "วางไฟล์หรือแตะเพื่อเลือกภาพ JPG, PNG หรือ WebP",
+  "descriptionSecondLine": "เราจะระบุกลุ่มดาว ดาวฤกษ์ และวัตถุท้องฟ้าลึกในภาพให้คุณ",
+  "buttons": {
+    "choose": "เลือกภาพ",
+    "sample": "ลองตัวอย่าง"
+  },
+  "errors": {
+    "unsupportedType": "โปรดอัปโหลดภาพ JPG, PNG หรือ WebP"
+  },
+  "altFallback": "ภาพที่อัปโหลด"
+}

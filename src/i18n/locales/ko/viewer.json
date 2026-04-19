@@ -1,0 +1,11 @@
+{
+  "zoomIn": "확대",
+  "zoomOut": "축소",
+  "reset": "원래 크기로",
+  "fullscreenEnter": "전체 화면",
+  "fullscreenExit": "전체 화면 종료",
+  "loadFailed": "이미지를 불러오지 못했습니다",
+  "sourceBlobInvalid": "세션 Blob이 더 이상 유효하지 않습니다",
+  "sourceDataInvalid": "데이터 URL을 디코딩할 수 없습니다",
+  "overlayAria": "별자리 오버레이"
+}

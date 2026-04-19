@@ -1,0 +1,8 @@
+{
+  "title": "解算失败",
+  "fallbackMessage": "解算过程中出现未知错误",
+  "buttons": {
+    "retry": "重试",
+    "reset": "重新开始"
+  }
+}

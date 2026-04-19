@@ -1,0 +1,13 @@
+{
+  "title": "Upload your night-sky photo",
+  "description": "Drop in or tap to select a JPG, PNG, or WebP image.",
+  "descriptionSecondLine": "We'll identify the constellations, stars, and deep-sky objects inside.",
+  "buttons": {
+    "choose": "Choose image",
+    "sample": "Try a sample"
+  },
+  "errors": {
+    "unsupportedType": "Please upload a JPG, PNG, or WebP image"
+  },
+  "altFallback": "Uploaded image"
+}

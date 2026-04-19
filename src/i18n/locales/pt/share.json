@@ -1,0 +1,14 @@
+{
+  "title": "A sua imagem está pronta",
+  "description": "O Stellaris é um projeto feito com carinho e gratuito para todos. Se este resultado o fez sorrir, partilhe-o com alguém que também adore o céu estrelado.",
+  "captionWithLocation": "Um céu sobre {{location}} — anotado com o Stellaris",
+  "captionDefault": "Stellaris · Anotador de estrelas",
+  "targets": {
+    "x": "Partilhar no X",
+    "threads": "Partilhar no Threads",
+    "facebook": "Partilhar no Facebook",
+    "linkedin": "Partilhar no LinkedIn"
+  },
+  "footerNote": "Cada partilha ajuda o Stellaris a manter-se gratuito — obrigado por fazer parte da comunidade.",
+  "madeWith": "Feito com"
+}

@@ -1,0 +1,11 @@
+{
+  "zoomIn": "Yakınlaştır",
+  "zoomOut": "Uzaklaştır",
+  "reset": "Ekrana sığdır",
+  "fullscreenEnter": "Tam ekrana geç",
+  "fullscreenExit": "Tam ekrandan çık",
+  "loadFailed": "Görsel yüklenemedi",
+  "sourceBlobInvalid": "Oturum verisi artık geçerli değil",
+  "sourceDataInvalid": "Data URL çözümlenemedi",
+  "overlayAria": "Takımyıldız katmanı"
+}

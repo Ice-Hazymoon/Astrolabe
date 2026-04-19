@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Export",
+  "title": "署名入りで書き出し",
+  "description": "観測地と座標を添えて、シェアできる星空作品に仕上げましょう。視野 {{field}}。",
+  "previewAlt": "プレビュー",
+  "location": {
+    "header": "観測地",
+    "placeholder": "地名を入力（検索対応）",
+    "searching": "検索中…",
+    "useCurrent": "現在地を使う",
+    "locating": "位置情報を取得中"
+  },
+  "coordinates": {
+    "latitude": "緯度",
+    "longitude": "経度"
+  },
+  "hints": {
+    "default": "観測地と座標はどちらも任意です。入力された情報は画像の下部に刻まれます。",
+    "geoUnsupported": "このデバイスは位置情報に対応していません",
+    "geoDenied": "位置情報の利用が拒否されました",
+    "geoFailed": "位置情報の取得に失敗しました。もう一度お試しください",
+    "exportFailed": "書き出しに失敗しました。もう一度お試しください"
+  },
+  "buttons": {
+    "cancel": "キャンセル",
+    "save": "画像を保存",
+    "saving": "生成中…"
+  }
+}
