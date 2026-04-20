@@ -1,6 +1,6 @@
 {
-  "title": "Analýza selhala",
-  "fallbackMessage": "Během analýzy došlo k neočekávané chybě",
+  "title": "Generování selhalo",
+  "fallbackMessage": "Toto generování se nepodařilo dokončit. Fronta API může být dlouhá, aktivních uživatelů může být příliš mnoho nebo astrometrické řešení hvězdné mapy může vyžadovat více výpočetního výkonu, než je nyní k dispozici. Zkuste to prosím za chvíli znovu.",
   "buttons": {
     "retry": "Zkusit znovu",
     "reset": "Začít znovu"

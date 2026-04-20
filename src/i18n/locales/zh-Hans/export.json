@@ -19,11 +19,15 @@
     "geoUnsupported": "此设备不支持定位",
     "geoDenied": "已拒绝定位权限",
     "geoFailed": "定位失败，请稍后再试",
-    "exportFailed": "导出失败，请重试"
+    "exportFailed": "导出失败，请重试",
+    "videoUnsupported": "视频导出需要较新的浏览器（Chrome、Edge 或 Safari 16.4+）。",
+    "videoFailed": "视频导出失败，请重试"
   },
   "buttons": {
     "cancel": "取消",
     "save": "保存图像",
-    "saving": "生成中…"
+    "saving": "生成中…",
+    "saveVideo": "导出视频",
+    "savingVideo": "渲染视频中… {{pct}}%"
   }
 }

@@ -6,8 +6,8 @@ import type {
   OverlayStarMarker,
   OverlayTextItem,
   RgbaTuple,
-} from '@/types/api';
-import { logoSvgMarkup } from '@/lib/logoMarkup';
+} from '../types/api';
+import { logoSvgMarkup } from './logoMarkup';
 
 /**
  * Rasterize the original image + the current overlay scene into a single PNG blob URL.
@@ -139,298 +139,499 @@ export function stripHeightFor(imageWidth: number): number {
   return Math.round(Math.max(150, Math.min(imageWidth * 0.095, 300)));
 }
 
+// Dark "observatory plaque" strip — matches the app's night-sky palette so the
+// exported frame reads as a cinematic credit panel instead of a paper cutout.
+// Three regions share the baseline by whitespace alone:
+//   • left:   logo glyph + wordmark, URL tucked beneath
+//   • center: location name (hero) + coordinates
+//   • right:  three stat pillars (number over small-caps label)
+// A single hairline up top is the only decoration — no vertical dividers, no
+// stats row separator, no short horizontal rules.
+
+interface StripPalette {
+  bgTop: string;
+  bgBot: string;
+  hairline: string;
+  text: string;
+  textSoft: string;
+  textMuted: string;
+  accent: string;
+  accentSoft: string;
+}
+
+const STRIP_PALETTE: StripPalette = {
+  bgTop: '#0A0C14',
+  bgBot: '#141726',
+  hairline: '#E6B87A',
+  text: '#EDEEF4',
+  textSoft: '#A5A7B2',
+  textMuted: '#70727C',
+  accent: '#E6B87A',
+  accentSoft: '#C79A5E',
+};
+
+const STRIP_SERIF = `'Spectral','Noto Serif SC','Iowan Old Style',Georgia,serif`;
+const STRIP_MONO = `'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace`;
+
 export function buildStripSvg(W: number, H: number, meta: StripMeta): string {
-  // Geometry — padding scales with both axes so wide panoramas don't look
-  // cramped against their edges and tall thumbnails don't waste the middle.
-  const padX = Math.round(Math.max(H * 0.35, W * 0.035));
-  const logoSize = Math.round(H * 0.36);
-  const logoX = padX;
-  const logoY = Math.round(H / 2 - logoSize / 2);
-  const logoScale = logoSize / 32;
-  const leftBlockX = logoX + logoSize + Math.round(H * 0.28);
-  const rightBlockX = W - padX;
+  const palette = STRIP_PALETTE;
 
-  // Equal-width three-column band: [padX, gutterL], [gutterL, gutterR],
-  // [gutterR, W - padX] — each exactly (W - 2·padX) / 3 wide.
-  const gutterL = Math.round((W + padX) / 3);
-  const gutterR = Math.round((2 * W - padX) / 3);
+  // Outer padding: the flanking columns hug the edges without touching them,
+  // leaving a comfortable rail of space on both sides of the strip.
+  const padX = Math.round(Math.max(H * 0.32, W * 0.024));
+  const innerW = Math.max(0, W - padX * 2);
 
-  // Typography — expressed as ratios of the strip height so every field scales
-  // together when the strip grows or shrinks with the photo size.
+  // Typography — scaled for a two-row layout: the location hero gets row 1
+  // to itself, while row 2 packs brand + stats into a denser metadata band.
   const fs = {
-    eyebrow: Math.round(H * 0.075),
-    name: Math.round(H * 0.2),
-    nameSolo: Math.round(H * 0.26),
+    wordmark: Math.round(H * 0.14),
+    url: Math.round(H * 0.1),
+    location: Math.round(H * 0.14),
     coords: Math.round(H * 0.1),
-    coordsSolo: Math.round(H * 0.17),
-    statNumber: Math.round(H * 0.24),
-    statLabel: Math.round(H * 0.072),
-    wordmark: Math.round(H * 0.18),
-    url: Math.round(H * 0.095),
-  };
-
-  const serif = `'Spectral','Noto Serif SC','Iowan Old Style',Georgia,serif`;
-  const mono = `'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace`;
-
-  // Palette — warm cream ground + ink on paper + one muted gold accent.
-  const palette = {
-    ink: '#15161B',
-    inkMid: '#55565D',
-    inkSoft: '#8A8B92',
-    accent: '#B18A3C',
-    accentSoft: '#D9C188',
-    bgTop: '#FDFBF6',
-    bgBot: '#F3EEE0',
+    statNumber: Math.round(H * 0.175),
   };
 
   const locationName = meta.locationName.trim();
   const coordinates = meta.coordinates.trim();
+  const hasLocation = !!locationName || !!coordinates;
+
   const siteName = (meta.siteName || 'Stellaris').trim();
   const siteUrl = (meta.siteUrl || '').toLowerCase();
-  const geom: StripGeom = { H, fs, serif, mono, palette };
 
-  const left = buildLeft(locationName, coordinates, { ...geom, leftBlockX });
-  const stats = meta.stats ? buildStats(meta.stats, gutterL, gutterR, geom) : '';
-  const right = buildRight(siteName, siteUrl, { ...geom, rightBlockX });
-  const rule = stats ? buildCenterRule(gutterL, gutterR, H, palette) : '';
-  const logo = logoSvgMarkup(palette.ink);
+  // Layout rules:
+  //   hasLocation:  row 1 = [location left | brand right], row 2 = [stats left]
+  //   !hasLocation: single row = [stats left | brand right]
+  const row1Cy = hasLocation ? H * 0.32 : H * 0.5;
+  const row2Cy = H * 0.72;
 
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
-      `<defs>` +
-        `<linearGradient id="strip-bg" x1="0" y1="0" x2="0" y2="1">` +
-          `<stop offset="0%" stop-color="${palette.bgTop}" />` +
-          `<stop offset="100%" stop-color="${palette.bgBot}" />` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<rect width="${W}" height="${H}" fill="url(#strip-bg)" />` +
-      `<g transform="translate(${logoX} ${logoY}) scale(${logoScale})">${logo}</g>` +
-      left +
-      rule +
-      stats +
-      right +
-    `</svg>`
-  );
-}
+  // Brand is always right-anchored; size to content, capped at 50% of innerW
+  // so a long URL can never hog the row.
+  const brandContentW = estimateBrandWidth(fs, H, siteName, siteUrl);
+  const brandMaxW = Math.min(brandContentW, innerW * 0.5);
 
-function buildCenterRule(
-  gutterL: number,
-  gutterR: number,
-  H: number,
-  palette: StripGeom['palette'],
-): string {
-  // Two ultra-fine vertical hairlines book-ending the stats column. They sit
-  // exactly on the equal-thirds boundaries so the middle section feels like a
-  // gated insert between left and right.
-  const topY = Math.round(H * 0.22);
-  const bottomY = Math.round(H * 0.78);
-  const common = `stroke="${palette.accent}" stroke-opacity="0.3" stroke-width="1"`;
-  return (
-    `<line x1="${gutterL}" y1="${topY}" x2="${gutterL}" y2="${bottomY}" ${common} />` +
-    `<line x1="${gutterR}" y1="${topY}" x2="${gutterR}" y2="${bottomY}" ${common} />`
-  );
-}
+  const rowGap = H * 0.3;
+  const statsWidth = meta.stats ? estimateStatsRowWidth(meta.stats, fs, H) : 0;
+  const locationMaxW = Math.max(0, innerW - brandMaxW - rowGap);
 
-function buildStats(
-  stats: NonNullable<StripMeta['stats']>,
-  gutterL: number,
-  gutterR: number,
-  g: StripGeom,
-): string {
-  const { H, fs, serif, mono, palette } = g;
-  const span = gutterR - gutterL;
-  const columns = [
-    {
-      x: gutterL + span * 0.18,
-      value: stats.stars,
-      label: stats.labels?.stars ?? 'STARS',
-    },
-    {
-      x: gutterL + span * 0.5,
-      value: stats.constellations,
-      label: stats.labels?.constellations ?? 'CONSTEL.',
-    },
-    {
-      x: gutterL + span * 0.82,
-      value: stats.deepSky,
-      label: stats.labels?.deepSky ?? 'DEEP SKY',
-    },
-  ];
-  const iconCy = Math.round(H * 0.3);
-  const iconR = H * 0.07;
-  const numY = Math.round(H * 0.62);
-  const labY = Math.round(H * 0.83);
-  const glyphs = [
-    statGlyphStar,
-    statGlyphConstellation,
-    statGlyphDeepSky,
-  ] as const;
+  const parts: string[] = [];
+  parts.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`);
+  parts.push(buildStripDefs(palette, H));
+  parts.push(`<rect width="${W}" height="${H}" fill="url(#strip-bg)" />`);
+  parts.push(buildStripAmbience(W, H, palette));
+  parts.push(buildStripHairline(W, palette));
 
-  return columns
-    .map((col, i) => {
-      const glyph = glyphs[i](iconR, iconCy, palette.accent);
-      return (
-        `<g transform="translate(${Math.round(col.x)} 0)">` +
-          glyph +
-          `<text x="0" y="${numY}" text-anchor="middle" font-family="${serif}" ` +
-          `font-size="${fs.statNumber}" font-weight="500" fill="${palette.ink}" ` +
-          `letter-spacing="-0.01em">${col.value}</text>` +
-          `<text x="0" y="${labY}" text-anchor="middle" font-family="${mono}" ` +
-          `font-size="${fs.statLabel}" font-weight="500" fill="${palette.inkSoft}" ` +
-          `letter-spacing="0.24em">${col.label}</text>` +
-        `</g>`
+  if (hasLocation) {
+    // Row 1 left: location. Row 1 right: brand. Row 2 left: stats.
+    parts.push(
+      buildStripLocationRow({
+        x: padX,
+        centerY: row1Cy,
+        maxW: locationMaxW,
+        H,
+        fs,
+        palette,
+        locationName,
+        coordinates,
+      }),
+    );
+    parts.push(
+      buildStripBrandRow({
+        rightX: W - padX,
+        centerY: row1Cy,
+        maxW: brandMaxW,
+        H,
+        fs,
+        palette,
+        siteName,
+        siteUrl,
+      }),
+    );
+    if (meta.stats) {
+      parts.push(
+        buildStripStatsRow({
+          leftX: padX,
+          centerY: row2Cy,
+          H,
+          fs,
+          palette,
+          stats: meta.stats,
+        }),
       );
-    })
-    .join('');
+    }
+  } else {
+    // Single row: stats left, brand right.
+    if (meta.stats) {
+      parts.push(
+        buildStripStatsRow({
+          leftX: padX,
+          centerY: H / 2,
+          H,
+          fs,
+          palette,
+          stats: meta.stats,
+        }),
+      );
+    }
+    const singleRowBrandMaxW = Math.min(
+      brandMaxW,
+      Math.max(H * 2, innerW - statsWidth - rowGap),
+    );
+    parts.push(
+      buildStripBrandRow({
+        rightX: W - padX,
+        centerY: H / 2,
+        maxW: singleRowBrandMaxW,
+        H,
+        fs,
+        palette,
+        siteName,
+        siteUrl,
+      }),
+    );
+  }
+  parts.push(`</svg>`);
+  return parts.join('');
 }
 
-function statGlyphStar(r: number, cy: number, color: string): string {
-  const tip = r * 0.32;
-  return (
-    `<path transform="translate(0 ${cy})" fill="${color}" d="` +
-    `M 0 ${-r} L ${tip} ${-tip} L ${r} 0 L ${tip} ${tip} L 0 ${r} ` +
-    `L ${-tip} ${tip} L ${-r} 0 L ${-tip} ${-tip} Z" />`
-  );
-}
-
-function statGlyphConstellation(r: number, cy: number, color: string): string {
-  // Three filled dots in a loose triangle, connected with faint lines.
-  const p1x = -r * 0.95, p1y = -r * 0.35;
-  const p2x = r * 0.95, p2y = -r * 0.2;
-  const p3x = -r * 0.15, p3y = r * 0.85;
-  const dot = r * 0.26;
-  const stroke = Math.max(1, r * 0.1);
-  return (
-    `<g transform="translate(0 ${cy})">` +
-      `<g stroke="${color}" stroke-width="${stroke}" stroke-opacity="0.55" stroke-linecap="round">` +
-        `<line x1="${p1x}" y1="${p1y}" x2="${p2x}" y2="${p2y}" />` +
-        `<line x1="${p2x}" y1="${p2y}" x2="${p3x}" y2="${p3y}" />` +
-        `<line x1="${p3x}" y1="${p3y}" x2="${p1x}" y2="${p1y}" />` +
-      `</g>` +
-      `<g fill="${color}">` +
-        `<circle cx="${p1x}" cy="${p1y}" r="${dot}" />` +
-        `<circle cx="${p2x}" cy="${p2y}" r="${dot}" />` +
-        `<circle cx="${p3x}" cy="${p3y}" r="${dot}" />` +
-      `</g>` +
-    `</g>`
-  );
-}
-
-function statGlyphDeepSky(r: number, cy: number, color: string): string {
-  // Hollow ring + filled core — a generic galaxy/nebula mark.
-  const ringStroke = Math.max(1, r * 0.17);
-  return (
-    `<g transform="translate(0 ${cy})">` +
-      `<circle cx="0" cy="0" r="${r}" fill="none" stroke="${color}" stroke-width="${ringStroke}" />` +
-      `<circle cx="0" cy="0" r="${r * 0.28}" fill="${color}" />` +
-    `</g>`
-  );
-}
-
-/**
- * Canvas drawImage on an SVG that references web fonts can rasterize before
- * the font is ready, producing a fallback-font snapshot. Awaiting the font
- * set before composition avoids that race.
- */
-interface StripGeom {
+// Location + coordinates stack, left-aligned at the padding rail. Long names
+// are truncated with a trailing ellipsis instead of wrapping or overflowing.
+function buildStripLocationRow(args: {
+  x: number;
+  centerY: number;
+  maxW: number;
   H: number;
-  fs: {
-    eyebrow: number;
-    name: number;
-    nameSolo: number;
-    coords: number;
-    coordsSolo: number;
-    statNumber: number;
-    statLabel: number;
-    wordmark: number;
-    url: number;
-  };
-  serif: string;
-  mono: string;
-  palette: {
-    ink: string;
-    inkMid: string;
-    inkSoft: string;
-    accent: string;
-    accentSoft: string;
-    bgTop: string;
-    bgBot: string;
-  };
+  fs: StripFontScale;
+  palette: StripPalette;
+  locationName: string;
+  coordinates: string;
+}): string {
+  const { x, centerY, maxW, H, fs, palette, locationName, coordinates } = args;
+  if (maxW <= 0) return '';
+
+  const nameText = locationName
+    ? truncateTextEnd(locationName, maxW, {
+        fontSize: fs.location,
+        family: 'serif',
+        letterSpacingEm: -0.005,
+      })
+    : '';
+  const coordsText = coordinates
+    ? truncateTextEnd(coordinates, maxW, {
+        fontSize: fs.coords,
+        family: 'mono',
+        letterSpacingEm: 0.08,
+      })
+    : '';
+  if (!nameText && !coordsText) return '';
+
+  const nameH = nameText ? fs.location * 0.82 : 0;
+  const coordsH = coordsText ? fs.coords * 0.82 : 0;
+  const stackGap = nameText && coordsText ? H * 0.055 : 0;
+  const totalH = nameH + stackGap + coordsH;
+  const topY = centerY - totalH / 2;
+  const nameCy = topY + nameH / 2;
+  const coordsCy = topY + nameH + stackGap + coordsH / 2;
+
+  const name = nameText
+    ? `<text x="${x}" y="${nameCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
+      `font-family="${STRIP_SERIF}" font-size="${fs.location}" font-weight="500" ` +
+      `fill="${palette.text}" letter-spacing="-0.005em">${esc(nameText)}</text>`
+    : '';
+  const coords = coordsText
+    ? `<text x="${x}" y="${coordsCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
+      `font-family="${STRIP_MONO}" font-size="${fs.coords}" font-weight="400" ` +
+      `fill="${palette.accentSoft}" letter-spacing="0.08em">${esc(coordsText)}</text>`
+    : '';
+  return name + coords;
 }
 
-function buildLeft(
-  locationName: string,
-  coordinates: string,
-  g: StripGeom & { leftBlockX: number },
-): string {
-  const { leftBlockX, H, fs, serif, mono, palette } = g;
-  const eyebrowAttrs =
-    `font-family="${serif}" font-size="${fs.eyebrow}" font-weight="500" ` +
-    `fill="${palette.accent}" letter-spacing="0.34em"`;
-  const nameAttrs =
-    `font-family="${serif}" fill="${palette.ink}" font-weight="500" letter-spacing="-0.005em"`;
-  const coordsAttrs =
-    `font-family="${mono}" fill="${palette.inkMid}" font-weight="500" letter-spacing="0.05em"`;
+// Brand lockup — logo on the left, stacked wordmark + URL on the right of it.
+// Whole unit is right-anchored at `rightX`, vertically centered on `centerY`.
+function buildStripBrandRow(args: {
+  rightX: number;
+  centerY: number;
+  maxW: number;
+  H: number;
+  fs: StripFontScale;
+  palette: StripPalette;
+  siteName: string;
+  siteUrl: string;
+}): string {
+  const { rightX, centerY, maxW, H, fs, palette, siteName, siteUrl } = args;
 
-  if (locationName && coordinates) {
-    const eyebrowY = Math.round(H * 0.3);
-    const nameY = Math.round(H * 0.58);
-    const coordsY = Math.round(H * 0.83);
-    return (
-      `<text x="${leftBlockX}" y="${eyebrowY}" ${eyebrowAttrs}>OBSERVED FROM</text>` +
-      `<text x="${leftBlockX}" y="${nameY}" font-size="${fs.name}" ${nameAttrs}>${esc(locationName)}</text>` +
-      `<text x="${leftBlockX}" y="${coordsY}" font-size="${fs.coords}" ${coordsAttrs}>${esc(coordinates)}</text>`
-    );
-  }
-  if (locationName) {
-    const eyebrowY = Math.round(H * 0.34);
-    const y = Math.round(H * 0.72);
-    return (
-      `<text x="${leftBlockX}" y="${eyebrowY}" ${eyebrowAttrs}>OBSERVED FROM</text>` +
-      `<text x="${leftBlockX}" y="${y}" font-size="${fs.nameSolo}" ${nameAttrs}>${esc(locationName)}</text>`
-    );
-  }
-  if (coordinates) {
-    const eyebrowY = Math.round(H * 0.34);
-    const y = Math.round(H * 0.72);
-    return (
-      `<text x="${leftBlockX}" y="${eyebrowY}" ${eyebrowAttrs}>COORDINATES</text>` +
-      `<text x="${leftBlockX}" y="${y}" font-size="${fs.coordsSolo}" ${coordsAttrs}>${esc(coordinates)}</text>`
-    );
-  }
-  return '';
-}
+  const logoSize = Math.round(H * 0.3);
+  const logoScale = logoSize / 32;
+  const logoGap = Math.round(H * 0.07);
+  const textBudget = Math.max(0, maxW - logoSize - logoGap);
 
-function buildRight(
-  siteName: string,
-  siteUrl: string,
-  g: StripGeom & { rightBlockX: number },
-): string {
-  const { rightBlockX, H, fs, serif, mono, palette } = g;
-  // Wordmark top, short gold accent rule, URL bottom — three layers with
-  // generous breathing room. The accent rule both anchors the eye and gives
-  // the signature side a subtle editorial feel.
-  const wordmarkY = Math.round(H * 0.46);
-  const ruleY = Math.round(H * 0.56);
-  const urlY = Math.round(siteUrl ? H * 0.82 : ruleY);
-  const ruleLen = Math.round(H * 0.58);
-
-  const wordmark =
-    `<text x="${rightBlockX}" y="${wordmarkY}" text-anchor="end" font-family="${serif}" ` +
-    `font-size="${fs.wordmark}" font-weight="500" fill="${palette.ink}" ` +
-    `letter-spacing="0.02em">${esc(siteName)}</text>`;
-
-  const accent =
-    `<line x1="${rightBlockX - ruleLen}" y1="${ruleY}" x2="${rightBlockX}" y2="${ruleY}" ` +
-    `stroke="${palette.accent}" stroke-width="1.2" opacity="0.78" />`;
-
-  const url = siteUrl
-    ? `<text x="${rightBlockX}" y="${urlY}" text-anchor="end" font-family="${mono}" ` +
-      `font-size="${fs.url}" font-weight="500" fill="${palette.inkSoft}" ` +
-      `letter-spacing="0.16em">${esc(siteUrl)}</text>`
+  const wordmarkText = truncateTextEnd(siteName.toUpperCase(), textBudget, {
+    fontSize: fs.wordmark,
+    family: 'serif',
+    letterSpacingEm: 0.26,
+  });
+  const urlText = siteUrl
+    ? truncateTextMiddle(siteUrl, textBudget, {
+        fontSize: fs.url,
+        family: 'mono',
+        letterSpacingEm: 0.04,
+      })
     : '';
 
-  return wordmark + accent + url;
+  // Measure after truncation so the block sizes to what actually renders.
+  const wordmarkW = estimateStripTextWidth(wordmarkText, {
+    fontSize: fs.wordmark,
+    family: 'serif',
+    letterSpacingEm: 0.26,
+  });
+  const urlW = urlText
+    ? estimateStripTextWidth(urlText, {
+        fontSize: fs.url,
+        family: 'mono',
+        letterSpacingEm: 0.04,
+      })
+    : 0;
+  const textW = Math.max(wordmarkW, urlW);
+  const blockW = logoSize + logoGap + textW;
+
+  const leftX = rightX - blockW;
+  const logoX = leftX;
+  const logoY = centerY - logoSize / 2;
+  const textX = leftX + logoSize + logoGap;
+
+  const wordmarkH = fs.wordmark * 0.82;
+  const urlH = urlText ? fs.url * 0.85 : 0;
+  const textGap = urlText ? H * 0.04 : 0;
+  const stackH = wordmarkH + textGap + urlH;
+  const stackTopY = centerY - stackH / 2;
+  const wordmarkCy = stackTopY + wordmarkH / 2;
+  const urlCy = stackTopY + wordmarkH + textGap + urlH / 2;
+
+  return (
+    `<g transform="translate(${logoX.toFixed(1)} ${logoY.toFixed(1)}) scale(${logoScale.toFixed(3)})">` +
+      logoSvgMarkup(palette.accent) +
+    `</g>` +
+    `<text x="${textX.toFixed(1)}" y="${wordmarkCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
+      `font-family="${STRIP_SERIF}" font-size="${fs.wordmark}" font-weight="500" ` +
+      `fill="${palette.text}" letter-spacing="0.26em">${esc(wordmarkText)}</text>` +
+    (urlText
+      ? `<text x="${textX.toFixed(1)}" y="${urlCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
+        `font-family="${STRIP_MONO}" font-size="${fs.url}" font-weight="400" ` +
+        `fill="${palette.textMuted}" letter-spacing="0.04em">${esc(urlText)}</text>`
+      : '')
+  );
+}
+
+// Measures the intrinsic width the brand block wants — logo + gap + the
+// wider of wordmark/URL. Used up-front so the location/stats block knows
+// how much horizontal room is left on the opposite side of the row.
+function estimateBrandWidth(
+  fs: StripFontScale,
+  H: number,
+  siteName: string,
+  siteUrl: string,
+): number {
+  const logoSize = Math.round(H * 0.3);
+  const logoGap = Math.round(H * 0.07);
+  const wordmarkW = estimateStripTextWidth(siteName.toUpperCase(), {
+    fontSize: fs.wordmark,
+    family: 'serif',
+    letterSpacingEm: 0.26,
+  });
+  const urlW = siteUrl
+    ? estimateStripTextWidth(siteUrl, {
+        fontSize: fs.url,
+        family: 'mono',
+        letterSpacingEm: 0.04,
+      })
+    : 0;
+  return logoSize + logoGap + Math.max(wordmarkW, urlW);
+}
+
+// Predicts the width the horizontal stats row will consume, so callers can
+// reserve the remaining space for the brand block when both share a row.
+function estimateStatsRowWidth(
+  stats: NonNullable<StripMeta['stats']>,
+  fs: StripFontScale,
+  H: number,
+): number {
+  const iconR = H * 0.068;
+  const iconToNumber = H * 0.06;
+  const betweenStats = H * 0.22;
+  const numberMetrics = {
+    fontSize: fs.statNumber,
+    family: 'serif' as const,
+    letterSpacingEm: -0.015,
+  };
+  const numbers = [stats.stars, stats.constellations, stats.deepSky].map((n) =>
+    estimateStripTextWidth(String(n), numberMetrics),
+  );
+  const pairs = numbers.reduce((sum, nw) => sum + iconR * 2 + iconToNumber + nw, 0);
+  return pairs + betweenStats * 2;
+}
+
+// Stats laid out horizontally: icon + number pairs with generous gaps
+// between pairs. Left-anchored starting at `leftX`.
+function buildStripStatsRow(args: {
+  leftX: number;
+  centerY: number;
+  H: number;
+  fs: StripFontScale;
+  palette: StripPalette;
+  stats: NonNullable<StripMeta['stats']>;
+}): string {
+  const { leftX, centerY, H, fs, palette, stats } = args;
+
+  const iconR = H * 0.068;
+  const iconToNumber = H * 0.06;
+  const betweenStats = H * 0.22;
+
+  const items = [
+    { value: stats.stars, icon: statIconStar },
+    { value: stats.constellations, icon: statIconConstellation },
+    { value: stats.deepSky, icon: statIconDeepSky },
+  ];
+
+  const numberMetrics = {
+    fontSize: fs.statNumber,
+    family: 'serif' as const,
+    letterSpacingEm: -0.015,
+  };
+  const numberWidths = items.map((item) =>
+    estimateStripTextWidth(String(item.value), numberMetrics),
+  );
+  const pairWidths = numberWidths.map((nw) => iconR * 2 + iconToNumber + nw);
+
+  let cursor = leftX;
+  const out: string[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const { value, icon } = items[i];
+    const iconCx = cursor + iconR;
+    const numberX = cursor + iconR * 2 + iconToNumber;
+    out.push(
+      `<g transform="translate(${iconCx.toFixed(1)} ${centerY.toFixed(1)})">${icon(iconR, palette.accent)}</g>`,
+      `<text x="${numberX.toFixed(1)}" y="${centerY.toFixed(1)}" text-anchor="start" ` +
+        `dominant-baseline="central" font-family="${STRIP_SERIF}" font-size="${fs.statNumber}" ` +
+        `font-weight="400" fill="${palette.text}" letter-spacing="-0.015em">${value}</text>`,
+    );
+    cursor += pairWidths[i] + betweenStats;
+  }
+  return out.join('');
+}
+
+function buildStripDefs(palette: StripPalette, H: number): string {
+  const glowBlur = Math.max(1.2, H * 0.012);
+  return (
+    `<defs>` +
+      `<linearGradient id="strip-bg" x1="0" y1="0" x2="0" y2="1">` +
+        `<stop offset="0%" stop-color="${palette.bgTop}" />` +
+        `<stop offset="100%" stop-color="${palette.bgBot}" />` +
+      `</linearGradient>` +
+      `<filter id="strip-hairline-glow" x="-2%" y="-800%" width="104%" height="1700%">` +
+        `<feGaussianBlur stdDeviation="0 ${glowBlur.toFixed(2)}" />` +
+      `</filter>` +
+    `</defs>`
+  );
+}
+
+function buildStripHairline(W: number, palette: StripPalette): string {
+  // A 1.5px amber rule with a vertical-only Gaussian bloom underneath, so the
+  // strip visually lifts away from the photograph above without adding any
+  // chrome elsewhere in the layout.
+  return (
+    `<line x1="0" y1="0.5" x2="${W}" y2="0.5" stroke="${palette.hairline}" ` +
+      `stroke-opacity="0.34" stroke-width="3" filter="url(#strip-hairline-glow)" />` +
+    `<line x1="0" y1="0.5" x2="${W}" y2="0.5" stroke="${palette.hairline}" ` +
+      `stroke-opacity="0.72" stroke-width="1.2" />`
+  );
+}
+
+function buildStripAmbience(W: number, H: number, palette: StripPalette): string {
+  // Deterministic sprinkle of micro-stars for texture. Seeded by dimensions so
+  // re-exports of the same photo produce identical SVG.
+  const rng = mulberry32(Math.round(W * 7919 + H * 31));
+  const count = Math.max(6, Math.round(W / 240));
+  const parts: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const x = rng() * W;
+    const y = H * 0.08 + rng() * H * 0.84;
+    const r = 0.35 + rng() * 0.95;
+    const opacity = 0.14 + rng() * 0.38;
+    const color = rng() > 0.78 ? palette.accent : '#F1F2F7';
+    parts.push(
+      `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" ` +
+        `fill="${color}" opacity="${opacity.toFixed(2)}" />`,
+    );
+  }
+  return parts.join('');
+}
+
+// Refined outline icons — all drawn inside a centered (0,0) frame so the
+// caller positions them with a single translate. Stroked, not filled: keeps
+// them visually lighter than the big serif numbers they sit above.
+function statIconStar(r: number, color: string): string {
+  const tip = r * 0.3;
+  const sw = Math.max(1, r * 0.14);
+  return (
+    `<path d="M 0 ${-r} L ${tip} ${-tip} L ${r} 0 L ${tip} ${tip} L 0 ${r} ` +
+    `L ${-tip} ${tip} L ${-r} 0 L ${-tip} ${-tip} Z" fill="none" ` +
+    `stroke="${color}" stroke-width="${sw.toFixed(2)}" stroke-linejoin="round" />`
+  );
+}
+
+function statIconConstellation(r: number, color: string): string {
+  const sw = Math.max(0.9, r * 0.11);
+  const dot = r * 0.18;
+  const p1 = { x: -r * 0.88, y: -r * 0.2 };
+  const p2 = { x: r * 0.82, y: -r * 0.5 };
+  const p3 = { x: r * 0.05, y: r * 0.82 };
+  return (
+    `<g stroke="${color}" stroke-width="${sw.toFixed(2)}" stroke-opacity="0.55" stroke-linecap="round" fill="none">` +
+      `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" />` +
+      `<line x1="${p2.x}" y1="${p2.y}" x2="${p3.x}" y2="${p3.y}" />` +
+      `<line x1="${p3.x}" y1="${p3.y}" x2="${p1.x}" y2="${p1.y}" />` +
+    `</g>` +
+    `<g fill="${color}">` +
+      `<circle cx="${p1.x}" cy="${p1.y}" r="${dot.toFixed(2)}" />` +
+      `<circle cx="${p2.x}" cy="${p2.y}" r="${dot.toFixed(2)}" />` +
+      `<circle cx="${p3.x}" cy="${p3.y}" r="${dot.toFixed(2)}" />` +
+    `</g>`
+  );
+}
+
+function statIconDeepSky(r: number, color: string): string {
+  // Tilted ellipse + solid core — reads as a spiral galaxy silhouette.
+  const sw = Math.max(1, r * 0.13);
+  const rx = r * 0.98;
+  const ry = r * 0.42;
+  const core = r * 0.2;
+  return (
+    `<g transform="rotate(-22)">` +
+      `<ellipse cx="0" cy="0" rx="${rx.toFixed(2)}" ry="${ry.toFixed(2)}" fill="none" ` +
+        `stroke="${color}" stroke-width="${sw.toFixed(2)}" />` +
+      `<circle cx="0" cy="0" r="${core.toFixed(2)}" fill="${color}" />` +
+    `</g>`
+  );
+}
+
+interface StripFontScale {
+  wordmark: number;
+  url: number;
+  location: number;
+  coords: number;
+  statNumber: number;
+}
+
+// Mulberry32 — deterministic PRNG so decorative stars stay stable across
+// identical-sized exports instead of reshuffling on every render.
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 async function ensureFontsReady(): Promise<void> {
@@ -454,6 +655,74 @@ function esc(value: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+type StripFontFamily = 'serif' | 'mono';
+
+interface StripTextMetrics {
+  fontSize: number;
+  family: StripFontFamily;
+  letterSpacingEm?: number;
+}
+
+function charAdvance(ch: string, family: StripFontFamily): number {
+  if (!ch) return 0;
+  if (/\s/u.test(ch)) return 0.34;
+  if (/[\u3400-\u9FFF\uF900-\uFAFF\u3040-\u30FF\uAC00-\uD7AF]/u.test(ch)) {
+    return family === 'mono' ? 0.94 : 0.98;
+  }
+  if (/[\u0600-\u06FF]/u.test(ch)) return family === 'mono' ? 0.8 : 0.76;
+  if (/[A-Z]/.test(ch)) return family === 'mono' ? 0.62 : 0.69;
+  if (/[a-z]/.test(ch)) return family === 'mono' ? 0.62 : 0.56;
+  if (/[0-9]/.test(ch)) return family === 'mono' ? 0.62 : 0.58;
+  if (/[.,:;'"`!|]/.test(ch)) return 0.26;
+  if (/[()[\]{}]/.test(ch)) return 0.36;
+  if (/[-–—_]/.test(ch)) return 0.42;
+  if (/[/\\]/.test(ch)) return 0.42;
+  if (/[&@#%*+=~]/.test(ch)) return family === 'mono' ? 0.64 : 0.6;
+  return family === 'mono' ? 0.62 : 0.58;
+}
+
+function estimateStripTextWidth(value: string, metrics: StripTextMetrics): number {
+  const chars = Array.from(value);
+  if (!chars.length) return 0;
+  const base = chars.reduce((sum, ch) => sum + charAdvance(ch, metrics.family), 0) * metrics.fontSize;
+  const spacing = Math.max(0, chars.length - 1) * metrics.fontSize * (metrics.letterSpacingEm ?? 0);
+  return base + spacing;
+}
+
+function trimForEllipsis(value: string): string {
+  return value.replace(/[\s,.;:|/_-]+$/u, '');
+}
+
+function truncateTextEnd(value: string, maxWidth: number, metrics: StripTextMetrics): string {
+  const text = value.trim();
+  if (!text || estimateStripTextWidth(text, metrics) <= maxWidth) return text;
+  const chars = Array.from(text);
+  while (chars.length > 1 && estimateStripTextWidth(`${chars.join('')}…`, metrics) > maxWidth) {
+    chars.pop();
+  }
+  return `${trimForEllipsis(chars.join(''))}…`;
+}
+
+function truncateTextMiddle(value: string, maxWidth: number, metrics: StripTextMetrics): string {
+  const text = value.trim();
+  if (!text || estimateStripTextWidth(text, metrics) <= maxWidth) return text;
+  const chars = Array.from(text);
+  let left = Math.ceil(chars.length / 2);
+  let right = left;
+  while (left > 1 && right < chars.length) {
+    const candidate = `${chars.slice(0, left).join('')}…${chars.slice(right).join('')}`;
+    if (estimateStripTextWidth(candidate, metrics) <= maxWidth) {
+      return `${trimForEllipsis(chars.slice(0, left).join(''))}…${chars.slice(right).join('').trimStart()}`;
+    }
+    if (left - 1 > chars.length - right) {
+      left -= 1;
+    } else {
+      right += 1;
+    }
+  }
+  return truncateTextEnd(text, maxWidth, metrics);
 }
 
 function circlePath(x: number, y: number, r: number): string {

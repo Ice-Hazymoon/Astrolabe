@@ -6,6 +6,8 @@
     "closeHistory": "Chiudi cronologia",
     "restart": "Ricomincia",
     "settings": "Parametri",
-    "parametersTitle": "Parametri"
+    "parametersTitle": "Parametri",
+    "apiWarningShort": "Servizio limitato",
+    "apiWarning": "Il controllo di integrità dell'API non è andato a buon fine. Alcune funzioni potrebbero essere temporaneamente non disponibili. Riprova tra poco."
   }
 }

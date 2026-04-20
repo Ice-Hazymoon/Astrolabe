@@ -1,6 +1,6 @@
 {
-  "title": "Analyse fehlgeschlagen",
-  "fallbackMessage": "Während der Analyse ist ein unerwarteter Fehler aufgetreten",
+  "title": "Generierung fehlgeschlagen",
+  "fallbackMessage": "Diese Generierung konnte nicht abgeschlossen werden. Die API-Warteschlange ist möglicherweise lang, es sind zu viele Nutzer gleichzeitig aktiv oder die Sternkartenberechnung benötigt mehr Rechenleistung als derzeit verfügbar ist. Bitte versuchen Sie es in Kürze erneut.",
   "buttons": {
     "retry": "Erneut versuchen",
     "reset": "Neu beginnen"

@@ -19,6 +19,36 @@
     "apiLabel": "Labeltaal",
     "switchAria": "Kies taal"
   },
+  "pwa": {
+    "label": "App installeren",
+    "statusReady": "App installeren",
+    "statusManual": "Installatiehulp",
+    "title": "Stellaris installeren",
+    "description": "Installeer Stellaris voor sneller starten, ondersteuning voor een offline shell en een schonere werkruimte op volledig scherm.",
+    "nativeReady": "Je browser kan nu het installatievenster openen.",
+    "manualTitle": "Handmatige installatie",
+    "manualHint": "Als de browser het installatievenster niet toont, gebruik dan de onderstaande stappen.",
+    "manualFootnote": "Sommige in-app browsers verbergen installatieopties. Open deze pagina indien nodig in Safari, Chrome of Edge.",
+    "buttons": {
+      "install": "App installeren"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "Desktopbrowser"
+    },
+    "steps": {
+      "ios1": "Open deze pagina in Safari.",
+      "ios2": "Tik op Deel en kies vervolgens Zet op beginscherm.",
+      "ios3": "Tik op Voeg toe om de installatie te voltooien.",
+      "android1": "Open het browsermenu.",
+      "android2": "Kies App installeren of Toevoegen aan startscherm.",
+      "android3": "Bevestig de installatie.",
+      "desktop1": "Open het browsermenu of het installatiepictogram in de adresbalk.",
+      "desktop2": "Kies Stellaris installeren.",
+      "desktop3": "Bevestig de installatie."
+    }
+  },
   "common": {
     "and": "en",
     "or": "of"

@@ -19,6 +19,36 @@
     "apiLabel": "ラベル言語",
     "switchAria": "言語を選択"
   },
+  "pwa": {
+    "label": "アプリをインストール",
+    "statusReady": "アプリをインストール",
+    "statusManual": "インストール方法",
+    "title": "Stellaris をインストール",
+    "description": "Stellaris をインストールすると、よりすばやく起動でき、オフラインシェルにも対応し、全画面でよりすっきり使えます。",
+    "nativeReady": "お使いのブラウザーは今すぐインストール画面を開けます。",
+    "manualTitle": "手動インストール",
+    "manualHint": "ブラウザーがインストール画面を表示しない場合は、以下の手順をお使いください。",
+    "manualFootnote": "一部のアプリ内ブラウザーではインストール操作が表示されません。必要に応じて Safari、Chrome、Edge でこのページを開いてください。",
+    "buttons": {
+      "install": "アプリをインストール"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "デスクトップブラウザー"
+    },
+    "steps": {
+      "ios1": "このページを Safari で開きます。",
+      "ios2": "共有をタップし、ホーム画面に追加を選びます。",
+      "ios3": "追加をタップしてインストールを完了します。",
+      "android1": "ブラウザーのメニューを開きます。",
+      "android2": "アプリをインストール または ホーム画面に追加 を選びます。",
+      "android3": "インストールを確認します。",
+      "desktop1": "ブラウザーのメニュー、またはアドレスバーのインストールアイコンを開きます。",
+      "desktop2": "Stellaris をインストール を選びます。",
+      "desktop3": "インストールを確認します。"
+    }
+  },
   "common": {
     "and": "と",
     "or": "または"

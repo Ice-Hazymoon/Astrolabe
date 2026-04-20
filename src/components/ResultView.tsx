@@ -49,10 +49,17 @@ export function ResultView() {
     return buildScene(result.catalog, options);
   }, [result?.catalog, options]);
 
+  // Keyed to the result so a fresh analysis (or history restore) remounts the
+  // overlay and replays entrance animations + the breathing glow filters.
+  // Layer toggles don't change the key — they just re-run the memo.
+  const overlayKey = result
+    ? `${result.processingMs}-${result.solve.center_ra_deg.toFixed(2)}-${result.solve.center_dec_deg.toFixed(2)}`
+    : 'none';
+
   const overlay = useMemo(() => {
     if (!scene) return null;
-    return <OverlayCanvas scene={scene} layers={options.layers} animate />;
-  }, [scene, options.layers]);
+    return <OverlayCanvas key={overlayKey} scene={scene} layers={options.layers} animate />;
+  }, [scene, options.layers, overlayKey]);
 
   useEffect(() => {
     return () => {
@@ -129,8 +136,8 @@ export function ResultView() {
             src={activeSrc}
             alt={activeAlt}
             cacheKey={resultKey}
-            twinkle={!activeOverlay}
-            enhance={!activeOverlay}
+            twinkle={false}
+            enhance={!!activeOverlay}
             bottomOffset={72}
             reservedBottom={66}
             topRight={actionButtons}
@@ -168,8 +175,8 @@ export function ResultView() {
                 src={activeSrc}
                 alt={activeAlt}
                 cacheKey={`fs::${resultKey}`}
-                twinkle={!activeOverlay}
-                enhance={!activeOverlay}
+                twinkle={false}
+                enhance={!!activeOverlay}
                 bottomOffset={72}
                 reservedBottom={66}
                 topRight={actionButtons}

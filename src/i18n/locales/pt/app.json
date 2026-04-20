@@ -6,6 +6,8 @@
     "closeHistory": "Fechar histórico",
     "restart": "Começar de novo",
     "settings": "Parâmetros",
-    "parametersTitle": "Parâmetros"
+    "parametersTitle": "Parâmetros",
+    "apiWarningShort": "Serviço limitado",
+    "apiWarning": "A verificação de integridade da API falhou. Alguns recursos podem ficar temporariamente indisponíveis. Tente novamente em instantes."
   }
 }

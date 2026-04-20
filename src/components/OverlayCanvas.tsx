@@ -118,6 +118,25 @@ const Lines = memo(function Lines({
   segments: OverlayLineSegment[];
   animate: boolean;
 }) {
+  if (!animate) {
+    return (
+      <g>
+        {segments.map((s, i) => (
+          <line
+            key={i}
+            x1={s.x1}
+            y1={s.y1}
+            x2={s.x2}
+            y2={s.y2}
+            stroke={rgba(s.rgba)}
+            strokeWidth={s.line_width}
+            strokeLinecap="round"
+          />
+        ))}
+      </g>
+    );
+  }
+
   return (
     <g filter="url(#overlay-line-glow)">
       {segments.map((s, i) => (
@@ -131,25 +150,13 @@ const Lines = memo(function Lines({
           strokeWidth={s.line_width}
           strokeLinecap="round"
           initial={animate ? { pathLength: 0, opacity: 0 } : false}
-          animate={
-            animate
-              ? { pathLength: 1, opacity: [0.55, 0.95, 0.55] }
-              : undefined
-          }
+          animate={animate ? { pathLength: 1, opacity: 1 } : undefined}
           transition={
             animate
               ? {
-                  pathLength: {
-                    duration: 0.9,
-                    delay: 0.06 + i * 0.004,
-                    ease: [0.22, 1, 0.36, 1],
-                  },
-                  opacity: {
-                    duration: 3.6,
-                    delay: 0.06 + i * 0.004,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  },
+                  duration: 1.8,
+                  delay: 0.12 + i * 0.008,
+                  ease: [0.22, 1, 0.36, 1],
                 }
               : undefined
           }
@@ -168,6 +175,27 @@ const Leaders = memo(function Leaders({
   animate: boolean;
   delayBase: number;
 }) {
+  if (!animate) {
+    return (
+      <g>
+        {labels.map((l, i) =>
+          l.leader ? (
+            <line
+              key={i}
+              x1={l.leader.x1}
+              y1={l.leader.y1}
+              x2={l.leader.x2}
+              y2={l.leader.y2}
+              stroke={rgba(l.leader.rgba)}
+              strokeWidth={l.leader.line_width}
+              strokeLinecap="round"
+            />
+          ) : null,
+        )}
+      </g>
+    );
+  }
+
   return (
     <g>
       {labels.map((l, i) =>
@@ -183,7 +211,7 @@ const Leaders = memo(function Leaders({
             strokeLinecap="round"
             initial={animate ? { opacity: 0 } : false}
             animate={animate ? { opacity: 1 } : undefined}
-            transition={animate ? { duration: 0.35, delay: delayBase + i * 0.012 } : undefined}
+            transition={animate ? { duration: 0.7, delay: delayBase + i * 0.024 } : undefined}
           />
         ) : null,
       )}
@@ -193,8 +221,8 @@ const Leaders = memo(function Leaders({
 
 /**
  * Star marker: an outlined ring that *surrounds* the photographed star rather than
- * covering it, plus a soft outer halo that breathes gently. Animates in by growing
- * its radius from 0 at the star's own coordinates (no sliding).
+ * covering it, plus a soft outer halo. Animates in by growing its radius from 0 at
+ * the star's own coordinates (no sliding), then holds perfectly still.
  */
 const StarMarkers = memo(function StarMarkers({
   stars,
@@ -205,12 +233,44 @@ const StarMarkers = memo(function StarMarkers({
   animate: boolean;
   delayBase: number;
 }) {
+  if (!animate) {
+    return (
+      <g>
+        {stars.map((m, i) => {
+          const ringR = m.radius + 2.6;
+          const haloR = m.radius + 5.2;
+          return (
+            <g key={i}>
+              <circle
+                cx={m.x}
+                cy={m.y}
+                r={haloR}
+                fill="none"
+                stroke={rgba(m.fill_rgba)}
+                strokeOpacity={0.45}
+                strokeWidth={1.2}
+              />
+              <circle
+                cx={m.x}
+                cy={m.y}
+                r={ringR}
+                fill="none"
+                stroke={rgba(m.outline_rgba)}
+                strokeWidth={1.4}
+              />
+            </g>
+          );
+        })}
+      </g>
+    );
+  }
+
   return (
     <g filter="url(#overlay-star-glow)">
       {stars.map((m, i) => {
         const ringR = m.radius + 2.6;
         const haloR = m.radius + 5.2;
-        const delay = delayBase + i * 0.018;
+        const delay = delayBase + i * 0.036;
         return (
           <g key={i}>
             <motion.circle
@@ -221,22 +281,10 @@ const StarMarkers = memo(function StarMarkers({
               strokeOpacity={0.45}
               strokeWidth={1.2}
               initial={animate ? { r: 0, opacity: 0 } : false}
-              animate={
-                animate
-                  ? { r: haloR, opacity: [0.25, 0.55, 0.25] }
-                  : { r: haloR }
-              }
+              animate={animate ? { r: haloR, opacity: 1 } : { r: haloR }}
               transition={
                 animate
-                  ? {
-                      r: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] },
-                      opacity: {
-                        duration: 2.8,
-                        delay,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      },
-                    }
+                  ? { duration: 1.1, delay, ease: [0.22, 1, 0.36, 1] }
                   : undefined
               }
             />
@@ -250,7 +298,7 @@ const StarMarkers = memo(function StarMarkers({
               animate={animate ? { r: ringR, opacity: 1 } : { r: ringR }}
               transition={
                 animate
-                  ? { duration: 0.42, delay: delay + 0.06, ease: [0.22, 1, 0.36, 1] }
+                  ? { duration: 0.84, delay: delay + 0.12, ease: [0.22, 1, 0.36, 1] }
                   : undefined
               }
             />
@@ -270,6 +318,23 @@ const DeepSkyMarkers = memo(function DeepSkyMarkers({
   animate: boolean;
   delayBase: number;
 }) {
+  if (!animate) {
+    return (
+      <g>
+        {markers.map((m, i) => (
+          <path
+            key={i}
+            d={deepSkyPath(m)}
+            fill="none"
+            stroke={rgba(m.rgba)}
+            strokeWidth={m.line_width}
+            strokeLinejoin="round"
+          />
+        ))}
+      </g>
+    );
+  }
+
   return (
     <g>
       {markers.map((m, i) => (
@@ -284,7 +349,7 @@ const DeepSkyMarkers = memo(function DeepSkyMarkers({
           animate={animate ? { opacity: 1 } : undefined}
           transition={
             animate
-              ? { duration: 0.45, delay: delayBase + i * 0.012, ease: [0.22, 1, 0.36, 1] }
+              ? { duration: 0.9, delay: delayBase + i * 0.024, ease: [0.22, 1, 0.36, 1] }
               : undefined
           }
         />
@@ -302,6 +367,59 @@ const Labels = memo(function Labels({
   animate: boolean;
   delayBase: number;
 }) {
+  if (!animate) {
+    return (
+      <g>
+        {items.map((t, i) => {
+          const family = fontFamilyFor(t.font_family);
+          const weight = t.font_weight ?? 600;
+          const italic = t.italic ?? false;
+          const letterSpacingEm = t.letter_spacing ?? 0;
+          const textW =
+            t.text_width ??
+            estimateTextWidth(t.text, t.font_size, t.font_family, italic, letterSpacingEm);
+          const ascent = t.font_size * 0.82;
+          const descent = t.font_size * 0.24;
+
+          return (
+            <g key={i}>
+              {t.chip ? (
+                <rect
+                  x={t.x - t.chip.padding_x}
+                  y={t.y - ascent - t.chip.padding_y}
+                  width={textW + t.chip.padding_x * 2}
+                  height={ascent + descent + t.chip.padding_y * 2}
+                  rx={t.chip.radius}
+                  ry={t.chip.radius}
+                  fill={rgba(t.chip.fill_rgba)}
+                  stroke={t.chip.border_rgba ? rgba(t.chip.border_rgba) : 'none'}
+                  strokeWidth={t.chip.border_width ?? 1}
+                />
+              ) : null}
+              <text
+                x={t.x}
+                y={t.y}
+                fontSize={t.font_size}
+                fontWeight={weight}
+                fontFamily={family}
+                fontStyle={italic ? 'italic' : 'normal'}
+                fill={rgba(t.text_rgba)}
+                stroke={rgba(t.stroke_rgba)}
+                strokeWidth={t.stroke_width}
+                letterSpacing={letterSpacingEm ? `${letterSpacingEm}em` : undefined}
+                style={{ paintOrder: 'stroke fill' }}
+                textAnchor="start"
+                dominantBaseline="alphabetic"
+              >
+                {t.text}
+              </text>
+            </g>
+          );
+        })}
+      </g>
+    );
+  }
+
   return (
     <g>
       {items.map((t, i) => {
@@ -315,14 +433,14 @@ const Labels = memo(function Labels({
         const ascent = t.font_size * 0.82;
         const descent = t.font_size * 0.24;
 
-        const delay = delayBase + i * 0.02;
+        const delay = delayBase + i * 0.04;
 
         return (
           <motion.g
             key={i}
             initial={animate ? { opacity: 0, y: 4 } : false}
             animate={animate ? { opacity: 1, y: 0 } : undefined}
-            transition={animate ? { duration: 0.3, delay } : undefined}
+            transition={animate ? { duration: 0.6, delay } : undefined}
           >
             {t.chip ? (
               <rect
@@ -443,17 +561,17 @@ export const OverlayCanvas = memo(function OverlayCanvas({
 
         {layers.label_leaders && (
           <>
-            <Leaders labels={visible.starLabels} animate={animate} delayBase={0.2} />
-            <Leaders labels={visible.dsoLabels} animate={animate} delayBase={0.24} />
+            <Leaders labels={visible.starLabels} animate={animate} delayBase={0.4} />
+            <Leaders labels={visible.dsoLabels} animate={animate} delayBase={0.48} />
           </>
         )}
 
-        <DeepSkyMarkers markers={visible.dsos} animate={animate} delayBase={0.18} />
-        <StarMarkers stars={visible.stars} animate={animate} delayBase={0.14} />
+        <DeepSkyMarkers markers={visible.dsos} animate={animate} delayBase={0.36} />
+        <StarMarkers stars={visible.stars} animate={animate} delayBase={0.28} />
 
-        <Labels items={visible.constLabels} animate={animate} delayBase={0.28} />
-        <Labels items={visible.starLabels} animate={animate} delayBase={0.34} />
-        <Labels items={visible.dsoLabels} animate={animate} delayBase={0.38} />
+        <Labels items={visible.constLabels} animate={animate} delayBase={0.56} />
+        <Labels items={visible.starLabels} animate={animate} delayBase={0.68} />
+        <Labels items={visible.dsoLabels} animate={animate} delayBase={0.76} />
       </g>
     </svg>
   );

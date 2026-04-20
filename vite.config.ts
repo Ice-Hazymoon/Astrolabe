@@ -19,7 +19,11 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       siteMetaPlugin({ siteUrl, siteName }),
       VitePWA({
+        injectRegister: false,
         registerType: 'autoUpdate',
+        devOptions: {
+          enabled: true,
+        },
         includeAssets: [
           'favicon.svg',
           'icon-maskable.svg',

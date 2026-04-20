@@ -6,6 +6,8 @@
     "closeHistory": "Verlauf schließen",
     "restart": "Neu beginnen",
     "settings": "Parameter",
-    "parametersTitle": "Parameter"
+    "parametersTitle": "Parameter",
+    "apiWarningShort": "Dienst eingeschränkt",
+    "apiWarning": "Die API-Zustandsprüfung ist fehlgeschlagen. Einige Funktionen sind vorübergehend möglicherweise nicht verfügbar. Bitte versuchen Sie es in Kürze erneut."
   }
 }

@@ -6,6 +6,8 @@
     "closeHistory": "Tutup riwayat",
     "restart": "Mulai dari awal",
     "settings": "Parameter",
-    "parametersTitle": "Parameter"
+    "parametersTitle": "Parameter",
+    "apiWarningShort": "Layanan terbatas",
+    "apiWarning": "Pemeriksaan kesehatan API gagal. Beberapa fitur mungkin sementara tidak tersedia. Coba lagi sebentar lagi."
   }
 }

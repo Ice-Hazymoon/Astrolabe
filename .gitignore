@@ -26,3 +26,4 @@ bun-debug.log*
 .env
 .env.local
 .env.*.local
+.vercel

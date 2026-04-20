@@ -1,6 +1,6 @@
 {
-  "title": "Analiz başarısız",
-  "fallbackMessage": "Analiz sırasında beklenmeyen bir hata oluştu",
+  "title": "Oluşturma başarısız oldu",
+  "fallbackMessage": "Bu oluşturma tamamlanamadı. API kuyruğu uzun olabilir, aynı anda çok fazla aktif kullanıcı olabilir veya yıldız haritası çözümü şu anda mevcut olandan daha fazla işlem gücü gerektiriyor olabilir. Lütfen kısa süre sonra tekrar deneyin.",
   "buttons": {
     "retry": "Yeniden dene",
     "reset": "Baştan başla"

@@ -1,6 +1,6 @@
 {
-  "title": "解算失敗",
-  "fallbackMessage": "解算過程中發生未知錯誤",
+  "title": "生成失敗",
+  "fallbackMessage": "本次生成未能完成。目前可能因為 API 佇列較長、同時使用人數較多，或星圖解算需要較高算力而暫時失敗，請稍後再試。",
   "buttons": {
     "retry": "重試",
     "reset": "重新開始"

@@ -1,13 +1,9 @@
-import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSky } from '@/state/store';
-import { LABEL_LOCALES } from '@/data/defaults';
-import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
-import { Button } from './ui/Button';
 import { SegmentedControl } from './ui/SegmentedControl';
 import { Switch } from './ui/Switch';
 import { Slider } from './ui/Slider';
-import type { Locale, OverlayOptions, Preset } from '@/types/api';
+import type { OverlayOptions, Preset } from '@/types/api';
 
 type LayerKey = keyof OverlayOptions['layers'];
 
@@ -29,20 +25,11 @@ const LAYER_GROUPS: LayerGroup[] = [
 ];
 
 export function ParameterPanel() {
-  const { t } = useTranslation(['parameters', 'common']);
+  const { t } = useTranslation('parameters');
   const options = useSky((s) => s.options);
-  const locale = useSky((s) => s.locale);
-  const phase = useSky((s) => s.phase);
-  const current = useSky((s) => s.current);
-  const resultLocale = useSky((s) => s.resultLocale);
   const applyPreset = useSky((s) => s.applyPreset);
   const toggleLayer = useSky((s) => s.toggleLayer);
   const updateDetail = useSky((s) => s.updateDetail);
-  const setLocale = useSky((s) => s.setLocale);
-  const startAnalysis = useSky((s) => s.startAnalysis);
-
-  const canReanalyze = phase === 'result' && !!current && current.blob.size > 0 && !!resultLocale;
-  const localeDrifted = !!resultLocale && locale !== resultLocale;
 
   return (
     <div className="flex flex-col gap-5 pr-1">
@@ -63,44 +50,6 @@ export function ParameterPanel() {
             { value: 'max', label: t('parameters:presets.max.label') },
           ]}
         />
-      </section>
-
-      <section className="flex flex-col gap-2.5">
-        <header className="flex items-baseline justify-between">
-          <span className="text-eyebrow">{t('common:language.uiLabel')}</span>
-        </header>
-        <LanguageSwitcher />
-      </section>
-
-      <section className="flex flex-col gap-2.5">
-        <header className="flex items-baseline justify-between">
-          <span className="text-eyebrow">{t('parameters:labelLocale.header')}</span>
-          {localeDrifted && (
-            <span className="text-[10.5px] text-[color:var(--color-text-faint)]">
-              {t('parameters:labelLocale.driftHint')}
-            </span>
-          )}
-        </header>
-        <div className="relative">
-          <select
-            value={locale}
-            onChange={(event) => setLocale(event.target.value as Locale)}
-            aria-label={t('parameters:labelLocale.ariaLabel')}
-            className="w-full appearance-none rounded-full bg-[color:var(--color-ink-2)]/80 border border-[color:var(--color-line-soft)] px-3.5 py-2 pr-9 text-[12.5px] text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-3)]/50 transition-colors"
-          >
-            {LABEL_LOCALES.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <span
-            aria-hidden
-            className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] text-[color:var(--color-text-muted)]"
-          >
-            ▾
-          </span>
-        </div>
       </section>
 
       <section className="flex flex-col gap-3">
@@ -185,22 +134,6 @@ export function ParameterPanel() {
           {t('parameters:detail.live')}
         </p>
       </section>
-
-      {canReanalyze && localeDrifted && (
-        <section className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-2)]/40 p-3">
-          <span className="text-[11.5px] text-[color:var(--color-text-soft)]">
-            {t('parameters:reanalyze.message')}
-          </span>
-          <Button
-            variant="primary"
-            size="sm"
-            leading={<RefreshCw className="h-3.5 w-3.5" strokeWidth={2.2} />}
-            onClick={() => void startAnalysis()}
-          >
-            {t('parameters:reanalyze.button')}
-          </Button>
-        </section>
-      )}
     </div>
   );
 }

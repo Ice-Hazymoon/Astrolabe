@@ -19,6 +19,36 @@
     "apiLabel": "Jazyk popisků",
     "switchAria": "Vyberte jazyk"
   },
+  "pwa": {
+    "label": "Nainstalovat aplikaci",
+    "statusReady": "Nainstalovat aplikaci",
+    "statusManual": "Nápověda k instalaci",
+    "title": "Nainstalovat Stellaris",
+    "description": "Nainstalujte Stellaris pro rychlejší spuštění, podporu offline shellu a čistší práci na celé obrazovce.",
+    "nativeReady": "Váš prohlížeč nyní může otevřít instalační okno.",
+    "manualTitle": "Ruční instalace",
+    "manualHint": "Pokud prohlížeč instalační okno nezobrazí, použijte kroky níže.",
+    "manualFootnote": "Některé integrované prohlížeče v aplikacích skrývají ovládání instalace. V případě potřeby otevřete tuto stránku v Safari, Chromu nebo Edge.",
+    "buttons": {
+      "install": "Nainstalovat aplikaci"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "Desktopový prohlížeč"
+    },
+    "steps": {
+      "ios1": "Otevřete tuto stránku v Safari.",
+      "ios2": "Klepněte na Sdílet a potom na Přidat na plochu.",
+      "ios3": "Klepnutím na Přidat dokončete instalaci.",
+      "android1": "Otevřete nabídku prohlížeče.",
+      "android2": "Vyberte Nainstalovat aplikaci nebo Přidat na plochu.",
+      "android3": "Potvrďte instalaci.",
+      "desktop1": "Otevřete nabídku prohlížeče nebo ikonu instalace v adresním řádku.",
+      "desktop2": "Vyberte Nainstalovat Stellaris.",
+      "desktop3": "Potvrďte instalaci."
+    }
+  },
   "common": {
     "and": "a",
     "or": "nebo"

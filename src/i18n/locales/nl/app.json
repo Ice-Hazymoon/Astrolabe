@@ -6,6 +6,8 @@
     "closeHistory": "Geschiedenis sluiten",
     "restart": "Opnieuw beginnen",
     "settings": "Parameters",
-    "parametersTitle": "Parameters"
+    "parametersTitle": "Parameters",
+    "apiWarningShort": "Dienst beperkt",
+    "apiWarning": "De API-gezondheidscontrole is mislukt. Sommige functies zijn mogelijk tijdelijk niet beschikbaar. Probeer het zo nog eens."
   }
 }

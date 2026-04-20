@@ -19,6 +19,36 @@
     "apiLabel": "Bahasa label",
     "switchAria": "Pilih bahasa"
   },
+  "pwa": {
+    "label": "Instal aplikasi",
+    "statusReady": "Instal aplikasi",
+    "statusManual": "Bantuan instalasi",
+    "title": "Instal Stellaris",
+    "description": "Instal Stellaris untuk peluncuran yang lebih cepat, dukungan offline shell, dan ruang kerja layar penuh yang lebih bersih.",
+    "nativeReady": "Browser Anda sekarang dapat membuka jendela instalasi.",
+    "manualTitle": "Instalasi manual",
+    "manualHint": "Jika browser tidak menampilkan jendela instalasi, ikuti langkah-langkah di bawah.",
+    "manualFootnote": "Beberapa browser di dalam aplikasi menyembunyikan kontrol instalasi. Buka halaman ini di Safari, Chrome, atau Edge jika perlu.",
+    "buttons": {
+      "install": "Instal aplikasi"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "Browser desktop"
+    },
+    "steps": {
+      "ios1": "Buka halaman ini di Safari.",
+      "ios2": "Ketuk Bagikan, lalu pilih Tambahkan ke Layar Utama.",
+      "ios3": "Ketuk Tambah untuk menyelesaikan instalasi.",
+      "android1": "Buka menu browser.",
+      "android2": "Pilih Instal aplikasi atau Tambahkan ke layar utama.",
+      "android3": "Konfirmasikan instalasi.",
+      "desktop1": "Buka menu browser atau ikon instalasi di bilah alamat.",
+      "desktop2": "Pilih Instal Stellaris.",
+      "desktop3": "Konfirmasikan instalasi."
+    }
+  },
   "common": {
     "and": "dan",
     "or": "atau"

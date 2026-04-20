@@ -1,6 +1,6 @@
 {
-  "title": "Analyse mislukt",
-  "fallbackMessage": "Er is een onverwachte fout opgetreden tijdens de analyse",
+  "title": "Genereren mislukt",
+  "fallbackMessage": "Deze generatie kon niet worden voltooid. De API-wachtrij kan lang zijn, er kunnen te veel gebruikers tegelijk actief zijn of de astrometrische oplossing van de sterrenkaart kan meer rekenkracht vereisen dan momenteel beschikbaar is. Probeer het zo nog eens.",
   "buttons": {
     "retry": "Opnieuw proberen",
     "reset": "Opnieuw beginnen"

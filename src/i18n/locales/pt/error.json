@@ -1,6 +1,6 @@
 {
-  "title": "A análise falhou",
-  "fallbackMessage": "Ocorreu um erro inesperado durante a análise",
+  "title": "Falha na geração",
+  "fallbackMessage": "Não foi possível concluir esta geração. A fila da API pode estar longa, pode haver usuários demais ativos ao mesmo tempo ou a solução astrométrica do mapa celeste pode exigir mais capacidade computacional do que a disponível no momento. Tente novamente em instantes.",
   "buttons": {
     "retry": "Tentar novamente",
     "reset": "Começar de novo"

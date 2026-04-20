@@ -6,6 +6,8 @@
     "closeHistory": "기록 닫기",
     "restart": "처음부터 다시",
     "settings": "매개변수",
-    "parametersTitle": "매개변수"
+    "parametersTitle": "매개변수",
+    "apiWarningShort": "서비스 제한 중",
+    "apiWarning": "API 상태 확인에 실패했습니다. 일부 기능을 일시적으로 사용할 수 없을 수 있습니다. 잠시 후 다시 시도해 주세요."
   }
 }

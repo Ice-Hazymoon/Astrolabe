@@ -15,6 +15,8 @@
     "longitude": "Längengrad"
   },
   "hints": {
+    "videoUnsupported": "Video export requires a modern browser (Chrome, Edge, or Safari 16.4+).",
+    "videoFailed": "Video export failed, please retry",
     "default": "Ort und Koordinaten sind beide optional — Ausgefülltes wird unten im Bild eingestempelt.",
     "geoUnsupported": "Dieses Gerät unterstützt keine Standortbestimmung",
     "geoDenied": "Standortberechtigung verweigert",
@@ -22,6 +24,8 @@
     "exportFailed": "Export fehlgeschlagen, bitte erneut versuchen"
   },
   "buttons": {
+    "saveVideo": "Save video",
+    "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Abbrechen",
     "save": "Bild speichern",
     "saving": "Wird erstellt…"

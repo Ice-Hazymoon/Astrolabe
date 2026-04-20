@@ -1,31 +1,32 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import { DEFAULT_UI_LANGUAGE, UI_LANGUAGES, findUiLanguage } from './languages';
 import { baseInitOptions } from './resources';
-import { syncLocalizedUrl } from './browserUrl';
+import { detectInitialUiLanguage, detectUrlUiLanguage, syncLocalizedUrl } from './browserUrl';
 
-/** Client-side i18n singleton. Uses the browser language detector so the app
- * honours `?lang=`, then localStorage, then the browser's `Accept-Language`.
- * On the server, `createServerI18n(lang)` (see ./server.ts) is used instead. */
+/**
+ * Client-side i18n singleton. Bootstrap from the current URL / prerendered
+ * `<html lang>` synchronously so hydration sees the same language the server
+ * rendered. Route changes then keep the i18n state and pathname aligned.
+ */
+const initialLanguage =
+  typeof document === 'undefined'
+    ? DEFAULT_UI_LANGUAGE
+    : detectInitialUiLanguage({
+        pathname: window.location.pathname,
+        search: window.location.search,
+        htmlLang: document.documentElement.lang,
+      });
+
 void i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
-  .init({
-    ...baseInitOptions,
-    detection: {
-      // `?lang=xx` wins so crawlers following hreflang alternates always land
-      // on the advertised language; `/lang/<code>/` is the canonical URL shape
-      // for non-default locales; localStorage then honours returning users;
-      // `navigator` covers first-time visitors; `htmlTag` picks up the language
-      // emitted by the prerender step (so an SSR'd page hydrates consistently).
-      order: ['querystring', 'path', 'localStorage', 'htmlTag', 'navigator'],
-      lookupQuerystring: 'lang',
-      lookupFromPathIndex: 1,
-      lookupLocalStorage: 'stellaris:lang',
-      caches: ['localStorage'],
-    },
-  });
+  .init(
+    {
+      ...baseInitOptions,
+      lng: initialLanguage,
+      initImmediate: false,
+    } as unknown as Parameters<typeof i18n.init>[0],
+  );
 
 function applyDocumentLang(code: string): void {
   if (typeof document === 'undefined') return;
@@ -41,8 +42,17 @@ if (typeof document !== 'undefined') {
     syncLocalizedUrl(code);
   };
 
+  const syncFromLocation = () => {
+    const code = detectUrlUiLanguage(window.location.pathname, window.location.search);
+    const active = findUiLanguage(i18n.resolvedLanguage ?? i18n.language)?.code ?? DEFAULT_UI_LANGUAGE;
+    if (code !== active) {
+      void i18n.changeLanguage(code);
+    }
+  };
+
   syncDocument(i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_UI_LANGUAGE);
   i18n.on('languageChanged', syncDocument);
+  window.addEventListener('popstate', syncFromLocation);
 }
 
 export { UI_LANGUAGES, findUiLanguage };

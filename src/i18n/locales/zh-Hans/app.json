@@ -6,6 +6,8 @@
     "closeHistory": "关闭历史记录",
     "restart": "重新开始",
     "settings": "参数设置",
-    "parametersTitle": "参数"
+    "parametersTitle": "参数",
+    "apiWarningShort": "服务暂不可用",
+    "apiWarning": "API 健康检查未通过，当前部分功能暂时可能无法使用，请稍后再试"
   }
 }

@@ -10,6 +10,7 @@ export function ErrorView() {
   const reset = useSky((s) => s.reset);
   const startAnalysis = useSky((s) => s.startAnalysis);
   const current = useSky((s) => s.current);
+  const message = error === 'generation_failed' ? t('fallbackMessage') : (error ?? t('fallbackMessage'));
 
   return (
     <motion.div
@@ -26,7 +27,7 @@ export function ErrorView() {
       <div className="text-center max-w-[420px]">
         <h2 className="text-display text-[20px] text-[color:var(--color-text)]">{t('title')}</h2>
         <p className="mt-1.5 text-[13px] text-[color:var(--color-text-muted)]">
-          {error ?? t('fallbackMessage')}
+          {message}
         </p>
       </div>
       <div className="flex items-center gap-2">

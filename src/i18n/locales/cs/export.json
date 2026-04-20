@@ -15,6 +15,8 @@
     "longitude": "Zeměpisná délka"
   },
   "hints": {
+    "videoUnsupported": "Video export requires a modern browser (Chrome, Edge, or Safari 16.4+).",
+    "videoFailed": "Video export failed, please retry",
     "default": "Místo i souřadnice jsou volitelné — vše vyplněné se otiskne na spodní okraj obrázku.",
     "geoUnsupported": "Toto zařízení nepodporuje geolokaci",
     "geoDenied": "Přístup k poloze byl odepřen",
@@ -22,6 +24,8 @@
     "exportFailed": "Export selhal, zkuste to prosím znovu"
   },
   "buttons": {
+    "saveVideo": "Save video",
+    "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Zrušit",
     "save": "Uložit obrázek",
     "saving": "Generování…"

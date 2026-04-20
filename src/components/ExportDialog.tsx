@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Download, MapPin, Navigation, Loader2, LocateFixed, Search } from 'lucide-react';
+import { X, Download, Film, MapPin, Navigation, Loader2, LocateFixed, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { AnalyzeResponse, OverlayOptions, OverlayScene } from '@/types/api';
 import {
@@ -9,12 +9,23 @@ import {
   stripHeightFor,
   type StripMeta,
 } from '@/lib/composite';
+import {
+  exportAnnotatedVideo,
+  isVideoExportSupported,
+  WebCodecsUnsupportedError,
+} from '@/lib/videoExport';
 import { reverseLookup, searchPlaces, type NominatimHit } from '@/lib/nominatim';
 import { SITE_HOST, SITE_NAME } from '@/lib/config';
 import { Button } from './ui/Button';
 import { IconButton } from './ui/IconButton';
 import { OverlayCanvas } from './OverlayCanvas';
 import { cn } from '@/lib/cn';
+
+function stripDomSvg(markup: string): string {
+  // The saved SVG has explicit pixel width/height for canvas rasterization.
+  // For DOM rendering we drop those so the SVG scales to its container.
+  return markup.replace(/<svg([^>]*?)\swidth="\d+"\s+height="\d+"/, '<svg$1');
+}
 
 interface ExportDialogProps {
   open: boolean;
@@ -51,12 +62,6 @@ function formatCoordinates(lat: string, lng: string): string {
   return parts.join('   ');
 }
 
-function stripDomSvg(markup: string): string {
-  // The saved SVG has explicit pixel width/height for canvas rasterization.
-  // For DOM rendering we drop those so the SVG scales to its container.
-  return markup.replace(/<svg([^>]*?)\swidth="\d+"\s+height="\d+"/, '<svg$1');
-}
-
 export function ExportDialog({
   open,
   onClose,
@@ -72,6 +77,12 @@ export function ExportDialog({
   const [lng, setLng] = useState('');
   const [saving, setSaving] = useState(false);
   const [savingError, setSavingError] = useState<string | null>(null);
+  // `null` = still feature-detecting, `true`/`false` once the probe resolves.
+  // Separates "haven't checked yet" from "definitely unsupported" so the
+  // video button can stay hidden until we know one way or the other.
+  const [videoSupported, setVideoSupported] = useState<boolean | null>(null);
+  const [videoPct, setVideoPct] = useState(0);
+  const videoAbortRef = useRef<AbortController | null>(null);
   const [suggestions, setSuggestions] = useState<NominatimHit[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -84,6 +95,17 @@ export function ExportDialog({
   const locationWrapRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
+  // Keep Escape-handler state in refs so the focus-management effect below
+  // doesn't re-run (and steal focus from the active input) every time
+  // `saving` or `searchOpen` flips.
+  const savingRef = useRef(saving);
+  const searchOpenRef = useRef(searchOpen);
+  useEffect(() => {
+    savingRef.current = saving;
+  }, [saving]);
+  useEffect(() => {
+    searchOpenRef.current = searchOpen;
+  }, [searchOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -94,8 +116,8 @@ export function ExportDialog({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !saving) {
-        if (searchOpen) {
+      if (e.key === 'Escape' && !savingRef.current) {
+        if (searchOpenRef.current) {
           setSearchOpen(false);
           return;
         }
@@ -110,7 +132,7 @@ export function ExportDialog({
       restoreFocusRef.current?.focus();
       restoreFocusRef.current = null;
     };
-  }, [open, onClose, saving, searchOpen]);
+  }, [open, onClose]);
 
   // Close the suggestion list when the user clicks outside of the location
   // wrapper (input + dropdown). Scoped to the dialog so it doesn't fight
@@ -259,6 +281,28 @@ export function ExportDialog({
     );
   };
 
+  // Feature-detect WebCodecs once per dialog open. Held in state (rather than
+  // probed on click) so the button's label/icon can stay stable and the check
+  // doesn't visibly delay the first click.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    void isVideoExportSupported().then((ok) => {
+      if (!cancelled) setVideoSupported(ok);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  // Cancel any in-flight video render if the dialog closes.
+  useEffect(() => {
+    if (!open && videoAbortRef.current) {
+      videoAbortRef.current.abort();
+      videoAbortRef.current = null;
+    }
+  }, [open]);
+
   const handleSave = async () => {
     if (saving) return;
     setSaving(true);
@@ -275,6 +319,44 @@ export function ExportDialog({
       setSavingError(t('export:hints.exportFailed'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveVideo = async () => {
+    if (saving) return;
+    setSaving(true);
+    setSavingError(null);
+    setVideoPct(0);
+    const controller = new AbortController();
+    videoAbortRef.current = controller;
+    try {
+      const { blobUrl } = await exportAnnotatedVideo({
+        imageSrc,
+        scene,
+        layers,
+        meta,
+        onProgress: (p) => setVideoPct(p),
+        signal: controller.signal,
+      });
+      const anchor = document.createElement('a');
+      anchor.href = blobUrl;
+      anchor.download = `stellaris-${Date.now()}.mp4`;
+      anchor.click();
+      // Reuse the same post-export flow as the PNG path — parent opens the
+      // share dialog and takes ownership of the blob URL lifetime.
+      onExported(blobUrl, meta);
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
+      console.error('[ExportDialog] video export failed', err);
+      setSavingError(
+        err instanceof WebCodecsUnsupportedError
+          ? t('export:hints.videoUnsupported')
+          : t('export:hints.videoFailed'),
+      );
+    } finally {
+      setSaving(false);
+      setVideoPct(0);
+      videoAbortRef.current = null;
     }
   };
 
@@ -528,20 +610,41 @@ export function ExportDialog({
                     <Button variant="ghost" size="md" onClick={onClose} disabled={saving}>
                       {t('export:buttons.cancel')}
                     </Button>
+                    {videoSupported && (
+                      <Button
+                        variant="subtle"
+                        size="md"
+                        onClick={handleSaveVideo}
+                        disabled={saving}
+                        leading={
+                          saving && videoPct > 0 ? (
+                            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.2} />
+                          ) : (
+                            <Film className="h-4 w-4" strokeWidth={2.2} />
+                          )
+                        }
+                      >
+                        {saving && videoPct > 0
+                          ? t('export:buttons.savingVideo', { pct: Math.round(videoPct * 100) })
+                          : t('export:buttons.saveVideo')}
+                      </Button>
+                    )}
                     <Button
                       variant="primary"
                       size="md"
                       onClick={handleSave}
                       disabled={saving}
                       leading={
-                        saving ? (
+                        saving && videoPct === 0 ? (
                           <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.2} />
                         ) : (
                           <Download className="h-4 w-4" strokeWidth={2.2} />
                         )
                       }
                     >
-                      {saving ? t('export:buttons.saving') : t('export:buttons.save')}
+                      {saving && videoPct === 0
+                        ? t('export:buttons.saving')
+                        : t('export:buttons.save')}
                     </Button>
                   </div>
                 </div>

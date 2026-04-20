@@ -1,6 +1,6 @@
 {
-  "title": "Análisis fallido",
-  "fallbackMessage": "Se produjo un error inesperado durante el análisis",
+  "title": "La generación falló",
+  "fallbackMessage": "No se pudo completar esta generación. La cola de la API puede ser larga, puede haber demasiados usuarios activos al mismo tiempo o la resolución astrométrica del mapa estelar puede requerir más capacidad de cómputo de la disponible ahora. Vuelve a intentarlo dentro de un momento.",
   "buttons": {
     "retry": "Reintentar",
     "reset": "Empezar de nuevo"

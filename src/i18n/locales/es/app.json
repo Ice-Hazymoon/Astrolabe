@@ -6,6 +6,8 @@
     "closeHistory": "Cerrar historial",
     "restart": "Empezar de nuevo",
     "settings": "Parámetros",
-    "parametersTitle": "Parámetros"
+    "parametersTitle": "Parámetros",
+    "apiWarningShort": "Servicio limitado",
+    "apiWarning": "La comprobación de estado de la API ha fallado. Es posible que algunas funciones no estén disponibles temporalmente. Vuelve a intentarlo en un momento."
   }
 }

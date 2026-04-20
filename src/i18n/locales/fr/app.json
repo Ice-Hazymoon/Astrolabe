@@ -6,6 +6,8 @@
     "closeHistory": "Fermer l'historique",
     "restart": "Recommencer",
     "settings": "Paramètres",
-    "parametersTitle": "Paramètres"
+    "parametersTitle": "Paramètres",
+    "apiWarningShort": "Service limité",
+    "apiWarning": "La vérification de l’état de l’API a échoué. Certaines fonctionnalités peuvent être temporairement indisponibles. Réessayez dans un instant."
   }
 }

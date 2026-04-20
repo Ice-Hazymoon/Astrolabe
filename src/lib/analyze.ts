@@ -55,7 +55,7 @@ const REAL_PHASES: ReadonlyArray<{ id: PhaseId; target: number }> = [
 export async function analyze(args: AnalyzeArgs): Promise<AnalyzeResponse> {
   const { file, inputDataUrl, options, locale, signal, onProgress, force } = args;
 
-  const useMock = force === 'mock' || (force !== 'api' && cachedStatus === 'offline');
+  const useMock = force === 'mock';
 
   if (useMock) {
     return mockAnalyze(inputDataUrl, options, { signal, onProgress });
@@ -66,15 +66,14 @@ export async function analyze(args: AnalyzeArgs): Promise<AnalyzeResponse> {
 
   try {
     const response = await analyzeViaApi({ file, locale, signal });
+    cachedStatus = 'online';
     ticker.complete();
     return response;
   } catch (err) {
     ticker.cancel();
     if (err instanceof DOMException && err.name === 'AbortError') throw err;
-    // Real call failed (network error, server down) — mark offline and fall back to mock so the
-    // user gets a usable result with feedback rather than a hard failure.
     cachedStatus = 'offline';
-    return mockAnalyze(inputDataUrl, options, { signal, onProgress });
+    throw err;
   }
 }
 

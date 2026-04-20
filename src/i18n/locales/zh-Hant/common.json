@@ -19,6 +19,36 @@
     "apiLabel": "標籤語言",
     "switchAria": "選擇語言"
   },
+  "pwa": {
+    "label": "安裝應用",
+    "statusReady": "安裝應用",
+    "statusManual": "安裝說明",
+    "title": "安裝 Stellaris",
+    "description": "將 Stellaris 安裝到裝置上，可以更快啟動，並獲得更接近原生應用的全螢幕使用體驗。",
+    "nativeReady": "目前瀏覽器已可直接開啟安裝視窗。",
+    "manualTitle": "手動安裝",
+    "manualHint": "如果瀏覽器沒有顯示安裝視窗，可以依照下列步驟手動安裝。",
+    "manualFootnote": "部分 App 內建瀏覽器會隱藏安裝入口，必要時請改用 Safari、Chrome 或 Edge 開啟此頁面。",
+    "buttons": {
+      "install": "立即安裝"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "桌面瀏覽器"
+    },
+    "steps": {
+      "ios1": "請先在 Safari 中開啟此頁面。",
+      "ios2": "點一下分享按鈕，然後選擇「加入主畫面」。",
+      "ios3": "點一下「加入」完成安裝。",
+      "android1": "開啟瀏覽器選單。",
+      "android2": "選擇「安裝應用」或「加入主畫面」。",
+      "android3": "確認安裝。",
+      "desktop1": "開啟瀏覽器選單，或點一下網址列中的安裝圖示。",
+      "desktop2": "選擇「安裝 Stellaris」。",
+      "desktop3": "確認安裝。"
+    }
+  },
   "common": {
     "and": "與",
     "or": "或"

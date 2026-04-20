@@ -225,9 +225,11 @@ export const useSky = create<SkyState>((set, get) => {
           set({ phase: 'preview', abortController: null });
           return;
         }
+        const status = getApiStatus();
         set({
           phase: 'error',
-          error: err instanceof Error ? err.message : null,
+          error: 'generation_failed',
+          apiStatus: status,
           abortController: null,
         });
       }

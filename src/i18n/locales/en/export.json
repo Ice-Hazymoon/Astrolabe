@@ -19,11 +19,15 @@
     "geoUnsupported": "This device does not support geolocation",
     "geoDenied": "Location permission denied",
     "geoFailed": "Location lookup failed, please try again",
-    "exportFailed": "Export failed, please retry"
+    "exportFailed": "Export failed, please retry",
+    "videoUnsupported": "Video export requires a modern browser (Chrome, Edge, or Safari 16.4+).",
+    "videoFailed": "Video export failed, please retry"
   },
   "buttons": {
     "cancel": "Cancel",
     "save": "Save image",
-    "saving": "Generating…"
+    "saving": "Generating…",
+    "saveVideo": "Save video",
+    "savingVideo": "Rendering video… {{pct}}%"
   }
 }

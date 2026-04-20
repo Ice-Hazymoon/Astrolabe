@@ -117,8 +117,8 @@ export function ImageViewer({
             alt=""
             draggable={false}
             aria-hidden
-            className="absolute inset-0 h-full w-full object-cover scale-110 blur-2xl opacity-70 select-none"
-            style={{ filter: 'blur(40px) saturate(1.15)' }}
+            className="absolute inset-0 h-full w-full object-cover scale-110 blur-xl opacity-60 select-none"
+            style={{ filter: 'blur(24px) saturate(1.05)' }}
           />
           <div className="absolute inset-0 bg-[color:var(--color-ink-0)]/35" />
         </div>
@@ -182,7 +182,7 @@ export function ImageViewer({
                   className="absolute inset-0 h-full w-full object-contain select-none pointer-events-none"
                   style={
                     enhance
-                      ? { filter: 'brightness(1.18) contrast(1.18) saturate(1.25)' }
+                      ? { filter: 'brightness(1.06) contrast(1.05) saturate(1.06)' }
                       : undefined
                   }
                 />

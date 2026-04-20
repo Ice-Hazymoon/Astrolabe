@@ -6,6 +6,8 @@
     "closeHistory": "履歴を閉じる",
     "restart": "最初からやり直す",
     "settings": "パラメーター",
-    "parametersTitle": "パラメーター"
+    "parametersTitle": "パラメーター",
+    "apiWarningShort": "サービス制限中",
+    "apiWarning": "API のヘルスチェックに失敗しました。一部の機能は一時的に利用できない可能性があります。しばらくしてからもう一度お試しください。"
   }
 }

@@ -6,6 +6,8 @@
     "closeHistory": "Zamknij historię",
     "restart": "Zacznij od nowa",
     "settings": "Parametry",
-    "parametersTitle": "Parametry"
+    "parametersTitle": "Parametry",
+    "apiWarningShort": "Usługa ograniczona",
+    "apiWarning": "Sprawdzenie stanu API nie powiodło się. Niektóre funkcje mogą być tymczasowo niedostępne. Spróbuj ponownie za chwilę."
   }
 }

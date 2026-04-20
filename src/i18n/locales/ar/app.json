@@ -6,6 +6,8 @@
     "closeHistory": "إغلاق السجل",
     "restart": "ابدأ من جديد",
     "settings": "المعاملات",
-    "parametersTitle": "المعاملات"
+    "parametersTitle": "المعاملات",
+    "apiWarningShort": "الخدمة محدودة",
+    "apiWarning": "فشل فحص صحة واجهة API. قد تتعذر بعض الميزات مؤقتًا. يُرجى المحاولة مرة أخرى بعد قليل."
   }
 }

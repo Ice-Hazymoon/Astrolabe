@@ -42,7 +42,6 @@ export const baseInitOptions = {
   resources,
   supportedLngs: SUPPORTED_CODES,
   fallbackLng,
-  nonExplicitSupportedLngs: true,
   load: 'currentOnly' as const,
   ns: NAMESPACES as unknown as string[],
   defaultNS: 'common',

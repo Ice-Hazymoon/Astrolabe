@@ -1,4 +1,11 @@
-import { SlidersHorizontal, RefreshCw, History } from 'lucide-react';
+import {
+  SlidersHorizontal,
+  RefreshCw,
+  History,
+  Languages,
+  ArrowDownToLine,
+  AlertTriangle,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSky } from '@/state/store';
 import { IconButton } from './ui/IconButton';
@@ -7,15 +14,29 @@ import { cn } from '@/lib/cn';
 
 interface TopbarProps {
   onOpenSettings(): void;
+  onOpenLanguageSettings(): void;
+  onOpenPwaInstall(): void;
   onToggleHistory(): void;
   historyOpen: boolean;
+  showPwaInstall: boolean;
+  installPromptAvailable: boolean;
 }
 
-export function Topbar({ onOpenSettings, onToggleHistory, historyOpen }: TopbarProps) {
-  const { t } = useTranslation('app');
+export function Topbar({
+  onOpenSettings,
+  onOpenLanguageSettings,
+  onOpenPwaInstall,
+  onToggleHistory,
+  historyOpen,
+  showPwaInstall,
+  installPromptAvailable,
+}: TopbarProps) {
+  const { t } = useTranslation(['app', 'common']);
   const phase = useSky((s) => s.phase);
   const reset = useSky((s) => s.reset);
   const historyCount = useSky((s) => s.history.length);
+  const apiStatus = useSky((s) => s.apiStatus);
+  const refreshApi = useSky((s) => s.refreshApi);
 
   return (
     <header className="relative z-30 flex items-center justify-between px-4 sm:px-6 h-[52px] shrink-0 border-b border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-0)]/70 backdrop-blur-xl">
@@ -35,6 +56,22 @@ export function Topbar({ onOpenSettings, onToggleHistory, historyOpen }: TopbarP
       </div>
 
       <div className="flex items-center gap-2">
+        {apiStatus === 'offline' && (
+          <button
+            type="button"
+            onClick={() => void refreshApi()}
+            className={cn(
+              'inline-flex h-8 max-w-[220px] items-center gap-2 rounded-[8px] border px-2.5 text-[11.5px] transition-colors',
+              'border-[color:var(--color-star)]/28 bg-[color:var(--color-star)]/10 text-[color:var(--color-star)]',
+              'hover:bg-[color:var(--color-star)]/14',
+            )}
+            title={t('topbar.apiWarning')}
+            aria-label={t('topbar.apiWarning')}
+          >
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+            <span className="hidden truncate sm:inline">{t('topbar.apiWarningShort')}</span>
+          </button>
+        )}
         <div className="relative">
           <IconButton
             label={historyOpen ? t('topbar.closeHistory') : t('topbar.openHistory')}
@@ -65,6 +102,30 @@ export function Topbar({ onOpenSettings, onToggleHistory, historyOpen }: TopbarP
           disabled={phase === 'idle'}
         >
           <RefreshCw />
+        </IconButton>
+        {showPwaInstall && (
+          <IconButton
+            label={
+              installPromptAvailable ? t('common:pwa.statusReady') : t('common:pwa.statusManual')
+            }
+            variant={installPromptAvailable ? 'subtle' : 'ghost'}
+            size="sm"
+            onClick={onOpenPwaInstall}
+            className={cn(
+              installPromptAvailable && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
+            )}
+          >
+            <ArrowDownToLine />
+          </IconButton>
+        )}
+        <IconButton
+          label={t('common:language.label')}
+          variant="ghost"
+          size="sm"
+          onClick={onOpenLanguageSettings}
+          className="opacity-70 hover:opacity-100"
+        >
+          <Languages />
         </IconButton>
         <IconButton
           label={t('topbar.settings')}

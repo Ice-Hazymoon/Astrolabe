@@ -6,6 +6,8 @@
     "closeHistory": "Zavřít historii",
     "restart": "Začít znovu",
     "settings": "Parametry",
-    "parametersTitle": "Parametry"
+    "parametersTitle": "Parametry",
+    "apiWarningShort": "Služba omezená",
+    "apiWarning": "Kontrola stavu API selhala. Některé funkce mohou být dočasně nedostupné. Zkuste to prosím za chvíli znovu."
   }
 }

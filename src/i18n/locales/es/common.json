@@ -19,6 +19,36 @@
     "apiLabel": "Idioma de las etiquetas",
     "switchAria": "Elegir idioma"
   },
+  "pwa": {
+    "label": "Instalar app",
+    "statusReady": "Instalar app",
+    "statusManual": "Ayuda de instalación",
+    "title": "Instalar Stellaris",
+    "description": "Instala Stellaris para abrirla más rápido, tener compatibilidad offline y disfrutar de un espacio de trabajo en pantalla completa más limpio.",
+    "nativeReady": "Tu navegador ya puede abrir la ventana de instalación.",
+    "manualTitle": "Instalación manual",
+    "manualHint": "Si el navegador no muestra la ventana de instalación, sigue los pasos de abajo.",
+    "manualFootnote": "Algunos navegadores integrados en apps ocultan los controles de instalación. Si hace falta, abre esta página en Safari, Chrome o Edge.",
+    "buttons": {
+      "install": "Instalar app"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "Navegador de escritorio"
+    },
+    "steps": {
+      "ios1": "Abre esta página en Safari.",
+      "ios2": "Toca Compartir y luego Añadir a la pantalla de inicio.",
+      "ios3": "Toca Añadir para terminar la instalación.",
+      "android1": "Abre el menú del navegador.",
+      "android2": "Elige Instalar app o Añadir a la pantalla de inicio.",
+      "android3": "Confirma la instalación.",
+      "desktop1": "Abre el menú del navegador o el icono de instalación en la barra de direcciones.",
+      "desktop2": "Elige Instalar Stellaris.",
+      "desktop3": "Confirma la instalación."
+    }
+  },
   "common": {
     "and": "y",
     "or": "o"

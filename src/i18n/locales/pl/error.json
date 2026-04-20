@@ -1,6 +1,6 @@
 {
-  "title": "Analiza nie powiodła się",
-  "fallbackMessage": "Podczas analizy wystąpił nieoczekiwany błąd",
+  "title": "Generowanie nie powiodło się",
+  "fallbackMessage": "Nie udało się ukończyć tego generowania. Kolejka API może być długa, aktywnych użytkowników może być zbyt wielu albo obliczenie mapy gwiazd może wymagać większej mocy obliczeniowej, niż jest teraz dostępna. Spróbuj ponownie za chwilę.",
   "buttons": {
     "retry": "Spróbuj ponownie",
     "reset": "Zacznij od nowa"

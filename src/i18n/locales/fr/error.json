@@ -1,6 +1,6 @@
 {
-  "title": "Échec de l'analyse",
-  "fallbackMessage": "Une erreur inattendue s'est produite pendant l'analyse",
+  "title": "Échec de la génération",
+  "fallbackMessage": "Cette génération n’a pas pu être terminée. La file d’attente de l’API est peut-être longue, il y a peut-être trop d’utilisateurs simultanés, ou le calcul astrométrique de la carte du ciel demande plus de puissance que ce qui est disponible actuellement. Réessayez dans un instant.",
   "buttons": {
     "retry": "Réessayer",
     "reset": "Recommencer"

@@ -6,6 +6,8 @@
     "closeHistory": "Close history",
     "restart": "Start over",
     "settings": "Parameters",
-    "parametersTitle": "Parameters"
+    "parametersTitle": "Parameters",
+    "apiWarningShort": "Service limited",
+    "apiWarning": "API health check failed. Some features may be temporarily unavailable. Try again in a bit."
   }
 }

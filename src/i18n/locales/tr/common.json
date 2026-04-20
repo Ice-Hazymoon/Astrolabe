@@ -19,6 +19,36 @@
     "apiLabel": "Etiket dili",
     "switchAria": "Dil seçin"
   },
+  "pwa": {
+    "label": "Uygulamayı yükle",
+    "statusReady": "Uygulamayı yükle",
+    "statusManual": "Yükleme yardımı",
+    "title": "Stellaris yükle",
+    "description": "Daha hızlı açılış, çevrimdışı kabuk desteği ve daha temiz bir tam ekran çalışma alanı için Stellaris'i yükleyin.",
+    "nativeReady": "Tarayıcınız şimdi yükleme penceresini açabilir.",
+    "manualTitle": "Elle yükleme",
+    "manualHint": "Tarayıcı yükleme penceresini göstermiyorsa aşağıdaki adımları kullanın.",
+    "manualFootnote": "Bazı uygulama içi tarayıcılar yükleme denetimlerini gizler. Gerekirse bu sayfayı Safari, Chrome veya Edge'de açın.",
+    "buttons": {
+      "install": "Uygulamayı yükle"
+    },
+    "platform": {
+      "ios": "iPhone / iPad",
+      "android": "Android",
+      "desktop": "Masaüstü tarayıcı"
+    },
+    "steps": {
+      "ios1": "Bu sayfayı Safari'de açın.",
+      "ios2": "Paylaş'a dokunun, ardından Ana Ekrana Ekle'yi seçin.",
+      "ios3": "Yüklemeyi tamamlamak için Ekle'ye dokunun.",
+      "android1": "Tarayıcı menüsünü açın.",
+      "android2": "Uygulamayı yükle veya Ana ekrana ekle seçeneğini seçin.",
+      "android3": "Yüklemeyi onaylayın.",
+      "desktop1": "Tarayıcı menüsünü veya adres çubuğundaki yükleme simgesini açın.",
+      "desktop2": "Stellaris yükle'yi seçin.",
+      "desktop3": "Yüklemeyi onaylayın."
+    }
+  },
   "common": {
     "and": "ve",
     "or": "veya"

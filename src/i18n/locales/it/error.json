@@ -1,6 +1,6 @@
 {
-  "title": "Analisi non riuscita",
-  "fallbackMessage": "Si è verificato un errore imprevisto durante l'analisi",
+  "title": "Generazione non riuscita",
+  "fallbackMessage": "Questa generazione non è stata completata. La coda dell'API potrebbe essere lunga, potrebbero esserci troppi utenti attivi contemporaneamente oppure la soluzione astrometrica della mappa stellare potrebbe richiedere più potenza di calcolo di quella attualmente disponibile. Riprova tra poco.",
   "buttons": {
     "retry": "Riprova",
     "reset": "Ricomincia"

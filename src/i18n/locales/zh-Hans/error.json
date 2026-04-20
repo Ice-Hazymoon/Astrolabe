@@ -1,6 +1,6 @@
 {
-  "title": "解算失败",
-  "fallbackMessage": "解算过程中出现未知错误",
+  "title": "生成失败",
+  "fallbackMessage": "本次生成未能完成。当前可能因为 API 队列较长、同时使用人数较多，或星图解算需要较高算力而暂时失败，请稍后再试。",
   "buttons": {
     "retry": "重试",
     "reset": "重新开始"

@@ -1,6 +1,6 @@
 {
-  "title": "Analisis gagal",
-  "fallbackMessage": "Terjadi kesalahan tak terduga selama analisis",
+  "title": "Pembuatan gagal",
+  "fallbackMessage": "Pembuatan ini tidak dapat diselesaikan. Antrean API mungkin sedang panjang, terlalu banyak pengguna yang aktif bersamaan, atau penyelesaian peta bintang mungkin membutuhkan daya komputasi lebih besar daripada yang tersedia saat ini. Coba lagi sebentar lagi.",
   "buttons": {
     "retry": "Coba lagi",
     "reset": "Mulai dari awal"

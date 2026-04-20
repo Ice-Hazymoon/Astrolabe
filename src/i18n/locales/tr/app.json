@@ -6,6 +6,8 @@
     "closeHistory": "Geçmişi kapat",
     "restart": "Baştan başla",
     "settings": "Parametreler",
-    "parametersTitle": "Parametreler"
+    "parametersTitle": "Parametreler",
+    "apiWarningShort": "Hizmet sınırlı",
+    "apiWarning": "API sağlık denetimi başarısız oldu. Bazı özellikler geçici olarak kullanılamıyor olabilir. Lütfen kısa süre sonra tekrar deneyin."
   }
 }

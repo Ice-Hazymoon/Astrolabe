@@ -1,6 +1,6 @@
 {
-  "title": "Analysis failed",
-  "fallbackMessage": "An unexpected error occurred during analysis",
+  "title": "Generation failed",
+  "fallbackMessage": "This generation could not be completed. The API queue may be long, there may be too many active users, or the astrometric solve may need more compute than is currently available. Please try again shortly.",
   "buttons": {
     "retry": "Retry",
     "reset": "Start over"
