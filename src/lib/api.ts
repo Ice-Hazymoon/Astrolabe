@@ -267,6 +267,25 @@ const MAX_DETAIL_REQUEST: OverlayOptions = {
   },
 };
 
+export type AnalyzeErrorCode = 'plate_solve_failed' | 'generation_failed';
+
+/**
+ * Thrown by {@link analyzeViaApi} so the store / view can branch on the
+ * specific failure mode. The backend returns `{ code, error }` with status
+ * 422 for "the image itself can't be plate-solved" (panorama, fisheye, heavy
+ * composite) — which needs a different UX than a generic server hiccup.
+ */
+export class AnalyzeError extends Error {
+  readonly code: AnalyzeErrorCode;
+  readonly status: number;
+  constructor(code: AnalyzeErrorCode, status: number, message: string) {
+    super(message);
+    this.name = 'AnalyzeError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
 export async function analyzeViaApi({ file, locale, signal }: AnalyzeArgs): Promise<AnalyzeResponse> {
   const form = new FormData();
   form.append('image', file, 'upload');
@@ -281,8 +300,16 @@ export async function analyzeViaApi({ file, locale, signal }: AnalyzeArgs): Prom
   });
 
   if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`API ${response.status}: ${text || response.statusText}`);
+    let code: AnalyzeErrorCode = 'generation_failed';
+    let message = response.statusText;
+    try {
+      const body = (await response.json()) as { code?: string; error?: string };
+      if (body?.code === 'plate_solve_failed') code = 'plate_solve_failed';
+      if (body?.error) message = body.error;
+    } catch {
+      // non-JSON body (empty, HTML, etc.) — keep defaults
+    }
+    throw new AnalyzeError(code, response.status, `API ${response.status}: ${message}`);
   }
 
   const raw = (await response.json()) as RawAnalyzeResponse;

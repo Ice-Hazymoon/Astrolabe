@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { AnalyzeResponse, Locale, OverlayOptions, Preset } from '@/types/api';
+import { AnalyzeError } from '@/lib/api';
 import { DEFAULT_LOCALE, DEFAULT_OPTIONS, PRESETS } from '@/data/defaults';
 import { analyze, getApiStatus, refreshApiStatus, type ApiStatus } from '@/lib/analyze';
 import { fileToDataUrl, history, makeThumbnail, type HistoryEntry } from '@/lib/storage';
@@ -226,9 +227,10 @@ export const useSky = create<SkyState>((set, get) => {
           return;
         }
         const status = getApiStatus();
+        const errorCode = err instanceof AnalyzeError ? err.code : 'generation_failed';
         set({
           phase: 'error',
-          error: 'generation_failed',
+          error: errorCode,
           apiStatus: status,
           abortController: null,
         });

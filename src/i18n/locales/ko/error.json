@@ -4,5 +4,41 @@
   "buttons": {
     "retry": "다시 시도",
     "reset": "처음부터 다시"
+  },
+  "plateSolveFailed": {
+    "title": "Couldn't recognize the sky in this image",
+    "message": "The astrometric solver couldn't match any constellations. This usually means the image isn't a single raw exposure of the night sky. A few common causes:",
+    "reasonsHeading": "Likely causes",
+    "reasons": {
+      "panorama": {
+        "title": "Stitched panorama",
+        "detail": "multi-frame panoramas warp star positions so pattern matching fails."
+      },
+      "composite": {
+        "title": "Multi-exposure composite",
+        "detail": "blending sky and foreground from separate shots (e.g. star-tracker + static foreground) distorts the geometry."
+      },
+      "fisheye": {
+        "title": "Fisheye or extreme wide-angle",
+        "detail": "very wide or uncorrected fisheye lenses break the linear projection the solver relies on."
+      },
+      "heavyEditing": {
+        "title": "Heavy post-processing",
+        "detail": "stacked, denoised, or AI-enhanced photos often lose the precise star positions."
+      },
+      "notNightSky": {
+        "title": "Not a night-sky photo",
+        "detail": "screenshots, daytime shots, planetarium renders, or illustrations are not supported."
+      },
+      "tooFewStars": {
+        "title": "Too few stars visible",
+        "detail": "heavy cloud cover, light pollution, or underexposure leaves too few points to match."
+      },
+      "motionBlur": {
+        "title": "Motion blur or star trails",
+        "detail": "long exposures without tracking turn stars into streaks, which the solver can't identify."
+      }
+    },
+    "suggestion": "Try uploading a single unedited exposure of the night sky. If you have a wide panorama, crop out a smaller central region and upload that instead."
   }
 }

@@ -1,6 +1,6 @@
 import type { AnalyzeResponse, Locale, OverlayOptions } from '@/types/api';
 import type { PhaseId } from '@/state/store';
-import { analyzeViaApi, probeApi } from './api';
+import { analyzeViaApi, AnalyzeError, probeApi } from './api';
 import { mockAnalyze } from './mock';
 
 export type ApiStatus = 'unknown' | 'online' | 'offline';
@@ -72,7 +72,14 @@ export async function analyze(args: AnalyzeArgs): Promise<AnalyzeResponse> {
   } catch (err) {
     ticker.cancel();
     if (err instanceof DOMException && err.name === 'AbortError') throw err;
-    cachedStatus = 'offline';
+    // 4xx responses (plate_solve_failed, bad request, etc.) mean the server
+    // reached us and the pipeline ran — API is online. Only transport-level or
+    // 5xx failures imply the API is down.
+    if (err instanceof AnalyzeError && err.status >= 400 && err.status < 500) {
+      cachedStatus = 'online';
+    } else {
+      cachedStatus = 'offline';
+    }
     throw err;
   }
 }
