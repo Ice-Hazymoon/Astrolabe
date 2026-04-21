@@ -1,8 +1,8 @@
 {
   "title": "Your image is ready",
   "description": "Stellaris is a labor of love and free for everyone. If this result made you smile, share it with a fellow stargazer.",
-  "captionWithLocation": "A sky over {{location}} — annotated with Stellaris",
-  "captionDefault": "Stellaris · Star Annotator",
+  "captionWithLocation": "The sky above {{location}} — every star named, every line traced ✦ Stellaris",
+  "captionDefault": "Every star named, every constellation traced ✦ Stellaris — annotate your own sky in seconds",
   "targets": {
     "x": "Share to X",
     "threads": "Share to Threads",
@@ -10,5 +10,10 @@
     "linkedin": "Share to LinkedIn"
   },
   "footerNote": "Every share keeps Stellaris free to grow — thank you for being part of the community.",
-  "madeWith": "Made with"
+  "madeBy": "Made by",
+  "follow": {
+    "title": "Follow us on X",
+    "description": "Get updates on new features and catalog additions.",
+    "cta": "Follow @GetZTools"
+  }
 }

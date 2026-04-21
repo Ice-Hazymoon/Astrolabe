@@ -19,5 +19,18 @@
       "fieldSize": "Поле зору",
       "elapsed": "Час розв’язання"
     }
+  },
+  "actions": {
+    "hide": "Сховати",
+    "show": "Показати",
+    "solo": "Показати лише це",
+    "unsolo": "Показати все"
+  },
+  "filterBar": {
+    "someHidden_one": "приховано: {{count}}",
+    "someHidden_other": "приховано: {{count}}",
+    "clearTab": "Очистити",
+    "resetAll": "Скинути фільтри",
+    "soloing": "Показано лише: {{name}}"
   }
 }

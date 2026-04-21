@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Download, Eye, EyeOff } from 'lucide-react';
+import { Download, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSky } from '@/state/store';
 import type { StripMeta } from '@/lib/composite';
 import { buildScene } from '@/lib/scene';
 import { Button } from './ui/Button';
+import { IconButton } from './ui/IconButton';
 import { ImageViewer } from './ImageViewer';
 import { OverlayCanvas } from './OverlayCanvas';
 import { ResultDetailsSheet } from './ResultDetailsSheet';
@@ -13,10 +14,11 @@ import { ExportDialog } from './ExportDialog';
 import { ShareDialog } from './ShareDialog';
 
 export function ResultView() {
-  const { t } = useTranslation('result');
+  const { t } = useTranslation(['result', 'app']);
   const result = useSky((s) => s.result);
   const current = useSky((s) => s.current);
   const options = useSky((s) => s.options);
+  const reset = useSky((s) => s.reset);
   const [showOriginal, setShowOriginal] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -118,6 +120,16 @@ export function ResultView() {
       >
         {t('export')}
       </Button>
+      <div className="surface rounded-full p-0.5">
+        <IconButton
+          label={t('app:topbar.restart')}
+          variant="ghost"
+          size="sm"
+          onClick={reset}
+        >
+          <RefreshCw />
+        </IconButton>
+      </div>
     </>
   );
 

@@ -52,5 +52,9 @@
   "common": {
     "and": "and",
     "or": "or"
+  },
+  "social": {
+    "followOnX": "Follow us on X",
+    "xHandle": "@GetZTools"
   }
 }

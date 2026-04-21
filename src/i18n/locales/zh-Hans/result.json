@@ -19,5 +19,18 @@
       "fieldSize": "视场范围",
       "elapsed": "解算耗时"
     }
+  },
+  "actions": {
+    "hide": "隐藏",
+    "show": "显示",
+    "solo": "仅显示此项",
+    "unsolo": "显示全部"
+  },
+  "filterBar": {
+    "someHidden_one": "已隐藏 {{count}} 项",
+    "someHidden_other": "已隐藏 {{count}} 项",
+    "clearTab": "清除",
+    "resetAll": "重置筛选",
+    "soloing": "仅显示：{{name}}"
   }
 }

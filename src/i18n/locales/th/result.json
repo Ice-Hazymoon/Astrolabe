@@ -19,5 +19,18 @@
       "fieldSize": "ขอบเขตการมอง",
       "elapsed": "เวลาที่ใช้แก้"
     }
+  },
+  "actions": {
+    "hide": "ซ่อน",
+    "show": "แสดง",
+    "solo": "แสดงเฉพาะรายการนี้",
+    "unsolo": "แสดงทั้งหมด"
+  },
+  "filterBar": {
+    "someHidden_one": "ซ่อน {{count}} รายการ",
+    "someHidden_other": "ซ่อน {{count}} รายการ",
+    "clearTab": "ล้าง",
+    "resetAll": "รีเซ็ตตัวกรอง",
+    "soloing": "แสดงเฉพาะ: {{name}}"
   }
 }

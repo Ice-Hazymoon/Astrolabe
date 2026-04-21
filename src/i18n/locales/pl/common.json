@@ -52,5 +52,9 @@
   "common": {
     "and": "i",
     "or": "lub"
+  },
+  "social": {
+    "followOnX": "Obserwuj nas na X",
+    "xHandle": "@GetZTools"
   }
 }

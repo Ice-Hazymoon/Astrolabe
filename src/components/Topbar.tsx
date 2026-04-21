@@ -1,6 +1,5 @@
 import {
   SlidersHorizontal,
-  RefreshCw,
   History,
   Languages,
   ArrowDownToLine,
@@ -10,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { useSky } from '@/state/store';
 import { IconButton } from './ui/IconButton';
 import { Logo } from './ui/Logo';
+import { XGlyph } from './ui/XGlyph';
 import { cn } from '@/lib/cn';
+
+const FOLLOW_URL = 'https://x.com/GetZTools';
 
 interface TopbarProps {
   onOpenSettings(): void;
@@ -32,11 +34,11 @@ export function Topbar({
   installPromptAvailable,
 }: TopbarProps) {
   const { t } = useTranslation(['app', 'common']);
-  const phase = useSky((s) => s.phase);
-  const reset = useSky((s) => s.reset);
   const historyCount = useSky((s) => s.history.length);
   const apiStatus = useSky((s) => s.apiStatus);
   const refreshApi = useSky((s) => s.refreshApi);
+
+  const followLabel = t('common:social.followOnX');
 
   return (
     <header className="relative z-30 flex items-center justify-between px-4 sm:px-6 h-[52px] shrink-0 border-b border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-0)]/70 backdrop-blur-xl">
@@ -94,15 +96,22 @@ export function Topbar({
             </span>
           )}
         </div>
-        <IconButton
-          label={t('topbar.restart')}
-          variant="ghost"
-          size="sm"
-          onClick={reset}
-          disabled={phase === 'idle'}
+        <a
+          href={FOLLOW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={followLabel}
+          title={followLabel}
+          className={cn(
+            'inline-flex h-8 w-8 items-center justify-center rounded-full',
+            'text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)]',
+            'hover:bg-[color:var(--color-ink-2)]/60',
+            'transition-[background-color,color,transform,filter] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-star)]/60',
+          )}
         >
-          <RefreshCw />
-        </IconButton>
+          <XGlyph className="h-3.5 w-3.5" />
+        </a>
         {showPwaInstall && (
           <IconButton
             label={
@@ -140,3 +149,4 @@ export function Topbar({
     </header>
   );
 }
+

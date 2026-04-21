@@ -10,6 +10,8 @@ import type {
   OverlayTextItem,
   RgbaTuple,
 } from '@/types/api';
+import { useSky } from '@/state/store';
+import { applyDetailsFilters } from '@/lib/detailsFilter';
 
 const FONT_SANS =
   'ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans", "Microsoft YaHei", sans-serif';
@@ -65,9 +67,27 @@ interface OverlayCanvasProps {
   className?: string;
 }
 
-function rgba(tuple: RgbaTuple): string {
+function rgba(tuple: RgbaTuple, alphaScale = 1): string {
   const [r, g, b, a] = tuple;
-  return `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${(a / 255).toFixed(3)})`;
+  const alpha = Math.min(255, a * alphaScale);
+  return `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${(alpha / 255).toFixed(3)})`;
+}
+
+// Visual tuning constants for the overlay — tweaked so lines read crisp and
+// stars feel lively without losing the underlying photograph.
+const LINE_ALPHA_BOOST = 1.45;
+const LINE_WIDTH_BOOST = 1.3;
+// How far to mix constellation-line color toward pure white (0 = server color,
+// 1 = white). Keeps a hint of the source tint while reading cleaner on photos.
+const LINE_WHITEN = 0.6;
+
+function lineStroke(tuple: RgbaTuple): string {
+  const [r, g, b, a] = tuple;
+  const wr = r + (255 - r) * LINE_WHITEN;
+  const wg = g + (255 - g) * LINE_WHITEN;
+  const wb = b + (255 - b) * LINE_WHITEN;
+  const alpha = Math.min(255, a * LINE_ALPHA_BOOST);
+  return `rgba(${wr | 0}, ${wg | 0}, ${wb | 0}, ${(alpha / 255).toFixed(3)})`;
 }
 
 function circlePath(x: number, y: number, r: number): string {
@@ -128,8 +148,8 @@ const Lines = memo(function Lines({
             y1={s.y1}
             x2={s.x2}
             y2={s.y2}
-            stroke={rgba(s.rgba)}
-            strokeWidth={s.line_width}
+            stroke={lineStroke(s.rgba)}
+            strokeWidth={s.line_width * LINE_WIDTH_BOOST}
             strokeLinecap="round"
           />
         ))}
@@ -146,8 +166,8 @@ const Lines = memo(function Lines({
           y1={s.y1}
           x2={s.x2}
           y2={s.y2}
-          stroke={rgba(s.rgba)}
-          strokeWidth={s.line_width}
+          stroke={lineStroke(s.rgba)}
+          strokeWidth={s.line_width * LINE_WIDTH_BOOST}
           strokeLinecap="round"
           initial={animate ? { pathLength: 0, opacity: 0 } : false}
           animate={animate ? { pathLength: 1, opacity: 1 } : undefined}
@@ -247,8 +267,8 @@ const StarMarkers = memo(function StarMarkers({
                 r={haloR}
                 fill="none"
                 stroke={rgba(m.fill_rgba)}
-                strokeOpacity={0.45}
-                strokeWidth={1.2}
+                strokeOpacity={0.7}
+                strokeWidth={1.6}
               />
               <circle
                 cx={m.x}
@@ -256,7 +276,7 @@ const StarMarkers = memo(function StarMarkers({
                 r={ringR}
                 fill="none"
                 stroke={rgba(m.outline_rgba)}
-                strokeWidth={1.4}
+                strokeWidth={1.8}
               />
             </g>
           );
@@ -278,13 +298,25 @@ const StarMarkers = memo(function StarMarkers({
               cy={m.y}
               fill="none"
               stroke={rgba(m.fill_rgba)}
-              strokeOpacity={0.45}
-              strokeWidth={1.2}
-              initial={animate ? { r: 0, opacity: 0 } : false}
-              animate={animate ? { r: haloR, opacity: 1 } : { r: haloR }}
+              strokeWidth={1.6}
+              initial={animate ? { r: 0, opacity: 0, strokeOpacity: 0 } : false}
+              animate={
+                animate
+                  ? {
+                      r: [0, haloR * 1.35, haloR],
+                      opacity: [0, 1, 1],
+                      strokeOpacity: [0, 1, 0.7],
+                    }
+                  : { r: haloR, strokeOpacity: 0.7 }
+              }
               transition={
                 animate
-                  ? { duration: 1.1, delay, ease: [0.22, 1, 0.36, 1] }
+                  ? {
+                      duration: 1.15,
+                      delay,
+                      times: [0, 0.55, 1],
+                      ease: [0.22, 1, 0.36, 1],
+                    }
                   : undefined
               }
             />
@@ -293,12 +325,21 @@ const StarMarkers = memo(function StarMarkers({
               cy={m.y}
               fill="none"
               stroke={rgba(m.outline_rgba)}
-              strokeWidth={1.4}
+              strokeWidth={1.8}
               initial={animate ? { r: 0, opacity: 0 } : false}
-              animate={animate ? { r: ringR, opacity: 1 } : { r: ringR }}
+              animate={
+                animate
+                  ? { r: [0, ringR * 1.25, ringR], opacity: [0, 1, 1] }
+                  : { r: ringR }
+              }
               transition={
                 animate
-                  ? { duration: 0.84, delay: delay + 0.12, ease: [0.22, 1, 0.36, 1] }
+                  ? {
+                      duration: 0.95,
+                      delay: delay + 0.1,
+                      times: [0, 0.55, 1],
+                      ease: [0.22, 1, 0.36, 1],
+                    }
                   : undefined
               }
             />
@@ -486,21 +527,23 @@ export const OverlayCanvas = memo(function OverlayCanvas({
   className,
 }: OverlayCanvasProps) {
   const { t } = useTranslation('viewer');
-  const { image_width: W, image_height: H } = scene;
+  const filters = useSky((s) => s.detailsFilters);
+  const filteredScene = useMemo(() => applyDetailsFilters(scene, filters), [scene, filters]);
+  const { image_width: W, image_height: H } = filteredScene;
   const clipId = `overlay-clip-${W}x${H}`;
 
   const visible = useMemo(
     () => ({
-      lines: layers.constellation_lines ? scene.constellation_lines : [],
-      constLabels: layers.constellation_labels ? scene.constellation_labels : [],
-      stars: layers.star_markers ? scene.star_markers : [],
-      starLabels: layers.star_labels ? scene.star_labels : [],
-      dsos: layers.deep_sky_markers ? scene.deep_sky_markers : [],
+      lines: layers.constellation_lines ? filteredScene.constellation_lines : [],
+      constLabels: layers.constellation_labels ? filteredScene.constellation_labels : [],
+      stars: layers.star_markers ? filteredScene.star_markers : [],
+      starLabels: layers.star_labels ? filteredScene.star_labels : [],
+      dsos: layers.deep_sky_markers ? filteredScene.deep_sky_markers : [],
       // Labels follow their parent marker — turning markers off also hides their names.
       dsoLabels:
-        layers.deep_sky_markers && layers.deep_sky_labels ? scene.deep_sky_labels : [],
+        layers.deep_sky_markers && layers.deep_sky_labels ? filteredScene.deep_sky_labels : [],
     }),
-    [scene, layers],
+    [filteredScene, layers],
   );
 
   return (
@@ -533,23 +576,25 @@ export const OverlayCanvas = memo(function OverlayCanvas({
           height="140%"
           filterUnits="objectBoundingBox"
         >
-          <feGaussianBlur stdDeviation="2.2" result="blur" />
+          <feGaussianBlur stdDeviation="1.2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        {/* Tighter bloom for star rings. */}
+        {/* Brighter bloom for star rings so they pop against the photograph. */}
         <filter
           id="overlay-star-glow"
-          x="-20%"
-          y="-20%"
-          width="140%"
-          height="140%"
+          x="-30%"
+          y="-30%"
+          width="160%"
+          height="160%"
           filterUnits="objectBoundingBox"
         >
-          <feGaussianBlur stdDeviation="1.4" result="blur" />
+          <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
+            <feMergeNode in="blur" />
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>

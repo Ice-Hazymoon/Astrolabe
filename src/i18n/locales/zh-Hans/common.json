@@ -52,5 +52,9 @@
   "common": {
     "and": "与",
     "or": "或"
+  },
+  "social": {
+    "followOnX": "关注我们的 X",
+    "xHandle": "@GetZTools"
   }
 }

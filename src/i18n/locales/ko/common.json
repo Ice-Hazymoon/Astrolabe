@@ -52,5 +52,9 @@
   "common": {
     "and": "및",
     "or": "또는"
+  },
+  "social": {
+    "followOnX": "X에서 팔로우",
+    "xHandle": "@GetZTools"
   }
 }

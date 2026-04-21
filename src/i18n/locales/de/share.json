@@ -1,8 +1,8 @@
 {
   "title": "Dein Bild ist bereit",
   "description": "Stellaris ist ein Herzensprojekt und kostenlos für alle. Wenn dich dieses Ergebnis zum Lächeln bringt, teile es mit einem Sternengucker.",
-  "captionWithLocation": "Ein Himmel über {{location}} — beschriftet mit Stellaris",
-  "captionDefault": "Stellaris · Sternbeschriftung",
+  "captionWithLocation": "Der Himmel über {{location}} — jeder Stern hat einen Namen, jedes Sternbild eine Linie ✦ Stellaris",
+  "captionDefault": "Jeder Stern benannt, jedes Sternbild gezeichnet ✦ Stellaris · dein eigener Himmel in Sekunden",
   "targets": {
     "x": "Auf X teilen",
     "threads": "Auf Threads teilen",
@@ -10,5 +10,10 @@
     "linkedin": "Auf LinkedIn teilen"
   },
   "footerNote": "Jeder Beitrag hält Stellaris kostenlos am Leben — danke, dass du Teil der Community bist.",
-  "madeWith": "Erstellt mit"
+  "madeBy": "Erstellt von",
+  "follow": {
+    "title": "Folge uns auf X",
+    "description": "Erhalte Updates zu neuen Funktionen und Katalogerweiterungen.",
+    "cta": "@GetZTools folgen"
+  }
 }

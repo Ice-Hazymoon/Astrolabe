@@ -41,12 +41,12 @@ export function ProcessingView() {
 
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <motion.div
-            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[color:var(--color-star)]/15 to-transparent"
-            animate={{ x: ['-50%', '250%'] }}
+            className="absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-[color:var(--color-star)]/15 to-transparent"
+            animate={{ x: ['0%', '500%'] }}
             transition={{
-              duration: 2.4,
+              duration: 2.8,
               repeat: Infinity,
-              ease: [0.65, 0, 0.35, 1],
+              ease: 'linear',
             }}
           />
         </div>

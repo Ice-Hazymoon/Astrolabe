@@ -1,8 +1,8 @@
 {
   "title": "作品已就緒",
   "description": "Stellaris 是一個用愛製作的免費專案。如果你喜歡這張作品，把它分享給同好吧。",
-  "captionWithLocation": "一張來自 {{location}} 的星空 — Stellaris 解算",
-  "captionDefault": "Stellaris · 星空標註",
+  "captionWithLocation": "{{location}} 的這片夜空，每顆星都被認了出來 ✦ Stellaris 為你解算星圖",
+  "captionDefault": "每一顆星都找到了名字，每一條星座線都被連了起來 ✦ Stellaris · 幾秒鐘標註你的星空",
   "targets": {
     "x": "分享至 X",
     "threads": "分享至 Threads",
@@ -10,5 +10,10 @@
     "linkedin": "分享至 LinkedIn"
   },
   "footerNote": "每一次分享都讓 Stellaris 自由生長 —— 感謝你成為社群的一份子。",
-  "madeWith": "Made with"
+  "madeBy": "製作",
+  "follow": {
+    "title": "關注我們的 X",
+    "description": "掌握新功能與星表更新的第一手消息。",
+    "cta": "關注 @GetZTools"
+  }
 }

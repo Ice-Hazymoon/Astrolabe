@@ -19,5 +19,18 @@
       "fieldSize": "Field of view",
       "elapsed": "Solve time"
     }
+  },
+  "actions": {
+    "hide": "Hide",
+    "show": "Show",
+    "solo": "Show only this",
+    "unsolo": "Show all"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} hidden",
+    "someHidden_other": "{{count}} hidden",
+    "clearTab": "Clear",
+    "resetAll": "Reset filters",
+    "soloing": "Showing only: {{name}}"
   }
 }

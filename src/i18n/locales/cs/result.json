@@ -19,5 +19,18 @@
       "fieldSize": "Zorné pole",
       "elapsed": "Čas řešení"
     }
+  },
+  "actions": {
+    "hide": "Skrýt",
+    "show": "Zobrazit",
+    "solo": "Zobrazit jen toto",
+    "unsolo": "Zobrazit vše"
+  },
+  "filterBar": {
+    "someHidden_one": "skryto: {{count}}",
+    "someHidden_other": "skryto: {{count}}",
+    "clearTab": "Vymazat",
+    "resetAll": "Obnovit filtry",
+    "soloing": "Zobrazuje se jen: {{name}}"
   }
 }

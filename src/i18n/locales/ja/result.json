@@ -19,5 +19,18 @@
       "fieldSize": "視野範囲",
       "elapsed": "解析時間"
     }
+  },
+  "actions": {
+    "hide": "非表示",
+    "show": "表示",
+    "solo": "これだけ表示",
+    "unsolo": "すべて表示"
+  },
+  "filterBar": {
+    "someHidden_one": "非表示 {{count}} 件",
+    "someHidden_other": "非表示 {{count}} 件",
+    "clearTab": "クリア",
+    "resetAll": "フィルターをリセット",
+    "soloing": "表示中: {{name}} のみ"
   }
 }

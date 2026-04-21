@@ -1,8 +1,8 @@
 {
   "title": "صورتك جاهزة",
   "description": "Stellaris عمل من القلب ومجاني للجميع. إذا رسمت هذه النتيجة ابتسامة على وجهك، فشاركها مع محبّي النجوم.",
-  "captionWithLocation": "سماء فوق {{location}} — موضّحة باستخدام Stellaris",
-  "captionDefault": "Stellaris · أداة توضيح النجوم",
+  "captionWithLocation": "السماء فوق {{location}} — كل نجم بات معروفًا باسمه ✦ Stellaris",
+  "captionDefault": "كل نجم يحمل اسمه، وكل كوكبة تتشكّل بخطوطها ✦ Stellaris · وضّح سماءك في ثوانٍ",
   "targets": {
     "x": "مشاركة على X",
     "threads": "مشاركة على Threads",
@@ -10,5 +10,10 @@
     "linkedin": "مشاركة على LinkedIn"
   },
   "footerNote": "كل مشاركة تساعد Stellaris على البقاء مجانيًا والنمو — شكرًا لكونك جزءًا من المجتمع.",
-  "madeWith": "صُنع بـ"
+  "madeBy": "من إنتاج",
+  "follow": {
+    "title": "تابعونا على X",
+    "description": "تابع آخر المزايا والإضافات إلى الكتالوج.",
+    "cta": "تابع @GetZTools"
+  }
 }

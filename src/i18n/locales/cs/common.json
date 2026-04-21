@@ -52,5 +52,9 @@
   "common": {
     "and": "a",
     "or": "nebo"
+  },
+  "social": {
+    "followOnX": "Sledujte nás na X",
+    "xHandle": "@GetZTools"
   }
 }

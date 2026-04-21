@@ -52,5 +52,9 @@
   "common": {
     "and": "ve",
     "or": "veya"
+  },
+  "social": {
+    "followOnX": "Bizi X'te takip et",
+    "xHandle": "@GetZTools"
   }
 }

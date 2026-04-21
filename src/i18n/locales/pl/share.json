@@ -1,8 +1,8 @@
 {
   "title": "Twój obraz jest gotowy",
   "description": "Stellaris powstaje z pasji i jest bezpłatny dla każdego. Jeśli wynik Cię ucieszył, podziel się nim z innymi miłośnikami gwiazd.",
-  "captionWithLocation": "Niebo nad {{location}} — z adnotacjami Stellaris",
-  "captionDefault": "Stellaris · Anotator gwiazd",
+  "captionWithLocation": "Niebo nad {{location}} — każda gwiazda ma imię, każda konstelacja linię ✦ Stellaris",
+  "captionDefault": "Każda gwiazda z imieniem, każda konstelacja połączona ✦ Stellaris · opisz własne niebo w kilka sekund",
   "targets": {
     "x": "Udostępnij na X",
     "threads": "Udostępnij na Threads",
@@ -10,5 +10,10 @@
     "linkedin": "Udostępnij na LinkedIn"
   },
   "footerNote": "Każde udostępnienie pomaga Stellaris pozostać bezpłatnym — dziękujemy, że jesteś częścią społeczności.",
-  "madeWith": "Stworzono z"
+  "madeBy": "Stworzone przez",
+  "follow": {
+    "title": "Obserwuj nas na X",
+    "description": "Bądź na bieżąco z nowymi funkcjami i dodatkami do katalogu.",
+    "cta": "Obserwuj @GetZTools"
+  }
 }

@@ -19,5 +19,18 @@
       "fieldSize": "視場範圍",
       "elapsed": "解算耗時"
     }
+  },
+  "actions": {
+    "hide": "隱藏",
+    "show": "顯示",
+    "solo": "僅顯示此項",
+    "unsolo": "顯示全部"
+  },
+  "filterBar": {
+    "someHidden_one": "已隱藏 {{count}} 項",
+    "someHidden_other": "已隱藏 {{count}} 項",
+    "clearTab": "清除",
+    "resetAll": "重設篩選",
+    "soloing": "僅顯示：{{name}}"
   }
 }

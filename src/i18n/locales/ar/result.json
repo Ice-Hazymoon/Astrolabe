@@ -19,5 +19,18 @@
       "fieldSize": "مجال الرؤية",
       "elapsed": "زمن الحل"
     }
+  },
+  "actions": {
+    "hide": "إخفاء",
+    "show": "إظهار",
+    "solo": "عرض هذا فقط",
+    "unsolo": "عرض الكل"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} مخفي",
+    "someHidden_other": "{{count}} مخفي",
+    "clearTab": "مسح",
+    "resetAll": "إعادة تعيين المرشحات",
+    "soloing": "عرض فقط: {{name}}"
   }
 }

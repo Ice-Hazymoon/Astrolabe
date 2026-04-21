@@ -1,12 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { IconButton } from './ui/IconButton';
 import { Logo } from './ui/Logo';
+import { XGlyph } from './ui/XGlyph';
 import { cn } from '@/lib/cn';
-import { SITE_HOST, SITE_URL, resolveOrigin } from '@/lib/config';
+import { SITE_URL, resolveOrigin } from '@/lib/config';
 import type { StripMeta } from '@/lib/composite';
+
+const CREATOR_URL = 'https://z.tools';
+const CREATOR_NAME = 'z.tools';
+const FOLLOW_URL = 'https://x.com/GetZTools';
 
 interface ShareDialogProps {
   open: boolean;
@@ -42,13 +47,6 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
   // Prefer the live browser origin (so staging deploys self-link), falling back
   // to the build-time config and finally the canonical production URL.
   const siteUrl = resolveOrigin() || SITE_URL;
-  const siteHost = (() => {
-    try {
-      return new URL(siteUrl).host;
-    } catch {
-      return SITE_HOST;
-    }
-  })();
 
   const caption = meta?.locationName
     ? t('share:captionWithLocation', { location: meta.locationName })
@@ -59,7 +57,7 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
       id: 'x',
       label: t('share:targets.x'),
       href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}&url=${encodeURIComponent(siteUrl)}`,
-      icon: <XBrand />,
+      icon: <XGlyph className="h-[18px] w-[18px]" />,
     },
     {
       id: 'threads',
@@ -141,6 +139,38 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
                   ))}
                 </div>
 
+                <a
+                  href={FOLLOW_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t('share:follow.title')}
+                  className={cn(
+                    'group relative flex items-center gap-3 rounded-[var(--radius-md)] pl-4 pr-3 py-2.5',
+                    'border border-[color:var(--color-line-soft)] bg-[color:var(--color-star)]/[0.06]',
+                    'border-l-2 border-l-[color:var(--color-star)]/70',
+                    'transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                    'hover:bg-[color:var(--color-star)]/[0.10] hover:border-[color:var(--color-line)]',
+                    'active:scale-[0.995]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-star)]/60',
+                  )}
+                >
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--color-ink-0)]/60 border border-[color:var(--color-line-soft)] text-[color:var(--color-text)] shrink-0">
+                    <XGlyph className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="flex flex-col min-w-0 flex-1">
+                    <span className="text-[13.5px] font-medium text-[color:var(--color-text)] tracking-tight leading-tight">
+                      {t('share:follow.title')}
+                    </span>
+                    <span className="text-[11.5px] text-[color:var(--color-text-muted)] leading-tight mt-0.5">
+                      {t('common:social.xHandle')}
+                    </span>
+                  </span>
+                  <ArrowUpRight
+                    className="h-4 w-4 text-[color:var(--color-text-muted)] group-hover:text-[color:var(--color-text-soft)] shrink-0 transition-colors"
+                    strokeWidth={2}
+                  />
+                </a>
+
                 <div className="rounded-[var(--radius-md)] border border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-0)]/45 px-4 py-3">
                   <p className="text-[12.5px] text-[color:var(--color-text-soft)] leading-relaxed">
                     {t('share:footerNote')}
@@ -148,15 +178,15 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
                 </div>
 
                 <footer className="pt-2 border-t border-[color:var(--color-line-soft)]/60 flex items-center justify-center gap-1.5 text-[11.5px] text-[color:var(--color-text-muted)]">
-                  <span>{t('share:madeWith')}</span>
+                  <span>{t('share:madeBy')}</span>
                   <span aria-hidden className="text-[color:var(--color-star)]">✦</span>
                   <a
-                    href={siteUrl}
+                    href={CREATOR_URL}
                     target="_blank"
                     rel="noreferrer"
                     className="underline underline-offset-2 decoration-[color:var(--color-line)] hover:text-[color:var(--color-text-soft)] transition-colors"
                   >
-                    {siteHost}
+                    {CREATOR_NAME}
                   </a>
                 </footer>
               </div>
@@ -200,14 +230,6 @@ function ShareRow({ label, href, icon }: ShareTarget) {
 }
 
 // --- Brand marks (minimal monochrome, tuned to pair with the lucide icon set)
-
-function XBrand() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z" />
-    </svg>
-  );
-}
 
 function ThreadsBrand() {
   // Minimal approximation of the Threads "@-spiral" mark — we keep it mono-line

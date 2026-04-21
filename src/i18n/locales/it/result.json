@@ -19,5 +19,18 @@
       "fieldSize": "Campo visivo",
       "elapsed": "Tempo di risoluzione"
     }
+  },
+  "actions": {
+    "hide": "Nascondi",
+    "show": "Mostra",
+    "solo": "Mostra solo questo",
+    "unsolo": "Mostra tutto"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} nascosto",
+    "someHidden_other": "{{count}} nascosti",
+    "clearTab": "Cancella",
+    "resetAll": "Reimposta filtri",
+    "soloing": "Visualizzazione solo: {{name}}"
   }
 }

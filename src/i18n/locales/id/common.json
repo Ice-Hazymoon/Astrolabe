@@ -52,5 +52,9 @@
   "common": {
     "and": "dan",
     "or": "atau"
+  },
+  "social": {
+    "followOnX": "Ikuti kami di X",
+    "xHandle": "@GetZTools"
   }
 }

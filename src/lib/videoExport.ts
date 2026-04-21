@@ -8,7 +8,9 @@
  */
 
 import type { OverlayOptions, OverlayScene } from '../types/api';
+import type { DetailsFilters } from '../state/store';
 import { buildStripSvg, stripHeightFor, type StripMeta } from './composite';
+import { applyDetailsFilters } from './detailsFilter';
 import {
   prerenderLabel,
   type LabelBitmap,
@@ -20,6 +22,17 @@ import type {
   VideoWorkerStartMessage,
 } from './videoWorker';
 
+// "No filter active" sentinel — same pattern as composite.ts so callers that
+// don't pass filters get an identity-return fast path in applyDetailsFilters.
+const NO_FILTERS: DetailsFilters = {
+  starsHidden: new Set<string>(),
+  starSolo: null,
+  constellationsHidden: new Set<string>(),
+  constellationSolo: null,
+  dsosHidden: new Set<string>(),
+  dsoSolo: null,
+};
+
 // ---------- Public API ----------
 
 export interface VideoExportOptions {
@@ -27,6 +40,11 @@ export interface VideoExportOptions {
   scene: OverlayScene;
   layers: OverlayOptions['layers'];
   meta: StripMeta;
+  /**
+   * Per-item visibility filters (hide / solo) mirroring the ResultDetailsSheet.
+   * Optional — when absent, all items in `scene` are rendered.
+   */
+  filters?: DetailsFilters;
   /** Max output width in px. Height scales to preserve aspect. Default 1920 (1080p). */
   maxWidth?: number;
   /** Frames per second. Default 30. */
@@ -80,10 +98,15 @@ export async function exportAnnotatedVideo(
 
   const fps = opts.fps ?? 30;
 
+  // Apply per-item hide/solo filters once, up-front. Downstream steps
+  // (label prerender, worker start message) all consume this filtered scene
+  // so the rendered MP4 mirrors what the live viewer paints.
+  const scene = applyDetailsFilters(opts.scene, opts.filters ?? NO_FILTERS);
+
   // --- 1. Load inputs, pick sizes ---------------------------------------
   const photoImg = await loadImage(opts.imageSrc);
-  const srcW = opts.scene.image_width > 0 ? opts.scene.image_width : photoImg.naturalWidth;
-  const srcH = opts.scene.image_height > 0 ? opts.scene.image_height : photoImg.naturalHeight;
+  const srcW = scene.image_width > 0 ? scene.image_width : photoImg.naturalWidth;
+  const srcH = scene.image_height > 0 ? scene.image_height : photoImg.naturalHeight;
   if (!srcW || !srcH) throw new Error('missing image dimensions');
 
   const maxW = opts.maxWidth ?? 1920;
@@ -117,7 +140,7 @@ export async function exportAnnotatedVideo(
   }
 
   // --- 3. Pre-rasterize labels (main thread — fonts are here) -----------
-  const labels = await prerenderAllLabels(opts.scene, opts.layers, opts.signal);
+  const labels = await prerenderAllLabels(scene, opts.layers, opts.signal);
 
   if (opts.signal?.aborted) {
     releaseBitmaps(labels, photoBitmap, stripBitmap);
@@ -172,7 +195,7 @@ export async function exportAnnotatedVideo(
     type: 'start',
     photo: photoBitmap,
     strip: stripBitmap,
-    scene: opts.scene,
+    scene,
     layers: opts.layers,
     labels,
     outW,

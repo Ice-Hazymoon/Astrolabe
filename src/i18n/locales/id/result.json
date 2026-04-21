@@ -19,5 +19,18 @@
       "fieldSize": "Bidang pandang",
       "elapsed": "Waktu pemecahan"
     }
+  },
+  "actions": {
+    "hide": "Sembunyikan",
+    "show": "Tampilkan",
+    "solo": "Tampilkan hanya ini",
+    "unsolo": "Tampilkan semua"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} tersembunyi",
+    "someHidden_other": "{{count}} tersembunyi",
+    "clearTab": "Bersihkan",
+    "resetAll": "Atur ulang filter",
+    "soloing": "Hanya menampilkan: {{name}}"
   }
 }

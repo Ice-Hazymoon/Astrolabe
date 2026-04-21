@@ -7,18 +7,37 @@ import type {
   OverlayTextItem,
   RgbaTuple,
 } from '../types/api';
+import type { DetailsFilters } from '../state/store';
+import { applyDetailsFilters } from './detailsFilter';
 import { logoSvgMarkup } from './logoMarkup';
+
+// Shared "no filter active" sentinel so callers that haven't wired filters yet
+// (and our own default-arg path) skip the filtering step with a single
+// identity-compare inside applyDetailsFilters — no new allocations.
+const NO_FILTERS: DetailsFilters = {
+  starsHidden: new Set<string>(),
+  starSolo: null,
+  constellationsHidden: new Set<string>(),
+  constellationSolo: null,
+  dsosHidden: new Set<string>(),
+  dsoSolo: null,
+};
 
 /**
  * Rasterize the original image + the current overlay scene into a single PNG blob URL.
  * Canvas is sized to the scene's native dimensions (which match the uploaded image),
  * so the exported PNG preserves the user's original resolution and aspect ratio —
  * only the overlay layer is added.
+ *
+ * `filters` (optional) hides/solos individual stars/constellations/DSOs so the
+ * export mirrors what the live viewer paints. Uses the same rules as
+ * OverlayCanvas — see `applyDetailsFilters` in `detailsFilter.ts`.
  */
 export async function composeAnnotated(
   imageSrc: string,
   scene: OverlayScene,
   layers: OverlayOptions['layers'],
+  filters: DetailsFilters = NO_FILTERS,
 ): Promise<string> {
   const img = await loadImage(imageSrc);
   const width = scene.image_width > 0 ? scene.image_width : img.naturalWidth;
@@ -33,7 +52,11 @@ export async function composeAnnotated(
 
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-  const markup = buildOverlaySvg({ ...scene, image_width: width, image_height: height }, layers);
+  const filteredScene = applyDetailsFilters(scene, filters);
+  const markup = buildOverlaySvg(
+    { ...filteredScene, image_width: width, image_height: height },
+    layers,
+  );
   const svgUrl = svgToObjectUrl(markup);
   try {
     const svgImg = await loadImage(svgUrl);
@@ -85,6 +108,7 @@ export async function composeAnnotatedWithStrip(
   scene: OverlayScene,
   layers: OverlayOptions['layers'],
   meta: StripMeta,
+  filters: DetailsFilters = NO_FILTERS,
 ): Promise<string> {
   const img = await loadImage(imageSrc);
   const W = scene.image_width > 0 ? scene.image_width : img.naturalWidth;
@@ -102,8 +126,14 @@ export async function composeAnnotatedWithStrip(
   // Photo
   ctx.drawImage(img, 0, 0, W, H);
 
-  // Overlay layer (same SVG the live viewer paints)
-  const overlay = buildOverlaySvg({ ...scene, image_width: W, image_height: H }, layers);
+  // Overlay layer (same SVG the live viewer paints). Apply per-item visibility
+  // filters so the export mirrors the user's hide/solo selections in the
+  // ResultDetailsSheet — see applyDetailsFilters / OverlayCanvas.
+  const filteredScene = applyDetailsFilters(scene, filters);
+  const overlay = buildOverlaySvg(
+    { ...filteredScene, image_width: W, image_height: H },
+    layers,
+  );
   const overlayUrl = svgToObjectUrl(overlay);
   try {
     const overlayImg = await loadImage(overlayUrl);
@@ -643,9 +673,25 @@ async function ensureFontsReady(): Promise<void> {
 
 // --- SVG construction -------------------------------------------------------
 
-function rgba(t: RgbaTuple): string {
+function rgba(t: RgbaTuple, alphaScale = 1): string {
   const [r, g, b, a] = t;
-  return `rgba(${r | 0},${g | 0},${b | 0},${(a / 255).toFixed(3)})`;
+  const alpha = Math.min(255, a * alphaScale);
+  return `rgba(${r | 0},${g | 0},${b | 0},${(alpha / 255).toFixed(3)})`;
+}
+
+// Must stay in lockstep with OverlayCanvas — the export is meant to mirror
+// what the live viewer paints. If you tune one, tune the other.
+const LINE_ALPHA_BOOST = 1.45;
+const LINE_WIDTH_BOOST = 1.3;
+const LINE_WHITEN = 0.6;
+
+function lineStroke(tuple: RgbaTuple): string {
+  const [r, g, b, a] = tuple;
+  const wr = r + (255 - r) * LINE_WHITEN;
+  const wg = g + (255 - g) * LINE_WHITEN;
+  const wb = b + (255 - b) * LINE_WHITEN;
+  const alpha = Math.min(255, a * LINE_ALPHA_BOOST);
+  return `rgba(${wr | 0},${wg | 0},${wb | 0},${(alpha / 255).toFixed(3)})`;
 }
 
 function esc(value: string): string {
@@ -769,7 +815,7 @@ function deepSkyPath(m: OverlayDeepSkyMarker): string {
 function renderLine(s: OverlayLineSegment): string {
   return (
     `<line x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}" ` +
-    `stroke="${rgba(s.rgba)}" stroke-width="${s.line_width}" stroke-linecap="round" />`
+    `stroke="${lineStroke(s.rgba)}" stroke-width="${(s.line_width * LINE_WIDTH_BOOST).toFixed(2)}" stroke-linecap="round" />`
   );
 }
 
@@ -789,9 +835,9 @@ function renderStar(m: OverlayStarMarker): string {
   const haloR = m.radius + 5.2;
   return (
     `<circle cx="${m.x}" cy="${m.y}" r="${haloR}" fill="none" ` +
-    `stroke="${rgba(m.fill_rgba)}" stroke-opacity="0.45" stroke-width="1.2" />` +
+    `stroke="${rgba(m.fill_rgba)}" stroke-opacity="0.7" stroke-width="1.6" />` +
     `<circle cx="${m.x}" cy="${m.y}" r="${ringR}" fill="none" ` +
-    `stroke="${rgba(m.outline_rgba)}" stroke-width="1.4" />`
+    `stroke="${rgba(m.outline_rgba)}" stroke-width="1.8" />`
   );
 }
 
@@ -882,12 +928,12 @@ function buildOverlaySvg(scene: OverlayScene, layers: OverlayOptions['layers']):
       `<clipPath id="overlay-clip"><rect x="0" y="0" width="${W}" height="${H}" /></clipPath>` +
       // Match the live overlay's filters so the exported image carries the same bloom.
       `<filter id="overlay-line-glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">` +
-      `<feGaussianBlur stdDeviation="2.2" result="blur" />` +
-      `<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>` +
+      `<feGaussianBlur stdDeviation="1.2" result="blur" />` +
+      `<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /><feMergeNode in="SourceGraphic" /></feMerge>` +
       `</filter>` +
-      `<filter id="overlay-star-glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">` +
-      `<feGaussianBlur stdDeviation="1.4" result="blur" />` +
-      `<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>` +
+      `<filter id="overlay-star-glow" x="-30%" y="-30%" width="160%" height="160%" filterUnits="objectBoundingBox">` +
+      `<feGaussianBlur stdDeviation="2" result="blur" />` +
+      `<feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>` +
       `</filter>` +
       `</defs>`,
   );

@@ -16,6 +16,7 @@ import {
 } from '@/lib/videoExport';
 import { reverseLookup, searchPlaces, type NominatimHit } from '@/lib/nominatim';
 import { SITE_HOST, SITE_NAME } from '@/lib/config';
+import { useSky } from '@/state/store';
 import { Button } from './ui/Button';
 import { IconButton } from './ui/IconButton';
 import { OverlayCanvas } from './OverlayCanvas';
@@ -72,6 +73,10 @@ export function ExportDialog({
   result,
 }: ExportDialogProps) {
   const { t, i18n } = useTranslation(['export', 'common', 'result']);
+  // Mirror the live overlay's per-item hide/solo selections in the exported PNG.
+  // Read through the store so updates made while the dialog is open re-bind on
+  // the next save click without needing the parent to re-thread props.
+  const detailsFilters = useSky((s) => s.detailsFilters);
   const [locationName, setLocationName] = useState('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
@@ -308,7 +313,7 @@ export function ExportDialog({
     setSaving(true);
     setSavingError(null);
     try {
-      const href = await composeAnnotatedWithStrip(imageSrc, scene, layers, meta);
+      const href = await composeAnnotatedWithStrip(imageSrc, scene, layers, meta, detailsFilters);
       const anchor = document.createElement('a');
       anchor.href = href;
       anchor.download = `stellaris-${Date.now()}.png`;
@@ -335,6 +340,7 @@ export function ExportDialog({
         scene,
         layers,
         meta,
+        filters: detailsFilters,
         onProgress: (p) => setVideoPct(p),
         signal: controller.signal,
       });

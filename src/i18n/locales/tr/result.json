@@ -19,5 +19,18 @@
       "fieldSize": "Görüş alanı",
       "elapsed": "Çözüm süresi"
     }
+  },
+  "actions": {
+    "hide": "Gizle",
+    "show": "Göster",
+    "solo": "Yalnızca bunu göster",
+    "unsolo": "Tümünü göster"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} gizli",
+    "someHidden_other": "{{count}} gizli",
+    "clearTab": "Temizle",
+    "resetAll": "Filtreleri sıfırla",
+    "soloing": "Yalnızca gösteriliyor: {{name}}"
   }
 }

@@ -1,8 +1,8 @@
 {
   "title": "Je afbeelding is klaar",
   "description": "Stellaris is met liefde gemaakt en gratis voor iedereen. Als dit resultaat je heeft blij gemaakt, deel het dan met een mede-sterrenkijker.",
-  "captionWithLocation": "Een hemel boven {{location}} — geannoteerd met Stellaris",
-  "captionDefault": "Stellaris · Sterannotator",
+  "captionWithLocation": "De hemel boven {{location}} — elke ster met een naam, elk sterrenbeeld met een lijn ✦ Stellaris",
+  "captionDefault": "Elke ster benoemd, elk sterrenbeeld getekend ✦ Stellaris · annoteer je eigen hemel in seconden",
   "targets": {
     "x": "Delen op X",
     "threads": "Delen op Threads",
@@ -10,5 +10,10 @@
     "linkedin": "Delen op LinkedIn"
   },
   "footerNote": "Elke keer dat je deelt, helpt Stellaris gratis te blijven groeien — bedankt dat je deel uitmaakt van de gemeenschap.",
-  "madeWith": "Gemaakt met"
+  "madeBy": "Gemaakt door",
+  "follow": {
+    "title": "Volg ons op X",
+    "description": "Ontvang updates over nieuwe functies en uitbreidingen van de catalogus.",
+    "cta": "@GetZTools volgen"
+  }
 }

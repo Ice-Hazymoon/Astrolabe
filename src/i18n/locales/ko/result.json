@@ -19,5 +19,18 @@
       "fieldSize": "시야 범위",
       "elapsed": "분석 소요 시간"
     }
+  },
+  "actions": {
+    "hide": "숨기기",
+    "show": "표시",
+    "solo": "이것만 표시",
+    "unsolo": "모두 표시"
+  },
+  "filterBar": {
+    "someHidden_one": "숨김 {{count}}개",
+    "someHidden_other": "숨김 {{count}}개",
+    "clearTab": "지우기",
+    "resetAll": "필터 재설정",
+    "soloing": "표시 중: {{name}}만"
   }
 }

@@ -19,5 +19,18 @@
       "fieldSize": "Gesichtsfeld",
       "elapsed": "Lösungszeit"
     }
+  },
+  "actions": {
+    "hide": "Ausblenden",
+    "show": "Einblenden",
+    "solo": "Nur dieses zeigen",
+    "unsolo": "Alle zeigen"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} ausgeblendet",
+    "someHidden_other": "{{count}} ausgeblendet",
+    "clearTab": "Löschen",
+    "resetAll": "Filter zurücksetzen",
+    "soloing": "Nur angezeigt: {{name}}"
   }
 }

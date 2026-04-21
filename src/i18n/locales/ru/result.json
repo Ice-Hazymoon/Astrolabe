@@ -19,5 +19,18 @@
       "fieldSize": "Поле зрения",
       "elapsed": "Время решения"
     }
+  },
+  "actions": {
+    "hide": "Скрыть",
+    "show": "Показать",
+    "solo": "Показать только это",
+    "unsolo": "Показать всё"
+  },
+  "filterBar": {
+    "someHidden_one": "скрыто: {{count}}",
+    "someHidden_other": "скрыто: {{count}}",
+    "clearTab": "Очистить",
+    "resetAll": "Сбросить фильтры",
+    "soloing": "Показано только: {{name}}"
   }
 }

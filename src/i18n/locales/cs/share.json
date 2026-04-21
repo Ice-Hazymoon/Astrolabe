@@ -1,8 +1,8 @@
 {
   "title": "Váš obrázek je připraven",
   "description": "Stellaris vzniká s láskou a je zdarma pro každého. Pokud vás výsledek potěšil, podělte se s dalším milovníkem hvězd.",
-  "captionWithLocation": "Obloha nad {{location}} — s anotacemi Stellaris",
-  "captionDefault": "Stellaris · Anotátor hvězd",
+  "captionWithLocation": "Obloha nad {{location}} — každá hvězda má jméno, každé souhvězdí linii ✦ Stellaris",
+  "captionDefault": "Každá hvězda pojmenovaná, každé souhvězdí propojené ✦ Stellaris · vaše nebe s popisky za pár vteřin",
   "targets": {
     "x": "Sdílet na X",
     "threads": "Sdílet na Threads",
@@ -10,5 +10,10 @@
     "linkedin": "Sdílet na LinkedIn"
   },
   "footerNote": "Každé sdílení pomáhá Stellaris zůstat zdarma — děkujeme, že jste součástí komunity.",
-  "madeWith": "Vytvořeno s"
+  "madeBy": "Vytvořil",
+  "follow": {
+    "title": "Sledujte nás na X",
+    "description": "Získejte novinky o nových funkcích a rozšířeních katalogu.",
+    "cta": "Sledovat @GetZTools"
+  }
 }

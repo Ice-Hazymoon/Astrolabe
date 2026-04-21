@@ -52,5 +52,9 @@
   "common": {
     "and": "и",
     "or": "или"
+  },
+  "social": {
+    "followOnX": "Подпишитесь в X",
+    "xHandle": "@GetZTools"
   }
 }

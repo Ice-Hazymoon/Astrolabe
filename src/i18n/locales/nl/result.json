@@ -19,5 +19,18 @@
       "fieldSize": "Gezichtsveld",
       "elapsed": "Oplostijd"
     }
+  },
+  "actions": {
+    "hide": "Verbergen",
+    "show": "Weergeven",
+    "solo": "Alleen deze tonen",
+    "unsolo": "Alles tonen"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} verborgen",
+    "someHidden_other": "{{count}} verborgen",
+    "clearTab": "Wissen",
+    "resetAll": "Filters resetten",
+    "soloing": "Alleen tonen: {{name}}"
   }
 }

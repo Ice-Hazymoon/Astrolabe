@@ -19,5 +19,18 @@
       "fieldSize": "Campo de visão",
       "elapsed": "Tempo de resolução"
     }
+  },
+  "actions": {
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "solo": "Mostrar apenas este",
+    "unsolo": "Mostrar tudo"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} oculto",
+    "someHidden_other": "{{count}} ocultos",
+    "clearTab": "Limpar",
+    "resetAll": "Repor filtros",
+    "soloing": "A mostrar apenas: {{name}}"
   }
 }

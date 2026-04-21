@@ -19,5 +19,18 @@
       "fieldSize": "Pole widzenia",
       "elapsed": "Czas rozwiązania"
     }
+  },
+  "actions": {
+    "hide": "Ukryj",
+    "show": "Pokaż",
+    "solo": "Pokaż tylko to",
+    "unsolo": "Pokaż wszystko"
+  },
+  "filterBar": {
+    "someHidden_one": "ukryte: {{count}}",
+    "someHidden_other": "ukryte: {{count}}",
+    "clearTab": "Wyczyść",
+    "resetAll": "Resetuj filtry",
+    "soloing": "Pokazuje tylko: {{name}}"
   }
 }

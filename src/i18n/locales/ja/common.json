@@ -52,5 +52,9 @@
   "common": {
     "and": "と",
     "or": "または"
+  },
+  "social": {
+    "followOnX": "X でフォロー",
+    "xHandle": "@GetZTools"
   }
 }

@@ -1,15 +1,28 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronUp, Stars, Compass, Telescope } from 'lucide-react';
+import {
+  ChevronUp,
+  Compass,
+  Eye,
+  EyeOff,
+  Focus,
+  Stars,
+  Telescope,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useSky } from '@/state/store';
+import {
+  detailsCategoryActive,
+  detailsFiltersActive,
+  useSky,
+  type DetailsCategory,
+} from '@/state/store';
 import { Stat } from './ui/Stat';
 import { cn } from '@/lib/cn';
 
 const TABS = [
-  { id: 'stars', icon: Stars },
-  { id: 'constellations', icon: Compass },
-  { id: 'dso', icon: Telescope },
+  { id: 'stars', category: 'stars', icon: Stars },
+  { id: 'constellations', category: 'constellations', icon: Compass },
+  { id: 'dso', category: 'dsos', icon: Telescope },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -37,9 +50,22 @@ function formatDec(deg: number): string {
   return `${sign}${d.toString().padStart(2, '0')}° ${m.toString().padStart(2, '0')}′`;
 }
 
+interface RowItem {
+  id: string;
+  filterKey: string;
+  primary: string;
+  secondary: string;
+  meta: string;
+}
+
 export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetProps) {
   const { t } = useTranslation(['result', 'catalog']);
   const result = useSky((s) => s.result);
+  const filters = useSky((s) => s.detailsFilters);
+  const toggleItemHidden = useSky((s) => s.toggleItemHidden);
+  const toggleItemSolo = useSky((s) => s.toggleItemSolo);
+  const clearCategoryFilters = useSky((s) => s.clearCategoryFilters);
+  const clearAllFilters = useSky((s) => s.clearAllFilters);
   const [tab, setTab] = useState<TabId>('stars');
 
   if (!result) return null;
@@ -50,11 +76,14 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
     dso: result.visible_deep_sky_objects.length,
   };
 
-  const items = (() => {
+  // filterKey must match the string used in OverlayCanvas to join scene items
+  // to result items — which is the display `name`.
+  const items: RowItem[] = (() => {
     switch (tab) {
       case 'stars':
         return result.visible_named_stars.map((s) => ({
           id: s.id,
+          filterKey: s.name,
           primary: s.name,
           secondary: s.constellation ?? '',
           meta: `mag ${s.magnitude.toFixed(2)}`,
@@ -62,6 +91,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       case 'constellations':
         return result.visible_constellations.map((c) => ({
           id: c.id,
+          filterKey: c.name,
           primary: c.name,
           secondary: '',
           meta: t('result:details.mainStarsCount', { count: c.starCount }),
@@ -69,6 +99,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       case 'dso':
         return result.visible_deep_sky_objects.map((d) => ({
           id: d.id,
+          filterKey: d.name,
           primary: d.name,
           // d.type is a raw backend code (e.g. "OCl"); translate via catalog with fallback to raw.
           secondary: t(`catalog:dsoTypes.${d.type}`, { defaultValue: d.type }),
@@ -76,6 +107,26 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
         }));
     }
   })();
+
+  const currentCategory: DetailsCategory = TABS.find((tabDef) => tabDef.id === tab)!.category;
+  const categoryState = (() => {
+    switch (currentCategory) {
+      case 'stars':
+        return { hidden: filters.starsHidden, solo: filters.starSolo };
+      case 'constellations':
+        return { hidden: filters.constellationsHidden, solo: filters.constellationSolo };
+      case 'dsos':
+        return { hidden: filters.dsosHidden, solo: filters.dsoSolo };
+    }
+  })();
+
+  const hiddenCount = categoryState.hidden.size;
+  const categoryHasFilter = detailsCategoryActive(filters, currentCategory);
+  const anyFilter = detailsFiltersActive(filters);
+
+  const soloItemName = categoryState.solo
+    ? items.find((i) => i.filterKey === categoryState.solo)?.primary ?? categoryState.solo
+    : null;
 
   return (
     <motion.div
@@ -110,6 +161,18 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
           </div>
         </div>
         <div className="flex items-center gap-2.5 shrink-0">
+          {anyFilter && open && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                clearAllFilters();
+              }}
+              className="text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--color-star)]/60"
+            >
+              {t('result:filterBar.resetAll')}
+            </button>
+          )}
           <span className="hidden sm:inline text-mono text-[10.5px] text-[color:var(--color-text-muted)] tabular-nums">
             {(result.processingMs / 1000).toFixed(2)}s
           </span>
@@ -136,6 +199,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
           {TABS.map((tabDef) => {
             const active = tab === tabDef.id;
             const Icon = tabDef.icon;
+            const tabFilterActive = detailsCategoryActive(filters, tabDef.category);
             return (
               <button
                 key={tabDef.id}
@@ -143,7 +207,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                 onClick={() => setTab(tabDef.id)}
                 tabIndex={open ? 0 : -1}
                 className={cn(
-                  'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[12px] transition-colors',
+                  'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[12px] transition-colors relative',
                   active
                     ? 'bg-[color:var(--color-ink-2)] text-[color:var(--color-text)]'
                     : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-soft)]',
@@ -154,10 +218,33 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                 <span className="text-mono text-[10.5px] text-[color:var(--color-text-faint)] ml-0.5 tabular-nums">
                   {counts[tabDef.id]}
                 </span>
+                {tabFilterActive && (
+                  <span
+                    aria-hidden
+                    className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-star)]"
+                  />
+                )}
               </button>
             );
           })}
         </div>
+
+        {categoryHasFilter && (
+          <div className="surface rounded-full px-2.5 py-1 flex items-center gap-2 self-start max-w-full shrink-0">
+            <span className="text-[11px] text-[color:var(--color-text-soft)] truncate">
+              {soloItemName
+                ? t('result:filterBar.soloing', { name: soloItemName })
+                : t('result:filterBar.someHidden', { count: hiddenCount })}
+            </span>
+            <button
+              type="button"
+              onClick={() => clearCategoryFilters(currentCategory)}
+              className="text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors"
+            >
+              {t('result:filterBar.clearTab')}
+            </button>
+          </div>
+        )}
 
         <div className="flex-1 min-h-0 overflow-y-auto -mx-3.5 px-3.5">
           <AnimatePresence mode="wait" initial={false}>
@@ -174,26 +261,88 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                   {t('result:details.empty')}
                 </li>
               )}
-              {items.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-baseline justify-between gap-2 py-1 border-b border-[color:var(--color-line-soft)]/50 last:border-b-0"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[12.5px] text-[color:var(--color-text)] truncate">
-                      {item.primary}
-                    </div>
-                    {item.secondary && (
-                      <div className="text-[10.5px] text-[color:var(--color-text-muted)] truncate">
-                        {item.secondary}
-                      </div>
+              {items.map((item) => {
+                const isHidden = categoryState.hidden.has(item.filterKey);
+                const isSolo = categoryState.solo === item.filterKey;
+                return (
+                  <li
+                    key={item.id}
+                    className={cn(
+                      'group/row relative flex items-baseline justify-between gap-2 py-1 pl-1.5 pr-1',
+                      'border-b border-[color:var(--color-line-soft)]/50 last:border-b-0',
+                      'transition-opacity duration-200',
+                      isHidden && 'opacity-50',
+                      isSolo &&
+                        'before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[2px] before:rounded-full before:bg-[color:var(--color-star)]',
                     )}
-                  </div>
-                  <span className="text-mono text-[10.5px] text-[color:var(--color-text-soft)] shrink-0 tabular-nums">
-                    {item.meta}
-                  </span>
-                </li>
-              ))}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[12.5px] text-[color:var(--color-text)] truncate">
+                        {item.primary}
+                      </div>
+                      {item.secondary && (
+                        <div className="text-[10.5px] text-[color:var(--color-text-muted)] truncate">
+                          {item.secondary}
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        'flex items-center gap-0.5 shrink-0',
+                        // Action cluster: always visible on touch, reveals on hover on desktop.
+                        // Reserving the space via opacity (not display) avoids layout shift.
+                        'opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 sm:focus-within:opacity-100 transition-opacity duration-150',
+                        (isHidden || isSolo) && 'sm:opacity-100',
+                      )}
+                    >
+                      <button
+                        type="button"
+                        aria-label={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                        aria-pressed={isSolo}
+                        title={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                        onClick={() => toggleItemSolo(currentCategory, item.filterKey)}
+                        className={cn(
+                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
+                          'transition-colors',
+                          isSolo && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
+                        )}
+                      >
+                        <Focus className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                        aria-pressed={isHidden}
+                        title={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                        onClick={() => toggleItemHidden(currentCategory, item.filterKey)}
+                        className={cn(
+                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
+                          'transition-colors',
+                        )}
+                      >
+                        {isHidden ? (
+                          <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        )}
+                      </button>
+                    </div>
+                    <span
+                      className={cn(
+                        'text-mono text-[10.5px] text-[color:var(--color-text-soft)] shrink-0 tabular-nums',
+                        // Hide the meta when the action cluster takes its place on hover,
+                        // so they don't visually stack. On touch both can coexist below/right.
+                        'hidden sm:inline sm:group-hover/row:hidden sm:focus-within:hidden',
+                        (isHidden || isSolo) && 'sm:hidden',
+                      )}
+                    >
+                      {item.meta}
+                    </span>
+                  </li>
+                );
+              })}
             </motion.ul>
           </AnimatePresence>
         </div>

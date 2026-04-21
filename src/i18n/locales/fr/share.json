@@ -1,8 +1,8 @@
 {
   "title": "Votre image est prête",
   "description": "Stellaris est un projet passionné et gratuit pour tous. Si ce résultat vous a fait sourire, partagez-le avec un ami passionné des étoiles.",
-  "captionWithLocation": "Un ciel au-dessus de {{location}} — annoté avec Stellaris",
-  "captionDefault": "Stellaris · Annotateur d'étoiles",
+  "captionWithLocation": "Le ciel au-dessus de {{location}} — chaque étoile nommée, chaque constellation tracée ✦ Stellaris",
+  "captionDefault": "Chaque étoile nommée, chaque constellation tracée ✦ Stellaris · annotez votre ciel en quelques secondes",
   "targets": {
     "x": "Partager sur X",
     "threads": "Partager sur Threads",
@@ -10,5 +10,10 @@
     "linkedin": "Partager sur LinkedIn"
   },
   "footerNote": "Chaque partage permet à Stellaris de rester gratuit — merci de faire partie de la communauté.",
-  "madeWith": "Conçu avec"
+  "madeBy": "Conçu par",
+  "follow": {
+    "title": "Suivez-nous sur X",
+    "description": "Recevez les actus des nouveautés et des ajouts au catalogue.",
+    "cta": "Suivre @GetZTools"
+  }
 }

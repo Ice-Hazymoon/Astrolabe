@@ -19,5 +19,18 @@
       "fieldSize": "Champ de vision",
       "elapsed": "Temps de résolution"
     }
+  },
+  "actions": {
+    "hide": "Masquer",
+    "show": "Afficher",
+    "solo": "N'afficher que celui-ci",
+    "unsolo": "Tout afficher"
+  },
+  "filterBar": {
+    "someHidden_one": "{{count}} masqué",
+    "someHidden_other": "{{count}} masqués",
+    "clearTab": "Effacer",
+    "resetAll": "Réinitialiser les filtres",
+    "soloing": "Afficher uniquement : {{name}}"
   }
 }
