@@ -198,7 +198,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
           open ? 'opacity-100' : 'opacity-0 pointer-events-none',
         )}
       >
-        <div className="flex items-center gap-1 pt-3 shrink-0 min-w-0">
+        <div className="flex items-center gap-1 pt-3 shrink-0 min-w-0 overflow-x-auto">
           {TABS.map((tabDef) => {
             const active = tab === tabDef.id;
             const Icon = tabDef.icon;
@@ -210,7 +210,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                 onClick={() => setTab(tabDef.id)}
                 tabIndex={open ? 0 : -1}
                 className={cn(
-                  'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[12px] transition-colors relative',
+                  'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[12px] transition-colors relative shrink-0 whitespace-nowrap',
                   active
                     ? 'bg-[color:var(--color-ink-2)] text-[color:var(--color-text)]'
                     : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-soft)]',

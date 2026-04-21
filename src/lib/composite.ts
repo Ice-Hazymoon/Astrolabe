@@ -166,7 +166,7 @@ export async function composeAnnotatedWithStrip(
  * look deliberate and 8K panoramas don't have the strip dominate the frame.
  */
 export function stripHeightFor(imageWidth: number): number {
-  return Math.round(Math.max(150, Math.min(imageWidth * 0.095, 300)));
+  return Math.round(Math.max(240, Math.min(imageWidth * 0.145, 440)));
 }
 
 // Dark "observatory plaque" strip — matches the app's night-sky palette so the

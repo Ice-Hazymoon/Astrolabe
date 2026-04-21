@@ -407,7 +407,7 @@ export function ExportDialog({
                 <X />
               </IconButton>
 
-              <div className="px-5 sm:px-7 pt-6 sm:pt-7 pb-5 sm:pb-6 flex flex-col gap-5">
+              <div className="px-4 sm:px-7 pt-5 sm:pt-7 pb-4 sm:pb-6 flex flex-col gap-4 sm:gap-5">
                 <header className="flex flex-col gap-1.5 pr-10">
                   <span className="text-eyebrow">{t('export:eyebrow')}</span>
                   <h2 className="text-display text-[21px] sm:text-[24px] tracking-tight text-[color:var(--color-text)] leading-tight">
@@ -423,6 +423,9 @@ export function ExportDialog({
                     className={cn(
                       'relative mx-auto w-full overflow-hidden',
                       'shadow-[var(--shadow-lift)]',
+                      // Preview vertical cap. Smaller on mobile so the form + actions
+                      // below can breathe; goes back to the roomier 52vh on sm+.
+                      '[--preview-cap-h:36vh] sm:[--preview-cap-h:52vh]',
                     )}
                     style={{
                       aspectRatio: `${imgW} / ${imgH + stripH}`,
@@ -430,8 +433,8 @@ export function ExportDialog({
                       // never exceed the target max — otherwise max-height alone
                       // squashes the box and the nested aspect-ratio children
                       // overflow behind `overflow-hidden`, cropping the photo.
-                      maxWidth: `calc(52vh * ${(imgW / (imgH + stripH)).toFixed(4)})`,
-                      maxHeight: '52vh',
+                      maxWidth: `calc(var(--preview-cap-h) * ${(imgW / (imgH + stripH)).toFixed(4)})`,
+                      maxHeight: 'var(--preview-cap-h)',
                     }}
                   >
                     <div
@@ -602,8 +605,8 @@ export function ExportDialog({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 pt-1">
-                  <span className="text-[11.5px] text-[color:var(--color-text-muted)] min-h-[16px]">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1">
+                  <span className="text-[11.5px] text-[color:var(--color-text-muted)] min-h-[16px] leading-snug">
                     {savingError ? (
                       <span className="text-[color:var(--color-danger)]">{savingError}</span>
                     ) : geoError ? (
@@ -612,8 +615,16 @@ export function ExportDialog({
                       t('export:hints.default')
                     )}
                   </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Button variant="ghost" size="md" onClick={onClose} disabled={saving}>
+                  <div className="flex items-center justify-end gap-2 sm:shrink-0">
+                    {/* Cancel hidden on mobile — the top-right X already dismisses, keeping
+                        thumb focus on the primary Save (and optional Save video) CTA. */}
+                    <Button
+                      variant="ghost"
+                      size="md"
+                      onClick={onClose}
+                      disabled={saving}
+                      className="hidden sm:inline-flex"
+                    >
                       {t('export:buttons.cancel')}
                     </Button>
                     {videoSupported && (

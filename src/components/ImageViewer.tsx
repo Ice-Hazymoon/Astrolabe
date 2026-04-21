@@ -103,7 +103,7 @@ export function ImageViewer({
         'transition-[border-radius,border-color] duration-300',
         fullscreen
           ? 'rounded-none border-transparent'
-          : 'rounded-[var(--radius-lg)] border border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-1)]/60 shadow-[var(--shadow-lift)]',
+          : 'sm:rounded-[var(--radius-lg)] sm:border sm:border-[color:var(--color-line-soft)] sm:bg-[color:var(--color-ink-1)]/60 sm:shadow-[var(--shadow-lift)]',
         className,
       )}
     >
@@ -139,37 +139,28 @@ export function ImageViewer({
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
+            {/* TransformComponent's wrapper spans the full viewport so zoom/pan
+                bounds live in viewport coordinates — zoomed-in, the image can
+                pan all the way to the screen edges. The content is image-aspect
+                sized via contentStyle, so the library still knows the actual
+                image extent: the dimension where content < wrapper stays
+                centered (no empty pan), and the dimension where content >= wrapper
+                covers the wrapper at the extremes (no letterbox exposure inside
+                the image). */}
             <TransformComponent
-              wrapperStyle={{
-                width: '100%',
-                height: '100%',
-              }}
+              wrapperStyle={{ width: '100%', height: '100%' }}
               contentStyle={{
-                width: '100%',
+                aspectRatio: aspectRatio ?? '4 / 5',
                 height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                maxHeight: reservedBottom > 0 ? `calc(100% - ${reservedBottom * 2}px)` : '100%',
+                maxWidth: '100%',
               }}
             >
               <div
                 className={cn(
-                  'relative shrink-0 overflow-hidden transition-[opacity,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                  'relative h-full w-full overflow-hidden transition-[opacity,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
                   loaded ? 'opacity-100 blur-0' : 'opacity-50 blur-2xl',
                 )}
-                style={{
-                  // Size the wrapper to match the image's displayed bounds via aspect-ratio.
-                  // This makes overlays (twinkles, future constellation lines) align with the image
-                  // and travel with it through the zoom/pan transform.
-                  aspectRatio: aspectRatio ?? '4 / 5',
-                  height: '100%',
-                  // Shrink the fitted (scale=1) image to leave symmetric top/bottom
-                  // breathing room for an external panel below. Because this caps the
-                  // layout size — not the transform — zooming still lets the user
-                  // pan/scale into the full canvas area.
-                  maxHeight: reservedBottom > 0 ? `calc(100% - ${reservedBottom * 2}px)` : '100%',
-                  maxWidth: '100%',
-                }}
               >
                 <img
                   ref={imgRef}

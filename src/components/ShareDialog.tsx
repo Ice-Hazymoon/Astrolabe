@@ -113,21 +113,18 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
                 <X />
               </IconButton>
 
-              <div className="px-6 sm:px-8 pt-9 sm:pt-10 pb-6 flex flex-col gap-6">
-                <header className="flex flex-col items-center gap-2.5 text-center">
-                  <span className="relative inline-flex h-11 w-11 items-center justify-center">
+              <div className="px-5 sm:px-8 pt-7 sm:pt-10 pb-5 sm:pb-6 flex flex-col gap-4 sm:gap-6">
+                <header className="flex flex-col items-center gap-2 sm:gap-2.5 text-center">
+                  <span className="relative inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center">
                     <Logo className="h-full w-full text-[color:var(--color-star)]" />
                     <span
                       aria-hidden
                       className="absolute inset-0 blur-xl bg-[color:var(--color-star)]/25 -z-10"
                     />
                   </span>
-                  <h2 className="text-display text-[26px] tracking-tight text-[color:var(--color-text)] leading-tight">
+                  <h2 className="text-display text-[22px] sm:text-[26px] tracking-tight text-[color:var(--color-text)] leading-tight">
                     {t('app:brand')}
                   </h2>
-                  <p className="text-[16px] font-medium text-[color:var(--color-text)]">
-                    {t('share:title')}
-                  </p>
                   <p className="text-[13px] text-[color:var(--color-text-muted)] leading-relaxed max-w-[320px]">
                     {t('share:description')}
                   </p>
@@ -145,37 +142,26 @@ export function ShareDialog({ open, onClose, meta }: ShareDialogProps) {
                   rel="noopener noreferrer"
                   aria-label={t('share:follow.title')}
                   className={cn(
-                    'group relative flex items-center gap-3 rounded-[var(--radius-md)] pl-4 pr-3 py-2.5',
-                    'border border-[color:var(--color-line-soft)] bg-[color:var(--color-star)]/[0.06]',
-                    'border-l-2 border-l-[color:var(--color-star)]/70',
+                    'group self-center inline-flex items-center gap-2 rounded-full pl-3.5 pr-3 h-9',
+                    'border border-[color:var(--color-line-soft)] bg-[color:var(--color-star)]/[0.05]',
                     'transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
-                    'hover:bg-[color:var(--color-star)]/[0.10] hover:border-[color:var(--color-line)]',
+                    'hover:bg-[color:var(--color-star)]/[0.09] hover:border-[color:var(--color-line)]',
                     'active:scale-[0.995]',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-star)]/60',
                   )}
                 >
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--color-ink-0)]/60 border border-[color:var(--color-line-soft)] text-[color:var(--color-text)] shrink-0">
-                    <XGlyph className="h-[18px] w-[18px]" />
+                  <XGlyph className="h-[13px] w-[13px] text-[color:var(--color-text)] shrink-0" />
+                  <span className="text-[12.5px] font-medium text-[color:var(--color-text)] tracking-tight">
+                    {t('share:follow.title')}
                   </span>
-                  <span className="flex flex-col min-w-0 flex-1">
-                    <span className="text-[13.5px] font-medium text-[color:var(--color-text)] tracking-tight leading-tight">
-                      {t('share:follow.title')}
-                    </span>
-                    <span className="text-[11.5px] text-[color:var(--color-text-muted)] leading-tight mt-0.5">
-                      {t('common:social.xHandle')}
-                    </span>
+                  <span className="text-[11px] text-[color:var(--color-text-muted)] tracking-tight">
+                    {t('common:social.xHandle')}
                   </span>
                   <ArrowUpRight
-                    className="h-4 w-4 text-[color:var(--color-text-muted)] group-hover:text-[color:var(--color-text-soft)] shrink-0 transition-colors"
+                    className="h-3.5 w-3.5 text-[color:var(--color-text-muted)] group-hover:text-[color:var(--color-text-soft)] shrink-0 transition-colors"
                     strokeWidth={2}
                   />
                 </a>
-
-                <div className="rounded-[var(--radius-md)] border border-[color:var(--color-line-soft)] bg-[color:var(--color-ink-0)]/45 px-4 py-3">
-                  <p className="text-[12.5px] text-[color:var(--color-text-soft)] leading-relaxed">
-                    {t('share:footerNote')}
-                  </p>
-                </div>
 
                 <footer className="pt-2 border-t border-[color:var(--color-line-soft)]/60 flex items-center justify-center gap-1.5 text-[11.5px] text-[color:var(--color-text-muted)]">
                   <span>{t('share:madeBy')}</span>
