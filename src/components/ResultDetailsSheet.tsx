@@ -91,7 +91,10 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       case 'constellations':
         return result.visible_constellations.map((c) => ({
           id: c.id,
-          filterKey: c.name,
+          // Filter key is the IAU abbr (c.id) so hide/solo state is i18n-stable
+          // and joins precisely against scene.constellation_figures[].id and
+          // constellation labels' `.constellation` field.
+          filterKey: c.id,
           primary: c.name,
           secondary: '',
           meta: t('result:details.mainStarsCount', { count: c.starCount }),
@@ -195,7 +198,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
           open ? 'opacity-100' : 'opacity-0 pointer-events-none',
         )}
       >
-        <div className="flex items-center gap-1 pt-3 shrink-0">
+        <div className="flex items-center gap-1 pt-3 shrink-0 min-w-0">
           {TABS.map((tabDef) => {
             const active = tab === tabDef.id;
             const Icon = tabDef.icon;
@@ -227,24 +230,33 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
               </button>
             );
           })}
+          <AnimatePresence initial={false}>
+            {categoryHasFilter && (
+              <motion.div
+                key={`cat-filter-${currentCategory}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="ml-auto flex items-center gap-2 min-w-0 pl-2"
+              >
+                <span className="text-[11px] text-[color:var(--color-text-soft)] truncate max-w-[140px] sm:max-w-[220px]">
+                  {soloItemName
+                    ? t('result:filterBar.soloing', { name: soloItemName })
+                    : t('result:filterBar.someHidden', { count: hiddenCount })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => clearCategoryFilters(currentCategory)}
+                  tabIndex={open ? 0 : -1}
+                  className="text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors shrink-0 px-1.5 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--color-star)]/60"
+                >
+                  {t('result:filterBar.clearTab')}
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {categoryHasFilter && (
-          <div className="surface rounded-full px-2.5 py-1 flex items-center gap-2 self-start max-w-full shrink-0">
-            <span className="text-[11px] text-[color:var(--color-text-soft)] truncate">
-              {soloItemName
-                ? t('result:filterBar.soloing', { name: soloItemName })
-                : t('result:filterBar.someHidden', { count: hiddenCount })}
-            </span>
-            <button
-              type="button"
-              onClick={() => clearCategoryFilters(currentCategory)}
-              className="text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors"
-            >
-              {t('result:filterBar.clearTab')}
-            </button>
-          </div>
-        )}
 
         <div className="flex-1 min-h-0 overflow-y-auto -mx-3.5 px-3.5">
           <AnimatePresence mode="wait" initial={false}>
@@ -268,7 +280,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                   <li
                     key={item.id}
                     className={cn(
-                      'group/row relative flex items-baseline justify-between gap-2 py-1 pl-1.5 pr-1',
+                      'group/row relative flex items-center justify-between gap-2 py-1 pl-1.5 pr-1',
                       'border-b border-[color:var(--color-line-soft)]/50 last:border-b-0',
                       'transition-opacity duration-200',
                       isHidden && 'opacity-50',
@@ -286,60 +298,65 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                         </div>
                       )}
                     </div>
-                    <div
-                      className={cn(
-                        'flex items-center gap-0.5 shrink-0',
-                        // Action cluster: always visible on touch, reveals on hover on desktop.
-                        // Reserving the space via opacity (not display) avoids layout shift.
-                        'opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 sm:focus-within:opacity-100 transition-opacity duration-150',
-                        (isHidden || isSolo) && 'sm:opacity-100',
-                      )}
-                    >
-                      <button
-                        type="button"
-                        aria-label={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
-                        aria-pressed={isSolo}
-                        title={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
-                        onClick={() => toggleItemSolo(currentCategory, item.filterKey)}
+                    <div className="relative shrink-0 flex items-center justify-end min-w-[52px]">
+                      {/* Meta drives layout width on desktop; fades out as actions fade in.
+                          Both sides use opacity on the same slot so there's no display-swap pop. */}
+                      <span
                         className={cn(
-                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
-                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
-                          'transition-colors',
-                          isSolo && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
+                          'text-mono text-[10.5px] text-[color:var(--color-text-soft)] tabular-nums',
+                          'hidden sm:inline-block transition-opacity duration-150',
+                          'sm:group-hover/row:opacity-0 sm:focus-within:opacity-0',
+                          (isHidden || isSolo) && 'sm:opacity-0',
+                        )}
+                        aria-hidden={isHidden || isSolo ? 'true' : undefined}
+                      >
+                        {item.meta}
+                      </span>
+                      <div
+                        className={cn(
+                          'absolute inset-y-0 right-0 flex items-center gap-0.5 transition-opacity duration-150',
+                          // Mobile: always visible (meta is hidden there). Desktop: reveals on hover/focus.
+                          'opacity-100 sm:opacity-0 sm:pointer-events-none',
+                          'sm:group-hover/row:opacity-100 sm:group-hover/row:pointer-events-auto',
+                          'sm:focus-within:opacity-100 sm:focus-within:pointer-events-auto',
+                          (isHidden || isSolo) && 'sm:opacity-100 sm:pointer-events-auto',
                         )}
                       >
-                        <Focus className="h-3.5 w-3.5" strokeWidth={2.2} />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label={isHidden ? t('result:actions.show') : t('result:actions.hide')}
-                        aria-pressed={isHidden}
-                        title={isHidden ? t('result:actions.show') : t('result:actions.hide')}
-                        onClick={() => toggleItemHidden(currentCategory, item.filterKey)}
-                        className={cn(
-                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
-                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
-                          'transition-colors',
-                        )}
-                      >
-                        {isHidden ? (
-                          <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
-                        ) : (
-                          <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />
-                        )}
-                      </button>
+                        <button
+                          type="button"
+                          aria-label={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                          aria-pressed={isSolo}
+                          title={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                          onClick={() => toggleItemSolo(currentCategory, item.filterKey)}
+                          className={cn(
+                            'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                            'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
+                            'transition-colors',
+                            isSolo && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
+                          )}
+                        >
+                          <Focus className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                          aria-pressed={isHidden}
+                          title={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                          onClick={() => toggleItemHidden(currentCategory, item.filterKey)}
+                          className={cn(
+                            'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                            'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
+                            'transition-colors',
+                          )}
+                        >
+                          {isHidden ? (
+                            <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
+                          ) : (
+                            <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />
+                          )}
+                        </button>
+                      </div>
                     </div>
-                    <span
-                      className={cn(
-                        'text-mono text-[10.5px] text-[color:var(--color-text-soft)] shrink-0 tabular-nums',
-                        // Hide the meta when the action cluster takes its place on hover,
-                        // so they don't visually stack. On touch both can coexist below/right.
-                        'hidden sm:inline sm:group-hover/row:hidden sm:focus-within:hidden',
-                        (isHidden || isSolo) && 'sm:hidden',
-                      )}
-                    >
-                      {item.meta}
-                    </span>
                   </li>
                 );
               })}

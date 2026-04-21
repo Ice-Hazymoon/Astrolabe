@@ -7,6 +7,7 @@ import type {
   LabelChip,
   LabelFontFamily,
   LabelVariant,
+  OverlayConstellationFigure,
   OverlayDeepSkyMarker,
   OverlayLineSegment,
   OverlayOptions,
@@ -177,6 +178,8 @@ interface LabelSpec {
   chip: LabelChip | null;
   /** True for constellation labels — they should be placed on their anchor, no leader. */
   centerAnchored: boolean;
+  /** For constellation labels only — IAU abbr carried through to OverlayTextItem. */
+  constellation?: string;
 }
 
 interface PlacedLabel {
@@ -275,10 +278,11 @@ function layoutLabels(
   specs: LabelSpec[],
   imageWidth: number,
   imageHeight: number,
+  scale: number,
 ): OverlayTextItem[] {
   const placed: PlacedLabel[] = [];
-  const margin = 6;
-  const pad = 4; // gap between label bboxes
+  const margin = 6 * scale;
+  const pad = 4 * scale; // gap between label bboxes
 
   const ordered = [...specs].sort((a, b) => b.priority - a.priority);
 
@@ -317,7 +321,7 @@ function layoutLabels(
     // distance between them (avoids a useless stub on the constellation path).
     const leader: OverlayLineSegment | null =
       !spec.centerAnchored && picked.ring > 0
-        ? buildLeader(spec, picked.cx, picked.cy)
+        ? buildLeader(spec, picked.cx, picked.cy, scale)
         : null;
 
     const boxX = picked.x - (spec.chip ? spec.chip.padding_x : 1);
@@ -340,6 +344,7 @@ function layoutLabels(
       letter_spacing: spec.letter_spacing,
       text_width: textW,
       chip: spec.chip,
+      constellation: spec.constellation,
     };
     placed.push({ item, box });
   }
@@ -351,27 +356,32 @@ function layoutLabels(
  * Trim a leader line so it stops a few pixels shy of both endpoints —
  * visually separates the line from the marker edge and the label baseline.
  */
-function buildLeader(spec: LabelSpec, labelCx: number, labelCy: number): OverlayLineSegment {
+function buildLeader(
+  spec: LabelSpec,
+  labelCx: number,
+  labelCy: number,
+  scale: number,
+): OverlayLineSegment {
   const dx = labelCx - spec.anchorX;
   const dy = labelCy - spec.anchorY;
   const len = Math.hypot(dx, dy) || 1;
   const ux = dx / len;
   const uy = dy / len;
-  const startShrink = spec.anchorRadius + 4;
+  const startShrink = spec.anchorRadius + 4 * scale;
   const endShrink = spec.font_size * 0.55;
   return {
     x1: spec.anchorX + ux * startShrink,
     y1: spec.anchorY + uy * startShrink,
     x2: labelCx - ux * endShrink,
     y2: labelCy - uy * endShrink,
-    line_width: 0.9,
+    line_width: 0.9 * scale,
     rgba: LEADER_RGBA,
   };
 }
 
 // --- Spec builders ---------------------------------------------------------
 
-function buildConstellationSpec(c: CatalogConstellation): LabelSpec {
+function buildConstellationSpec(c: CatalogConstellation, scale: number): LabelSpec {
   return {
     text: c.display_name,
     variant: 'constellation',
@@ -379,36 +389,37 @@ function buildConstellationSpec(c: CatalogConstellation): LabelSpec {
     anchorX: c.label_x,
     anchorY: c.label_y,
     anchorRadius: 0,
-    font_size: 28,
+    font_size: 28 * scale,
     font_weight: 600,
     font_family: 'serif',
     italic: false,
     letter_spacing: 0.14,
-    stroke_width: 3.4,
+    stroke_width: 3.4 * scale,
     text_rgba: CONST_LABEL_RGBA,
     stroke_rgba: CONST_STROKE_RGBA,
     chip: null,
     centerAnchored: true,
+    constellation: c.abbr,
   };
 }
 
-function buildStarSpec(s: CatalogStar): LabelSpec {
-  const radius = starRadius(s.magnitude);
+function buildStarSpec(s: CatalogStar, scale: number): LabelSpec {
+  const radius = starRadius(s.magnitude) * scale;
   // Bright stars get slightly bigger labels and higher priority.
-  const fontSize = s.magnitude <= 1 ? 18 : s.magnitude <= 2.5 ? 17 : 16;
+  const fontSize = (s.magnitude <= 1 ? 18 : s.magnitude <= 2.5 ? 17 : 16) * scale;
   return {
     text: s.name,
     variant: 'star',
     priority: 200 - s.magnitude * 10,
     anchorX: s.x,
     anchorY: s.y,
-    anchorRadius: radius + 2,
+    anchorRadius: radius + 2 * scale,
     font_size: fontSize,
     font_weight: 500,
     font_family: 'sans',
     italic: false,
     letter_spacing: 0.02,
-    stroke_width: 2.2,
+    stroke_width: 2.2 * scale,
     text_rgba: STAR_LABEL_RGBA,
     stroke_rgba: STAR_STROKE_RGBA,
     chip: null,
@@ -416,16 +427,16 @@ function buildStarSpec(s: CatalogStar): LabelSpec {
   };
 }
 
-function buildDsoSpec(d: CatalogDso, text: string): LabelSpec {
+function buildDsoSpec(d: CatalogDso, text: string, scale: number): LabelSpec {
   // DSO labels are mono-like and sit inside a subtle chip — the chip is what
   // separates them visually from a star label of the same size.
   const chip: LabelChip = {
     fill_rgba: DSO_CHIP_FILL,
     border_rgba: DSO_CHIP_BORDER,
     border_width: 1,
-    padding_x: 6,
-    padding_y: 3,
-    radius: 4,
+    padding_x: 6 * scale,
+    padding_y: 3 * scale,
+    radius: 4 * scale,
   };
   return {
     text,
@@ -434,13 +445,13 @@ function buildDsoSpec(d: CatalogDso, text: string): LabelSpec {
     priority: (d.curated ? 180 : 140) - d.magnitude * 4,
     anchorX: d.x,
     anchorY: d.y,
-    anchorRadius: 7,
-    font_size: 17,
+    anchorRadius: 7 * scale,
+    font_size: 17 * scale,
     font_weight: 600,
     font_family: 'mono',
     italic: false,
     letter_spacing: 0.03,
-    stroke_width: 1.2,
+    stroke_width: 1.2 * scale,
     text_rgba: DSO_LABEL_RGBA,
     stroke_rgba: DSO_STROKE_RGBA,
     chip,
@@ -457,6 +468,15 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
   const { stars, constellations, dsos, image_width, image_height } = catalog;
   const { layers, detail } = options;
 
+  // Scale factor derived from the image's long edge. The legacy constants
+  // (font 28, marker radius 6, stroke 2.2, etc.) were tuned on ~1400px-wide
+  // shots. When the source is larger, those pixel-space values shrink to
+  // unreadable sizes after the SVG is fit to the viewport — e.g. a 4000x3000
+  // photo displayed at 800px wide renders a 28-unit label as ~5.6 screen
+  // pixels. We grow proportionally with the image so labels stay legible,
+  // and never shrink below the 1400px baseline.
+  const scale = Math.max(1, Math.max(image_width, image_height) / 1400);
+
   // Constellations
   const constellationsToShow = constellations.filter((c) => {
     if (detail.show_all_constellation_labels) return true;
@@ -464,16 +484,23 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
     return c.show_label;
   });
 
-  const constellation_lines: OverlayLineSegment[] = constellations.flatMap((c) =>
-    c.segments.map((s) => ({
-      x1: s.x1,
-      y1: s.y1,
-      x2: s.x2,
-      y2: s.y2,
-      line_width: 2,
-      rgba: LINE_RGBA,
-    })),
-  );
+  // Keep lines grouped per constellation — each figure carries its IAU abbr
+  // so the details-sheet hide/solo filter can target an individual figure
+  // instead of an all-or-nothing toggle. Empty-segment figures are dropped
+  // so the renderer doesn't walk dead groups.
+  const constellation_figures: OverlayConstellationFigure[] = constellations
+    .filter((c) => c.segments.length > 0)
+    .map((c) => ({
+      id: c.abbr,
+      segments: c.segments.map((s) => ({
+        x1: s.x1,
+        y1: s.y1,
+        x2: s.x2,
+        y2: s.y2,
+        line_width: 2 * scale,
+        rgba: LINE_RGBA,
+      })),
+    }));
 
   // Stars: filter by magnitude, then cap to the density limit.
   const keptStars = sortStarsForLabeling(
@@ -483,7 +510,7 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
   const star_markers: OverlayStarMarker[] = keptStars.map((s) => ({
     x: s.x,
     y: s.y,
-    radius: starRadius(s.magnitude),
+    radius: starRadius(s.magnitude) * scale,
     fill_rgba: starFill(s.magnitude),
     outline_rgba: STAR_OUTLINE_RGBA,
   }));
@@ -497,22 +524,22 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
     marker: dsoMarkerShape(d.type_code),
     x: d.x,
     y: d.y,
-    radius: 6,
-    line_width: 2,
+    radius: 6 * scale,
+    line_width: 2 * scale,
     rgba: dsoStroke(d.type_code),
   }));
 
   // Collect all labels, run a shared layout pass, then split back by variant
   // so the render order and per-type visibility controls keep working.
   const allSpecs: LabelSpec[] = [];
-  for (const c of constellationsToShow) allSpecs.push(buildConstellationSpec(c));
-  for (const s of keptStars) allSpecs.push(buildStarSpec(s));
+  for (const c of constellationsToShow) allSpecs.push(buildConstellationSpec(c, scale));
+  for (const s of keptStars) allSpecs.push(buildStarSpec(s, scale));
   for (const d of keptDsos) {
     const text = detail.detailed_dso_labels ? d.detailed_label : d.primary_label;
-    allSpecs.push(buildDsoSpec(d, text));
+    allSpecs.push(buildDsoSpec(d, text, scale));
   }
 
-  const laid = layoutLabels(allSpecs, image_width, image_height);
+  const laid = layoutLabels(allSpecs, image_width, image_height, scale);
 
   const constellation_labels = laid.filter((l) => l.variant === 'constellation');
   const star_labels = laid.filter((l) => l.variant === 'star');
@@ -521,7 +548,7 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
   return {
     image_width,
     image_height,
-    constellation_lines,
+    constellation_figures,
     constellation_labels,
     star_markers,
     star_labels,

@@ -61,7 +61,9 @@ export function computeOverlayBuildInfo(
   let end = 0;
 
   if (layers.constellation_lines) {
-    end = Math.max(end, staggeredEnd(scene.constellation_lines.length, LINE_BUILD.baseDelay, LINE_BUILD.perItem, LINE_BUILD.duration));
+    let lineCount = 0;
+    for (const f of scene.constellation_figures) lineCount += f.segments.length;
+    end = Math.max(end, staggeredEnd(lineCount, LINE_BUILD.baseDelay, LINE_BUILD.perItem, LINE_BUILD.duration));
   }
   if (layers.star_markers) {
     const last = staggered(scene.star_markers.length - 1, STAR_HALO_BUILD.baseDelay, STAR_HALO_BUILD.perItem);
@@ -72,7 +74,7 @@ export function computeOverlayBuildInfo(
     end = Math.max(end, staggeredEnd(scene.deep_sky_markers.length, DSO_BUILD.baseDelay, DSO_BUILD.perItem, DSO_BUILD.duration));
   }
   if (layers.label_leaders) {
-    if (layers.star_labels) {
+    if (layers.star_markers && layers.star_labels) {
       end = Math.max(end, staggeredEnd(scene.star_labels.length, LEADER_BUILD.starBase, LEADER_BUILD.perItem, LEADER_BUILD.duration));
     }
     if (layers.deep_sky_markers && layers.deep_sky_labels) {
@@ -82,7 +84,7 @@ export function computeOverlayBuildInfo(
   if (layers.constellation_labels) {
     end = Math.max(end, staggeredEnd(scene.constellation_labels.length, LABEL_BUILD.constBase, LABEL_BUILD.perItem, LABEL_BUILD.duration));
   }
-  if (layers.star_labels) {
+  if (layers.star_markers && layers.star_labels) {
     end = Math.max(end, staggeredEnd(scene.star_labels.length, LABEL_BUILD.starBase, LABEL_BUILD.perItem, LABEL_BUILD.duration));
   }
   if (layers.deep_sky_markers && layers.deep_sky_labels) {
@@ -131,14 +133,19 @@ export function drawOverlayFrame(
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Lines — bloom + crisp pass.
-  if (layers.constellation_lines && scene.constellation_lines.length > 0) {
-    drawConstellationLines(ctx, t, scene.constellation_lines, 'bloom', strokeBoost);
-    drawConstellationLines(ctx, t, scene.constellation_lines, 'crisp', strokeBoost);
+  // Lines — bloom + crisp pass. Flatten the grouped figures so the existing
+  // stagger-indexed draw routine stays unchanged; figures are only grouped at
+  // the filter/data layer, not at the pixel level.
+  if (layers.constellation_lines) {
+    const flatLines = scene.constellation_figures.flatMap((f) => f.segments);
+    if (flatLines.length > 0) {
+      drawConstellationLines(ctx, t, flatLines, 'bloom', strokeBoost);
+      drawConstellationLines(ctx, t, flatLines, 'crisp', strokeBoost);
+    }
   }
 
   if (layers.label_leaders) {
-    if (layers.star_labels) {
+    if (layers.star_markers && layers.star_labels) {
       drawLeaders(ctx, t, scene.star_labels, LEADER_BUILD.starBase, strokeBoost);
     }
     if (layers.deep_sky_markers && layers.deep_sky_labels) {
@@ -158,7 +165,7 @@ export function drawOverlayFrame(
   if (layers.constellation_labels) {
     drawPrerenderedLabels(ctx, t, labels.constellation, LABEL_BUILD.constBase);
   }
-  if (layers.star_labels) {
+  if (layers.star_markers && layers.star_labels) {
     drawPrerenderedLabels(ctx, t, labels.star, LABEL_BUILD.starBase);
   }
   if (layers.deep_sky_markers && layers.deep_sky_labels) {

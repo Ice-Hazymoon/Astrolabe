@@ -534,12 +534,15 @@ export const OverlayCanvas = memo(function OverlayCanvas({
 
   const visible = useMemo(
     () => ({
-      lines: layers.constellation_lines ? filteredScene.constellation_lines : [],
+      lines: layers.constellation_lines
+        ? filteredScene.constellation_figures.flatMap((f) => f.segments)
+        : [],
       constLabels: layers.constellation_labels ? filteredScene.constellation_labels : [],
       stars: layers.star_markers ? filteredScene.star_markers : [],
-      starLabels: layers.star_labels ? filteredScene.star_labels : [],
-      dsos: layers.deep_sky_markers ? filteredScene.deep_sky_markers : [],
       // Labels follow their parent marker — turning markers off also hides their names.
+      starLabels:
+        layers.star_markers && layers.star_labels ? filteredScene.star_labels : [],
+      dsos: layers.deep_sky_markers ? filteredScene.deep_sky_markers : [],
       dsoLabels:
         layers.deep_sky_markers && layers.deep_sky_labels ? filteredScene.deep_sky_labels : [],
     }),

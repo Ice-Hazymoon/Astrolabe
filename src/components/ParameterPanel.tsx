@@ -16,7 +16,11 @@ interface LayerGroup {
 
 const LAYER_GROUPS: LayerGroup[] = [
   { titleKey: 'constellation', layers: ['constellation_lines', 'constellation_labels'] },
-  { titleKey: 'stars', layers: ['star_markers', 'star_labels'] },
+  {
+    titleKey: 'stars',
+    layers: ['star_markers', 'star_labels'],
+    dependsOn: { star_labels: 'star_markers' },
+  },
   {
     titleKey: 'deepSky',
     layers: ['deep_sky_markers', 'deep_sky_labels', 'label_leaders'],

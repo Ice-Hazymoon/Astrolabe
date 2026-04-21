@@ -16,6 +16,14 @@ export interface OverlayLineSegment {
   rgba: RgbaTuple;
 }
 
+/** A constellation's stick figure lines, grouped so each figure can be
+ * hidden / solo'd independently by the details sheet. `id` is the IAU
+ * abbreviation (e.g. "Ori") — stable across locales. */
+export interface OverlayConstellationFigure {
+  id: string;
+  segments: OverlayLineSegment[];
+}
+
 export type LabelVariant = 'constellation' | 'star' | 'dso';
 export type LabelFontFamily = 'sans' | 'serif' | 'mono';
 
@@ -52,6 +60,10 @@ export interface OverlayTextItem {
   text_width?: number;
   /** Optional subtle chip drawn behind the text (DSO labels use this). */
   chip?: LabelChip | null;
+  /** For constellation labels only: the IAU abbreviation of the parent
+   * constellation (e.g. "Ori"). Enables precise filtering by the details
+   * sheet without joining via the localized `text`. */
+  constellation?: string;
 }
 
 export interface OverlayStarMarker {
@@ -83,7 +95,8 @@ export interface OverlayDeepSkyMarker {
 export interface OverlayScene {
   image_width: number;
   image_height: number;
-  constellation_lines: OverlayLineSegment[];
+  /** Stick figures grouped per constellation so hide/solo can be per-figure. */
+  constellation_figures: OverlayConstellationFigure[];
   constellation_labels: OverlayTextItem[];
   star_markers: OverlayStarMarker[];
   star_labels: OverlayTextItem[];

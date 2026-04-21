@@ -941,12 +941,15 @@ function buildOverlaySvg(scene: OverlayScene, layers: OverlayOptions['layers']):
 
   if (layers.constellation_lines) {
     parts.push(`<g filter="url(#overlay-line-glow)">`);
-    for (const s of scene.constellation_lines) parts.push(renderLine(s));
+    for (const figure of scene.constellation_figures) {
+      for (const s of figure.segments) parts.push(renderLine(s));
+    }
     parts.push(`</g>`);
   }
+  const showStarLabels = layers.star_markers && layers.star_labels;
   const showDsoLabels = layers.deep_sky_markers && layers.deep_sky_labels;
   if (layers.label_leaders) {
-    if (layers.star_labels) parts.push(renderLeaders(scene.star_labels));
+    if (showStarLabels) parts.push(renderLeaders(scene.star_labels));
     if (showDsoLabels) parts.push(renderLeaders(scene.deep_sky_labels));
   }
   if (layers.deep_sky_markers) {
@@ -960,7 +963,7 @@ function buildOverlaySvg(scene: OverlayScene, layers: OverlayOptions['layers']):
   if (layers.constellation_labels) {
     for (const t of scene.constellation_labels) parts.push(renderLabel(t));
   }
-  if (layers.star_labels) {
+  if (showStarLabels) {
     for (const t of scene.star_labels) parts.push(renderLabel(t));
   }
   if (showDsoLabels) {

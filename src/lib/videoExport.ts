@@ -364,9 +364,10 @@ async function prerenderAllLabels(
   const constellation = layers.constellation_labels
     ? await prerenderInChunks(scene.constellation_labels, signal)
     : [];
-  const star = layers.star_labels
-    ? await prerenderInChunks(scene.star_labels, signal)
-    : [];
+  const star =
+    layers.star_markers && layers.star_labels
+      ? await prerenderInChunks(scene.star_labels, signal)
+      : [];
   const deepSky =
     layers.deep_sky_markers && layers.deep_sky_labels
       ? await prerenderInChunks(scene.deep_sky_labels, signal)

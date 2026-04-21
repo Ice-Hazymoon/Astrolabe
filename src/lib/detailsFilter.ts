@@ -8,31 +8,17 @@ import type { DetailsFilters } from '@/state/store';
 // Per-item filter model (see DetailsFilters in store.ts):
 //   - Stars / constellations / DSOs each have a `hidden` Set<string> and a single
 //     `solo` id (mutually exclusive within its category).
-//   - Scene items (lines, star/DSO markers, labels) do not carry a stable id —
-//     the only joinable field is `OverlayTextItem.text`, which equals the
-//     item's display `name` in the result payload. All filtering flows through
-//     that name, with two fallbacks:
-//       1. Constellation lines have no text. We join them via the label set:
-//          when a constellation is solo'd/hidden, the WHOLE line collection is
-//          shown/hidden together. (Trade-off: we can't keep one constellation's
-//          lines visible while hiding another's unless a label exists for the
-//          hidden one — in practice, constellation_labels is comprehensive.)
-//          Concretely: if a solo is set and its name has no label, lines are
-//          hidden. If hidden set contains ALL rendered constellations, lines
-//          hide. Otherwise we just drop lines whose nearest label was removed;
-//          since we can't spatially attribute segments cheaply, we take the
-//          conservative approach — lines survive if any non-hidden
-//          constellation label is present.
-//       2. Star markers have no text. We correlate markers to star_labels by
-//          the label's `leader` endpoint (x2,y2) which points at the star,
-//          snap-matched with a small tolerance. Markers without a matching
-//          label get the benefit of the doubt and remain visible (they can
-//          only be hidden through the label pipeline).
-//       3. DSO markers: same leader-endpoint correlation. Where a leader is
-//          absent, we match by proximity to the label's anchor (x,y).
+//   - Constellations join precisely: each figure carries `id` (IAU abbr) and each
+//     constellation label carries `constellation` (the same abbr), so hide/solo
+//     is per-figure — not an all-or-nothing toggle.
+//   - Stars / DSOs: scene markers don't carry a stable id. Labels carry `text`
+//     which equals the item's display `name`. Markers are correlated to their
+//     label via leader endpoints (with tolerance), falling back to keeping
+//     uncorrelated markers visible rather than dropping them arbitrarily.
 //
 // Shared between the live overlay (OverlayCanvas.tsx) and the export path
-// (composite.ts) so saved PNGs mirror what the user sees on screen.
+// (composite.ts / videoExport.ts) so saved PNGs and MP4s mirror what the user
+// sees on screen.
 export function applyDetailsFilters(
   scene: OverlayScene,
   filters: DetailsFilters,
@@ -58,21 +44,22 @@ export function applyDetailsFilters(
   };
 
   // --- Constellations ---
+  // Figures are already keyed by IAU abbr; constellation labels carry the same
+  // abbr (attached by buildScene()). Both filter on the same join key — no
+  // positional/text heuristics needed.
   let constellation_labels = scene.constellation_labels;
-  let constellation_lines = scene.constellation_lines;
+  let constellation_figures = scene.constellation_figures;
   if (constActive) {
-    constellation_labels = constellation_labels.filter((l) =>
-      keepByName(l.text, constellationsHidden, constellationSolo),
-    );
-    // Lines: coarse behaviour — if solo is set, only keep lines if the solo'd
-    // constellation's label survived. Otherwise keep lines whenever at least
-    // one constellation label remains visible (matches the documented trade-off).
-    if (constellationSolo !== null) {
-      const hasSoloLabel = constellation_labels.some((l) => l.text === constellationSolo);
-      constellation_lines = hasSoloLabel ? constellation_lines : [];
-    } else if (constellation_labels.length === 0) {
-      constellation_lines = [];
-    }
+    const keepConst = (abbr: string | undefined): boolean => {
+      // Defensive: if a label somehow lacks `constellation` we keep it rather
+      // than dropping silently — this should never happen in practice because
+      // buildScene() attaches the abbr on every constellation label.
+      if (!abbr) return true;
+      if (constellationSolo !== null) return abbr === constellationSolo;
+      return !constellationsHidden.has(abbr);
+    };
+    constellation_labels = constellation_labels.filter((l) => keepConst(l.constellation));
+    constellation_figures = constellation_figures.filter((f) => keepConst(f.id));
   }
 
   // --- Stars ---
@@ -151,7 +138,7 @@ export function applyDetailsFilters(
 
   return {
     ...scene,
-    constellation_lines,
+    constellation_figures,
     constellation_labels,
     star_markers,
     star_labels,
