@@ -136,7 +136,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       initial={false}
       animate={{ height: open ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT }}
       transition={{ type: 'spring', stiffness: 380, damping: 36, mass: 0.6 }}
-      className="absolute inset-x-2.5 bottom-2.5 z-20 surface rounded-[var(--radius-lg)] overflow-hidden flex flex-col"
+      className="absolute inset-x-2.5 bottom-2.5 z-20 surface rounded-[var(--radius-lg)] overflow-hidden flex flex-col backdrop-blur-md"
       style={{ maxHeight: 'calc(100% - 20px)' }}
     >
       <button
