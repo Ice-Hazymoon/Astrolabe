@@ -30,8 +30,7 @@ export async function generateMetadata({
     SUPPORTED_CODES.map((code) => [code, getLocalePath(code)]),
   );
   const localePath = getLocalePath(lang);
-  const ogImagePath = getLocalePath(lang, '/opengraph-image');
-  const twitterImagePath = getLocalePath(lang, '/twitter-image');
+  const socialImagePath = '/og-cover.png';
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -55,7 +54,7 @@ export async function generateMetadata({
       url: localePath,
       images: [
         {
-          url: ogImagePath,
+          url: socialImagePath,
           width: 1200,
           height: 630,
           alt: seo.ogImageAlt,
@@ -66,7 +65,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: seo.title,
       description: seo.description,
-      images: [twitterImagePath],
+      images: [socialImagePath],
     },
   };
 }

@@ -42,3 +42,4 @@ bun-debug.log*
 .claude/
 tmp/
 temp/
+.tmp-logo/

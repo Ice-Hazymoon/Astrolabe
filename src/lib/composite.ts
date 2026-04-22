@@ -442,7 +442,7 @@ function buildStripBrandRow(args: {
 
   return (
     `<g transform="translate(${logoX.toFixed(1)} ${logoY.toFixed(1)}) scale(${logoScale.toFixed(3)})">` +
-      logoSvgMarkup(palette.accent) +
+      logoSvgMarkup() +
     `</g>` +
     `<text x="${textX.toFixed(1)}" y="${wordmarkCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
       `font-family="${STRIP_SERIF}" font-size="${fs.wordmark}" font-weight="500" ` +

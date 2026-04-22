@@ -64,7 +64,7 @@ export const getJsonLd = cache(async (locale: string) => {
   const seo = await getLocaleSeo(locale);
   const language = findUiLanguage(locale)?.code ?? DEFAULT_UI_LANGUAGE;
   const localePath = getLocalePath(language);
-  const ogImagePath = getLocalePath(language, '/opengraph-image');
+  const ogImagePath = '/og-cover.png';
 
   return {
     '@context': 'https://schema.org',
