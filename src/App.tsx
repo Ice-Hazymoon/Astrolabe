@@ -5,15 +5,13 @@ import { Stage } from './components/Stage';
 import { ParameterSidebar } from './components/ParameterSidebar';
 import { LanguageSettingsDialog } from './components/LanguageSettingsDialog';
 import { PwaInstallDialog } from './components/PwaInstallDialog';
+import { HistoryStrip } from './components/HistoryStrip';
 import { useSEO } from './i18n/useSEO';
 import { useLocaleSync } from './i18n/useLocaleSync';
 import { usePwaInstall } from './pwa/usePwaInstall';
 
 const ParameterDrawer = lazy(() =>
   import('./components/ParameterDrawer').then((m) => ({ default: m.ParameterDrawer }))
-);
-const HistoryStrip = lazy(() =>
-  import('./components/HistoryStrip').then((m) => ({ default: m.HistoryStrip }))
 );
 
 export default function App() {
@@ -68,11 +66,9 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-      {drawerOpen && (
-        <Suspense fallback={null}>
-          <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      </Suspense>
       <LanguageSettingsDialog
         open={languageDialogOpen}
         onClose={() => setLanguageDialogOpen(false)}

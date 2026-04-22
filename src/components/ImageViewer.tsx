@@ -60,6 +60,7 @@ export function ImageViewer({
   const [errored, setErrored] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const wrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
 
   // Probe the image's natural dimensions *before* TransformWrapper mounts.
   // react-zoom-pan-pinch's `centerOnInit` measures the content box once on
@@ -128,8 +129,35 @@ export function ImageViewer({
   const zoomOut = useCallback(() => wrapperRef.current?.zoomOut(0.4), []);
   const resetZoom = useCallback(() => wrapperRef.current?.resetTransform(280), []);
 
+  useEffect(() => {
+    if (!ready) return;
+
+    const frame = frameRef.current;
+    if (!frame || typeof ResizeObserver === 'undefined') return;
+
+    let raf = 0;
+    const recenter = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const ref = wrapperRef.current;
+        if (!ref) return;
+        if (ref.state.scale <= 1.0001) ref.centerView(1, 0);
+      });
+    };
+
+    recenter();
+    const observer = new ResizeObserver(() => recenter());
+    observer.observe(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+    };
+  }, [ready, wrapperKey]);
+
   return (
     <div
+      ref={frameRef}
       className={cn(
         'relative h-full w-full overflow-hidden',
         'transition-[border-radius,border-color] duration-300',

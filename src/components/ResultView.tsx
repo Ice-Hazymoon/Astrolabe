@@ -44,7 +44,7 @@ export function ResultView() {
   // Reset showOriginal when the result itself changes (e.g. switching history entries).
   useEffect(() => {
     setShowOriginal(false);
-  }, [result?.processingMs]);
+  }, [current?.sourceKey]);
 
   const scene = useMemo(() => {
     if (!result?.catalog || !result.catalog.image_width) return null;
@@ -76,7 +76,7 @@ export function ResultView() {
   const activeOverlay = !showOriginal ? overlay : null;
   // Keyed to the result only — NOT to showOriginal — so toggling the overlay keeps
   // the viewer's zoom/pan state instead of remounting the image underneath.
-  const resultKey = `${result.processingMs}-${result.solve.center_ra_deg.toFixed(2)}-${result.solve.center_dec_deg.toFixed(2)}`;
+  const resultKey = current.sourceKey;
 
   const openExport = () => {
     if (!scene) return;
@@ -145,6 +145,7 @@ export function ResultView() {
       {!fullscreen && (
         <>
           <ImageViewer
+            key={resultKey}
             src={activeSrc}
             alt={activeAlt}
             cacheKey={resultKey}
@@ -184,6 +185,7 @@ export function ResultView() {
               className="relative h-full w-full p-3"
             >
               <ImageViewer
+                key={`fs::${resultKey}`}
                 src={activeSrc}
                 alt={activeAlt}
                 cacheKey={`fs::${resultKey}`}

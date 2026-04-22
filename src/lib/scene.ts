@@ -159,6 +159,8 @@ function boxesOverlap(a: LabelBox, b: LabelBox, pad: number): boolean {
 
 interface LabelSpec {
   text: string;
+  entity_id?: string;
+  constellation_ids?: string[];
   variant: LabelVariant;
   /** Higher placed first. */
   priority: number;
@@ -330,6 +332,8 @@ function layoutLabels(
 
     const item: OverlayTextItem = {
       text: spec.text,
+      entity_id: spec.entity_id,
+      constellation_ids: spec.constellation_ids,
       x: picked.x,
       y: picked.y,
       font_size: spec.font_size,
@@ -384,6 +388,8 @@ function buildLeader(
 function buildConstellationSpec(c: CatalogConstellation, scale: number): LabelSpec {
   return {
     text: c.display_name,
+    entity_id: c.id,
+    constellation_ids: [c.abbr],
     variant: 'constellation',
     priority: 300, // always win — big type sets the grid
     anchorX: c.label_x,
@@ -409,6 +415,8 @@ function buildStarSpec(s: CatalogStar, scale: number): LabelSpec {
   const fontSize = (s.magnitude <= 1 ? 18 : s.magnitude <= 2.5 ? 17 : 16) * scale;
   return {
     text: s.name,
+    entity_id: s.id,
+    constellation_ids: s.constellation_ids,
     variant: 'star',
     priority: 200 - s.magnitude * 10,
     anchorX: s.x,
@@ -440,6 +448,7 @@ function buildDsoSpec(d: CatalogDso, text: string, scale: number): LabelSpec {
   };
   return {
     text,
+    entity_id: d.id,
     variant: 'dso',
     // Curated (Messier etc.) beat generic; brighter beat fainter.
     priority: (d.curated ? 180 : 140) - d.magnitude * 4,
@@ -502,12 +511,33 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
       })),
     }));
 
+  const constellationIdsByHip = new Map<number, Set<string>>();
+  for (const constellation of constellations) {
+    for (const segment of constellation.segments) {
+      for (const hip of [segment.start_hip, segment.end_hip]) {
+        if (hip == null) continue;
+        const memberships = constellationIdsByHip.get(hip) ?? new Set<string>();
+        memberships.add(constellation.abbr);
+        constellationIdsByHip.set(hip, memberships);
+      }
+    }
+  }
+  const starConstellationIds = (star: CatalogStar): string[] | undefined => {
+    const memberships = new Set<string>(star.constellation_ids ?? []);
+    if (star.hip != null) {
+      for (const abbr of constellationIdsByHip.get(star.hip) ?? []) memberships.add(abbr);
+    }
+    return memberships.size > 0 ? [...memberships] : undefined;
+  };
+
   // Stars: filter by magnitude, then cap to the density limit.
   const keptStars = sortStarsForLabeling(
     stars.filter((s) => s.magnitude <= detail.star_magnitude_limit),
   ).slice(0, Math.max(0, detail.star_label_limit));
 
   const star_markers: OverlayStarMarker[] = keptStars.map((s) => ({
+    id: s.id,
+    constellation_ids: starConstellationIds(s),
     x: s.x,
     y: s.y,
     radius: starRadius(s.magnitude) * scale,
@@ -521,6 +551,7 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
   ).slice(0, Math.max(0, detail.dso_label_limit));
 
   const deep_sky_markers: OverlayDeepSkyMarker[] = keptDsos.map((d) => ({
+    id: d.id,
     marker: dsoMarkerShape(d.type_code),
     x: d.x,
     y: d.y,

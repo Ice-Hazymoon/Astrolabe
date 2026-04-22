@@ -14,7 +14,7 @@ import type {
 
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, '') ||
-  'http://localhost:3000';
+  'https://constellate-api.imiku.me';
 
 interface RawHealth {
   ok: boolean;
@@ -150,7 +150,14 @@ function toCatalogConstellation(
   const segments: CatalogConstellationSegment[] = Array.isArray(raw.segments)
     ? raw.segments
         .filter((s) => s?.start && s?.end)
-        .map((s) => ({ x1: s.start.x, y1: s.start.y, x2: s.end.x, y2: s.end.y }))
+        .map((s) => ({
+          x1: s.start.x,
+          y1: s.start.y,
+          x2: s.end.x,
+          y2: s.end.y,
+          start_hip: s.start.hip,
+          end_hip: s.end.hip,
+        }))
     : [];
   if (raw.label_x == null || raw.label_y == null) return null;
   return {
@@ -191,10 +198,32 @@ function toCatalogDso(raw: RawAnalyzeResponse['visible_deep_sky_objects'][number
 function normalize(raw: RawAnalyzeResponse): AnalyzeResponse {
   const width = raw.image_width ?? raw.overlay_scene?.image_width ?? 0;
   const height = raw.image_height ?? raw.overlay_scene?.image_height ?? 0;
+  const constellationMembershipByHip = new Map<number, Set<string>>();
+  for (const constellation of raw.visible_constellations) {
+    const abbr = constellation.abbr;
+    for (const segment of constellation.segments ?? []) {
+      for (const hip of [segment.start?.hip, segment.end?.hip]) {
+        if (hip == null) continue;
+        const memberships = constellationMembershipByHip.get(hip) ?? new Set<string>();
+        memberships.add(abbr);
+        constellationMembershipByHip.set(hip, memberships);
+      }
+    }
+  }
   const catalog: Catalog = {
     image_width: width,
     image_height: height,
-    stars: raw.visible_named_stars.map(toCatalogStar).filter((s): s is CatalogStar => s != null),
+    stars: raw.visible_named_stars
+      .map((star) => {
+        const item = toCatalogStar(star);
+        if (!item) return null;
+        if (star.hip != null) {
+          const memberships = constellationMembershipByHip.get(star.hip);
+          if (memberships?.size) item.constellation_ids = [...memberships];
+        }
+        return item;
+      })
+      .filter((s): s is CatalogStar => s != null),
     constellations: raw.visible_constellations
       .map(toCatalogConstellation)
       .filter((c): c is CatalogConstellation => c != null),

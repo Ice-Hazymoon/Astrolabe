@@ -76,14 +76,14 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
     dso: result.visible_deep_sky_objects.length,
   };
 
-  // filterKey must match the string used in OverlayCanvas to join scene items
-  // to result items — which is the display `name`.
+  // filterKey mirrors the stable ids carried into the overlay scene so
+  // hide/solo applies to markers and labels together.
   const items: RowItem[] = (() => {
     switch (tab) {
       case 'stars':
         return result.visible_named_stars.map((s) => ({
           id: s.id,
-          filterKey: s.name,
+          filterKey: s.id,
           primary: s.name,
           secondary: s.constellation ?? '',
           meta: `mag ${s.magnitude.toFixed(2)}`,
@@ -102,7 +102,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       case 'dso':
         return result.visible_deep_sky_objects.map((d) => ({
           id: d.id,
-          filterKey: d.name,
+          filterKey: d.id,
           primary: d.name,
           // d.type is a raw backend code (e.g. "OCl"); translate via catalog with fallback to raw.
           secondary: t(`catalog:dsoTypes.${d.type}`, { defaultValue: d.type }),
@@ -136,8 +136,8 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       initial={false}
       animate={{ height: open ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT }}
       transition={{ type: 'spring', stiffness: 380, damping: 36, mass: 0.6 }}
-      className="absolute inset-x-2.5 bottom-2.5 z-20 surface rounded-[var(--radius-lg)] overflow-hidden flex flex-col backdrop-blur-md"
-      style={{ maxHeight: 'calc(100% - 20px)' }}
+      className="absolute inset-x-1.5 bottom-1.5 sm:inset-x-2.5 sm:bottom-2.5 z-20 surface rounded-[var(--radius-lg)] overflow-hidden flex flex-col backdrop-blur-md"
+      style={{ maxHeight: 'calc(100% - 12px)' }}
     >
       <button
         type="button"
@@ -266,7 +266,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-1.5"
+              className="grid grid-cols-2 lg:grid-cols-3 min-[1400px]:grid-cols-4 gap-2.5 sm:gap-3"
             >
               {items.length === 0 && (
                 <li className="col-span-full text-[12px] text-[color:var(--color-text-muted)] py-2">
@@ -280,82 +280,78 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
                   <li
                     key={item.id}
                     className={cn(
-                      'group/row relative flex items-center justify-between gap-2 py-1 pl-1.5 pr-1',
-                      'border-b border-[color:var(--color-line-soft)]/50 last:border-b-0',
-                      'transition-opacity duration-200',
-                      isHidden && 'opacity-50',
-                      isSolo &&
-                        'before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[2px] before:rounded-full before:bg-[color:var(--color-star)]',
+                      'group/row relative min-w-0 rounded-[14px] border px-3 py-2.5 pr-16',
+                      'border-[color:var(--color-line-soft)]/70 bg-[color:var(--color-ink-1)]/65',
+                      'transition-[border-color,background-color,opacity] duration-200',
+                      'hover:border-[color:var(--color-line)]/80 hover:bg-[color:var(--color-ink-2)]/55',
+                      isHidden && 'opacity-55',
+                      isSolo && 'border-[color:var(--color-star)]/45 bg-[color:var(--color-star)]/[0.06]',
                     )}
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[12.5px] text-[color:var(--color-text)] truncate">
-                        {item.primary}
+                    <div className="min-w-0">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pr-1">
+                        <div className="min-w-0 max-w-full truncate text-[12.5px] text-[color:var(--color-text)]">
+                          {item.primary}
+                        </div>
+                        <span
+                          className={cn(
+                            'inline-flex shrink-0 items-center rounded-full border px-1.5 py-0.5',
+                            'border-[color:var(--color-line-soft)]/80 bg-[color:var(--color-ink-2)]/72',
+                            'text-mono text-[10px] text-[color:var(--color-text-soft)] tabular-nums',
+                            isSolo && 'border-[color:var(--color-star)]/35 text-[color:var(--color-star)]',
+                          )}
+                        >
+                          {item.meta}
+                        </span>
                       </div>
                       {item.secondary && (
-                        <div className="text-[10.5px] text-[color:var(--color-text-muted)] truncate">
+                        <div className="mt-1 text-[10.5px] text-[color:var(--color-text-muted)] truncate pr-1">
                           {item.secondary}
                         </div>
                       )}
                     </div>
-                    <div className="relative shrink-0 flex items-center justify-end min-w-[52px]">
-                      {/* Meta drives layout width on desktop; fades out as actions fade in.
-                          Both sides use opacity on the same slot so there's no display-swap pop. */}
-                      <span
+                    <div
+                      className={cn(
+                        'absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 transition-opacity duration-150',
+                        'opacity-100 sm:opacity-0 sm:pointer-events-none',
+                        'sm:group-hover/row:opacity-100 sm:group-hover/row:pointer-events-auto',
+                        'sm:focus-within:opacity-100 sm:focus-within:pointer-events-auto',
+                        (isHidden || isSolo) && 'sm:opacity-100 sm:pointer-events-auto',
+                      )}
+                    >
+                      <button
+                        type="button"
+                        aria-label={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                        aria-pressed={isSolo}
+                        title={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
+                        onClick={() => toggleItemSolo(currentCategory, item.filterKey)}
                         className={cn(
-                          'text-mono text-[10.5px] text-[color:var(--color-text-soft)] tabular-nums',
-                          'hidden sm:inline-block transition-opacity duration-150',
-                          'sm:group-hover/row:opacity-0 sm:focus-within:opacity-0',
-                          (isHidden || isSolo) && 'sm:opacity-0',
-                        )}
-                        aria-hidden={isHidden || isSolo ? 'true' : undefined}
-                      >
-                        {item.meta}
-                      </span>
-                      <div
-                        className={cn(
-                          'absolute inset-y-0 right-0 flex items-center gap-0.5 transition-opacity duration-150',
-                          // Mobile: always visible (meta is hidden there). Desktop: reveals on hover/focus.
-                          'opacity-100 sm:opacity-0 sm:pointer-events-none',
-                          'sm:group-hover/row:opacity-100 sm:group-hover/row:pointer-events-auto',
-                          'sm:focus-within:opacity-100 sm:focus-within:pointer-events-auto',
-                          (isHidden || isSolo) && 'sm:opacity-100 sm:pointer-events-auto',
+                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/75',
+                          'transition-colors',
+                          isSolo && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
                         )}
                       >
-                        <button
-                          type="button"
-                          aria-label={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
-                          aria-pressed={isSolo}
-                          title={isSolo ? t('result:actions.unsolo') : t('result:actions.solo')}
-                          onClick={() => toggleItemSolo(currentCategory, item.filterKey)}
-                          className={cn(
-                            'inline-flex h-6 w-6 items-center justify-center rounded-full',
-                            'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
-                            'transition-colors',
-                            isSolo && 'text-[color:var(--color-star)] hover:text-[color:var(--color-star)]',
-                          )}
-                        >
-                          <Focus className="h-3.5 w-3.5" strokeWidth={2.2} />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={isHidden ? t('result:actions.show') : t('result:actions.hide')}
-                          aria-pressed={isHidden}
-                          title={isHidden ? t('result:actions.show') : t('result:actions.hide')}
-                          onClick={() => toggleItemHidden(currentCategory, item.filterKey)}
-                          className={cn(
-                            'inline-flex h-6 w-6 items-center justify-center rounded-full',
-                            'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/60',
-                            'transition-colors',
-                          )}
-                        >
-                          {isHidden ? (
-                            <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
-                          ) : (
-                            <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />
-                          )}
-                        </button>
-                      </div>
+                        <Focus className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                        aria-pressed={isHidden}
+                        title={isHidden ? t('result:actions.show') : t('result:actions.hide')}
+                        onClick={() => toggleItemHidden(currentCategory, item.filterKey)}
+                        className={cn(
+                          'inline-flex h-6 w-6 items-center justify-center rounded-full',
+                          'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-2)]/75',
+                          'transition-colors',
+                        )}
+                      >
+                        {isHidden ? (
+                          <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        )}
+                      </button>
                     </div>
                   </li>
                 );

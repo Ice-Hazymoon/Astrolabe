@@ -15,10 +15,9 @@ export interface ProcessingProgress {
   pct: number;
 }
 
-/** Per-item visibility filter state for the details sheet. Keyed by the displayed
- * `name`/`id` of each result item (see ResultDetailsSheet). The filter keys must
- * correspond to the strings used to match scene items in OverlayCanvas — today
- * that's the item's display `name` (since scene items only carry `text`). */
+/** Per-item visibility filter state for the details sheet. Keys mirror the
+ * stable ids attached to overlay markers/labels so per-row hide/solo can
+ * affect the rendered object exactly instead of heuristically. */
 export type DetailsCategory = 'stars' | 'constellations' | 'dsos';
 
 export interface DetailsFilters {
@@ -73,6 +72,8 @@ export function detailsCategoryActive(f: DetailsFilters, category: DetailsCatego
 }
 
 interface UploadInput {
+  /** Stable identity for the currently displayed source image. */
+  sourceKey: string;
   /** data: URL — used for thumbnailing, history persistence, and as a display fallback. */
   inputDataUrl: string;
   /** Best URL for live display in <img>. blob: URL when freshly uploaded, otherwise = inputDataUrl. */
@@ -217,6 +218,7 @@ export const useSky = create<SkyState>((set, get) => {
       set({
         phase: 'preview',
         current: {
+          sourceKey: `upload:${file.name}:${file.size}:${file.lastModified}`,
           inputDataUrl,
           inputDisplayUrl: inputBlobUrl,
           fileName: file.name,
@@ -331,6 +333,7 @@ export const useSky = create<SkyState>((set, get) => {
         phase: 'result',
         // Restored entries don't have the original blob, so we display the data URL directly.
         current: {
+          sourceKey: `history:${entry.id}`,
           inputDataUrl: entry.inputDataUrl,
           inputDisplayUrl: entry.inputDataUrl,
           fileName: entry.fileName,

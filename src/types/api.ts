@@ -39,6 +39,10 @@ export interface LabelChip {
 
 export interface OverlayTextItem {
   text: string;
+  /** Stable object id mirrored from the result payload for exact hide/solo matching. */
+  entity_id?: string;
+  /** Related constellation abbreviations (IAU) for smart constellation-driven filtering. */
+  constellation_ids?: string[];
   /** SVG baseline-start x (textAnchor="start"). */
   x: number;
   /** SVG text baseline y. */
@@ -67,6 +71,9 @@ export interface OverlayTextItem {
 }
 
 export interface OverlayStarMarker {
+  id?: string;
+  /** Related constellation abbreviations (IAU) for smart constellation-driven filtering. */
+  constellation_ids?: string[];
   x: number;
   y: number;
   radius: number;
@@ -84,6 +91,7 @@ export type DeepSkyMarkerShape =
   | 'x_circle';
 
 export interface OverlayDeepSkyMarker {
+  id?: string;
   marker: DeepSkyMarkerShape | string;
   x: number;
   y: number;
@@ -173,6 +181,8 @@ export interface CatalogStar {
   id: string;
   name: string;
   hip?: number;
+  /** Constellation abbreviations derived from stick-figure segment membership. */
+  constellation_ids?: string[];
   magnitude: number;
   x: number;
   y: number;
@@ -183,6 +193,8 @@ export interface CatalogConstellationSegment {
   y1: number;
   x2: number;
   y2: number;
+  start_hip?: number;
+  end_hip?: number;
 }
 
 export interface CatalogConstellation {
