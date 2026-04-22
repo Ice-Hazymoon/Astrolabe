@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import { DEFAULT_UI_LANGUAGE, UI_LANGUAGES, findUiLanguage } from './languages';
 import { baseInitOptions } from './resources';
 import { detectInitialUiLanguage, detectUrlUiLanguage, syncLocalizedUrl } from './browserUrl';
+import { saveLanguage } from './autoRedirect';
 
 /**
  * Client-side i18n singleton. Bootstrap from the current URL / prerendered
@@ -40,6 +41,7 @@ if (typeof document !== 'undefined') {
   const syncDocument = (code: string) => {
     applyDocumentLang(code);
     syncLocalizedUrl(code);
+    saveLanguage(code);
   };
 
   const syncFromLocation = () => {
