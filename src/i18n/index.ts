@@ -38,7 +38,13 @@ function applyDocumentLang(code: string): void {
 }
 
 if (typeof document !== 'undefined') {
-  const syncDocument = (code: string) => {
+  // On the initial boot we deliberately do NOT persist the language — this
+  // module is imported (and runs) before `maybeAutoRedirect` gets a chance to
+  // read localStorage. If we wrote the bootstrap default here, auto-redirect
+  // would always see saved='en' and never honor the user's browser locale.
+  // Persistence happens only via `languageChanged` below (switcher / reload
+  // after redirect) and via `maybeAutoRedirect` when the URL is explicit.
+  const onLanguageChanged = (code: string) => {
     applyDocumentLang(code);
     syncLocalizedUrl(code);
     saveLanguage(code);
@@ -52,8 +58,10 @@ if (typeof document !== 'undefined') {
     }
   };
 
-  syncDocument(i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_UI_LANGUAGE);
-  i18n.on('languageChanged', syncDocument);
+  const initial = i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_UI_LANGUAGE;
+  applyDocumentLang(initial);
+  syncLocalizedUrl(initial);
+  i18n.on('languageChanged', onLanguageChanged);
   window.addEventListener('popstate', syncFromLocation);
 }
 
