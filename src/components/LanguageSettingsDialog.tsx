@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 import { LabelLocaleSwitcher } from '@/i18n/LabelLocaleSwitcher';
 import { IconButton } from './ui/IconButton';

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Trash2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useSky } from '@/state/store';
 import { Button } from './ui/Button';
 import { ImageViewer } from './ImageViewer';

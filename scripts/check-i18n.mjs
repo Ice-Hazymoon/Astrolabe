@@ -7,9 +7,9 @@ const baseline = 'en';
 /**
  * Namespaces whose per-locale coverage is intentionally partial. Translations
  * come from the upstream Stardroid bundles, which ship different subsets of
- * celestial-object names per language. i18next's fallbackLng chain covers
- * whatever is missing, so we only validate that non-`en` locales never add
- * *extra* keys that English doesn't know about.
+ * celestial-object names per language. Our locale loader deep-merges each
+ * locale over the English baseline, so we only validate that non-`en` locales
+ * never add *extra* keys that English doesn't know about.
  */
 const SPARSE_NAMESPACES = new Set(['celestial.json']);
 

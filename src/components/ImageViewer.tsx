@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { ZoomIn, ZoomOut, Maximize2, Expand, Shrink } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { IconButton } from './ui/IconButton';
 import { cn } from '@/lib/cn';
 
@@ -56,11 +56,23 @@ export function ImageViewer({
   overlay,
 }: ImageViewerProps) {
   const { t } = useTranslation('viewer');
-  const [loaded, setLoaded] = useState(false);
-  const [errored, setErrored] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const [viewState, setViewState] = useState<{
+    src: string | null;
+    aspectRatio: number | null;
+    loaded: boolean;
+    errored: boolean;
+  }>({
+    src: null,
+    aspectRatio: null,
+    loaded: false,
+    errored: false,
+  });
   const wrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const currentViewState = viewState.src === src
+    ? viewState
+    : { src: null, aspectRatio: null, loaded: false, errored: false };
+  const { aspectRatio, loaded, errored } = currentViewState;
 
   // Probe the image's natural dimensions *before* TransformWrapper mounts.
   // react-zoom-pan-pinch's `centerOnInit` measures the content box once on
@@ -72,10 +84,6 @@ export function ImageViewer({
   // fallback). Holding mount back until we know the real ratio avoids that
   // race entirely: the wrapper's first measurement is already correct.
   useEffect(() => {
-    setErrored(false);
-    setLoaded(false);
-    setAspectRatio(null);
-
     if (!src) return;
 
     let cancelled = false;
@@ -84,16 +92,31 @@ export function ImageViewer({
     const apply = () => {
       if (cancelled) return;
       if (probe.naturalWidth > 0 && probe.naturalHeight > 0) {
-        setAspectRatio(probe.naturalWidth / probe.naturalHeight);
+        setViewState({
+          src,
+          aspectRatio: probe.naturalWidth / probe.naturalHeight,
+          loaded: false,
+          errored: false,
+        });
       } else {
-        setErrored(true);
+        setViewState({
+          src,
+          aspectRatio: null,
+          loaded: false,
+          errored: true,
+        });
       }
     };
     probe.onload = apply;
     probe.onerror = () => {
       if (cancelled) return;
-      setErrored(true);
-      console.warn('[ImageViewer] failed to load image', { src: src.slice(0, 64), alt });
+      setViewState({
+        src,
+        aspectRatio: null,
+        loaded: false,
+        errored: true,
+      });
+      console.warn('[ImageViewer] failed to load image', { src: src.slice(0, 64) });
     };
     probe.src = src;
     // Fast path: some browsers serve fully-decoded cached images synchronously,
@@ -105,16 +128,24 @@ export function ImageViewer({
       probe.onload = null;
       probe.onerror = null;
     };
-  }, [src, cacheKey, alt]);
+  }, [src, cacheKey]);
 
   const handleLoad = useCallback(() => {
-    setLoaded(true);
-    setErrored(false);
-  }, []);
+    setViewState((current) => ({
+      src,
+      aspectRatio: current.aspectRatio,
+      loaded: true,
+      errored: false,
+    }));
+  }, [src]);
 
   const handleError = useCallback(() => {
-    setErrored(true);
-    setLoaded(false);
+    setViewState((current) => ({
+      src,
+      aspectRatio: current.src === src ? current.aspectRatio : null,
+      loaded: false,
+      errored: true,
+    }));
     console.warn('[ImageViewer] failed to load image', { src: src.slice(0, 64), alt });
   }, [src, alt]);
 

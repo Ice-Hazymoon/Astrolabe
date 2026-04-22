@@ -1,17 +1,20 @@
-import { Suspense, lazy, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { Topbar } from './components/Topbar';
 import { Stage } from './components/Stage';
 import { ParameterSidebar } from './components/ParameterSidebar';
 import { LanguageSettingsDialog } from './components/LanguageSettingsDialog';
 import { PwaInstallDialog } from './components/PwaInstallDialog';
 import { HistoryStrip } from './components/HistoryStrip';
-import { useSEO } from './i18n/useSEO';
 import { useLocaleSync } from './i18n/useLocaleSync';
 import { usePwaInstall } from './pwa/usePwaInstall';
+import { history } from './lib/storage';
+import { useSky } from './state/store';
 
-const ParameterDrawer = lazy(() =>
-  import('./components/ParameterDrawer').then((m) => ({ default: m.ParameterDrawer }))
+const ParameterDrawer = dynamic(
+  () => import('./components/ParameterDrawer').then((m) => m.ParameterDrawer),
+  { loading: () => null },
 );
 
 export default function App() {
@@ -19,8 +22,21 @@ export default function App() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
   const pwa = usePwaInstall();
-  useSEO();
   useLocaleSync();
+
+  useEffect(() => {
+    const syncHistory = (entries: ReturnType<typeof history.list>) => {
+      useSky.getState().hydrateHistory(entries);
+    };
+
+    // Keep the server render and the first client render identical, then
+    // hydrate browser-only state like localStorage-backed history after mount.
+    const unsubscribe = history.subscribe(syncHistory);
+    syncHistory(history.list());
+    void useSky.getState().refreshApi();
+
+    return unsubscribe;
+  }, []);
 
   return (
     <div
@@ -60,15 +76,11 @@ export default function App() {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="shrink-0 overflow-hidden"
           >
-            <Suspense fallback={null}>
-              <HistoryStrip onClose={() => setHistoryOpen(false)} />
-            </Suspense>
+            <HistoryStrip onClose={() => setHistoryOpen(false)} />
           </motion.div>
         )}
       </AnimatePresence>
-      <Suspense fallback={null}>
-        <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      </Suspense>
+      <ParameterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <LanguageSettingsDialog
         open={languageDialogOpen}
         onClose={() => setLanguageDialogOpen(false)}

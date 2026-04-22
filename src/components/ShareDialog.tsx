@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { IconButton } from './ui/IconButton';
 import { Logo } from './ui/Logo';
 import { XGlyph } from './ui/XGlyph';

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLocale } from 'next-intl';
 import { useSky } from '@/state/store';
 import { findUiLanguage } from './languages';
 
@@ -12,10 +12,11 @@ import { findUiLanguage } from './languages';
  * the API falls back to English on unknown locales.
  */
 export function useLocaleSync(): void {
-  const { i18n } = useTranslation();
+  const locale = useLocale();
   const setLocale = useSky((s) => s.setLocale);
   const hasUserOverridden = useRef(false);
   const syncingFromUi = useRef(false);
+  const activeLanguage = locale;
 
   useEffect(() => {
     const unsubscribe = useSky.subscribe((state, prev) => {
@@ -25,27 +26,21 @@ export function useLocaleSync(): void {
         return;
       }
 
-      const activeUi = findUiLanguage(i18n.resolvedLanguage ?? i18n.language);
+      const activeUi = findUiLanguage(locale);
       hasUserOverridden.current =
         !!activeUi && state.locale !== activeUi.apiLocale;
     });
 
-    const apply = (code: string) => {
-      if (hasUserOverridden.current) return;
-      const lang = findUiLanguage(code);
-      const currentLocale = useSky.getState().locale;
-      if (lang && lang.apiLocale !== currentLocale) {
-        syncingFromUi.current = true;
-        setLocale(lang.apiLocale);
-      }
-    };
+    return unsubscribe;
+  }, [locale]);
 
-    apply(i18n.resolvedLanguage ?? i18n.language);
-    const handler = (lng: string) => apply(lng);
-    i18n.on('languageChanged', handler);
-    return () => {
-      i18n.off('languageChanged', handler);
-      unsubscribe();
-    };
-  }, [i18n, setLocale]);
+  useEffect(() => {
+    if (hasUserOverridden.current) return;
+    const lang = findUiLanguage(activeLanguage);
+    const currentLocale = useSky.getState().locale;
+    if (lang && lang.apiLocale !== currentLocale) {
+      syncingFromUi.current = true;
+      setLocale(lang.apiLocale);
+    }
+  }, [activeLanguage, setLocale]);
 }

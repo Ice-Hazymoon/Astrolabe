@@ -1,14 +1,23 @@
 # dependencies
-node_modules
+node_modules/
 .pnpm-store
 
-# build
-dist
-dist-ssr
-dev-dist
+# next / build
+.next/
+out/
+dist/
+dist-ssr/
+dev-dist/
+.turbo/
+.cache/
+.eslintcache
+.sass-cache/
+coverage/
+storybook-static/
 *.tsbuildinfo
 
 # logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -19,7 +28,7 @@ bun-debug.log*
 # editor
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 
 # env
@@ -27,3 +36,9 @@ bun-debug.log*
 .env.local
 .env.*.local
 .vercel
+
+# local state
+.omx/
+.claude/
+tmp/
+temp/

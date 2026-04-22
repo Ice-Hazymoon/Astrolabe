@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useSyncExternalStore, useState } from 'react';
+import type { BeforeInstallPromptEvent } from '@/types/pwa';
 
 export type InstallPlatform = 'ios' | 'android' | 'desktop';
 
@@ -24,47 +25,65 @@ function isStandaloneMode(): boolean {
 }
 
 export function usePwaInstall() {
-  const [ready, setReady] = useState(false);
-  const [platform, setPlatform] = useState<InstallPlatform>('desktop');
-  const [isInstalled, setIsInstalled] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const ready = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  const platform = useSyncExternalStore<InstallPlatform>(
+    () => () => {},
+    detectInstallPlatform,
+    () => 'desktop',
+  );
+  const isInstalled = useSyncExternalStore(
+    (onChange) => {
+      if (typeof window === 'undefined') {
+        return () => {};
+      }
+
+      const displayQueries = [
+        window.matchMedia('(display-mode: standalone)'),
+        window.matchMedia('(display-mode: minimal-ui)'),
+        window.matchMedia('(display-mode: fullscreen)'),
+      ];
+
+      window.addEventListener('appinstalled', onChange);
+      for (const query of displayQueries) {
+        query.addEventListener('change', onChange);
+      }
+
+      return () => {
+        window.removeEventListener('appinstalled', onChange);
+        for (const query of displayQueries) {
+          query.removeEventListener('change', onChange);
+        }
+      };
+    },
+    isStandaloneMode,
+    () => false,
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    setReady(true);
-    setPlatform(detectInstallPlatform());
 
-    const syncInstalled = () => setIsInstalled(isStandaloneMode());
-    const displayQueries = [
-      window.matchMedia('(display-mode: standalone)'),
-      window.matchMedia('(display-mode: minimal-ui)'),
-      window.matchMedia('(display-mode: fullscreen)'),
-    ];
-
-    const onBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
+    const onBeforeInstallPrompt = (event: Event) => {
+      const installPromptEvent = event as BeforeInstallPromptEvent;
       event.preventDefault();
-      setInstallEvent(event);
+      setInstallEvent(installPromptEvent);
     };
     const onAppInstalled = () => {
-      setIsInstalled(true);
       setInstallEvent(null);
       setDialogOpen(false);
     };
 
-    syncInstalled();
-    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt as EventListener);
     window.addEventListener('appinstalled', onAppInstalled);
-    for (const query of displayQueries) {
-      query.addEventListener('change', syncInstalled);
-    }
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt as EventListener);
       window.removeEventListener('appinstalled', onAppInstalled);
-      for (const query of displayQueries) {
-        query.removeEventListener('change', syncInstalled);
-      }
     };
   }, []);
 

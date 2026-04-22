@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useSky } from '@/state/store';
 import { SegmentedControl } from './ui/SegmentedControl';
 import { Switch } from './ui/Switch';

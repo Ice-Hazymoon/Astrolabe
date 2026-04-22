@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, type DragEvent } from 'react';
 import { ImageUp, Sparkles } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useSky } from '@/state/store';
 import { Button } from './ui/Button';
 import { cn } from '@/lib/cn';

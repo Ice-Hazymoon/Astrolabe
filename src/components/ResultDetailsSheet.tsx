@@ -9,8 +9,10 @@ import {
   Stars,
   Telescope,
 } from 'lucide-react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import {
+  useCelestialTranslation,
+  useTranslation,
+} from '@/i18n/useTranslation';
 import {
   detailsCategoryActive,
   detailsFiltersActive,
@@ -61,7 +63,7 @@ interface RowItem {
 }
 
 export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetProps) {
-  const { t, i18n } = useTranslation(['result', 'catalog']);
+  const { t } = useTranslation(['result', 'catalog']);
   const result = useSky((s) => s.result);
   const filters = useSky((s) => s.detailsFilters);
   const labelLocale = useSky((s) => s.locale);
@@ -70,9 +72,7 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
   const clearCategoryFilters = useSky((s) => s.clearCategoryFilters);
   const clearAllFilters = useSky((s) => s.clearAllFilters);
   const [tab, setTab] = useState<TabId>('stars');
-  // Celestial-name lookups use the label locale (not the UI language) so
-  // swapping the label locale dropdown updates the sheet in real time.
-  const labelT = useMemo(() => i18n.getFixedT(labelLocale), [i18n, labelLocale]);
+  const labelT = useCelestialTranslation(labelLocale);
 
   if (!result) return null;
 
@@ -151,55 +151,54 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
       className="absolute inset-x-1.5 bottom-1.5 sm:inset-x-2.5 sm:bottom-2.5 z-20 surface rounded-[var(--radius-lg)] overflow-hidden flex flex-col backdrop-blur-md"
       style={{ maxHeight: 'calc(100% - 12px)' }}
     >
-      <button
-        type="button"
-        onClick={() => onOpenChange(!open)}
-        aria-expanded={open}
-        aria-controls="result-details-content"
-        className="flex items-center justify-between gap-3 px-3.5 h-[52px] shrink-0 hover:bg-[color:var(--color-ink-2)]/40 transition-colors"
-      >
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <span className="text-eyebrow shrink-0">{t('result:details.header')}</span>
-          <div className="flex items-center gap-2.5 sm:gap-3 text-[12px] text-[color:var(--color-text-soft)]">
-            <span className="inline-flex items-center gap-1 tabular-nums">
-              <Stars className="h-3 w-3 shrink-0 text-[color:var(--color-star)]" strokeWidth={2.2} />
-              {counts.stars}
-            </span>
-            <span className="inline-flex items-center gap-1 tabular-nums">
-              <Compass className="h-3 w-3 shrink-0 text-[color:var(--color-aurora)]" strokeWidth={2.2} />
-              {counts.constellations}
-            </span>
-            <span className="inline-flex items-center gap-1 tabular-nums">
-              <Telescope className="h-3 w-3 shrink-0 text-[color:var(--color-nebula)]" strokeWidth={2.2} />
-              {counts.dso}
-            </span>
+      <div className="flex h-[52px] shrink-0 items-center gap-3 px-3.5">
+        <button
+          type="button"
+          onClick={() => onOpenChange(!open)}
+          aria-expanded={open}
+          aria-controls="result-details-content"
+          className="flex min-w-0 flex-1 items-center justify-between gap-3 self-stretch rounded-[inherit] hover:bg-[color:var(--color-ink-2)]/40 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--color-star)]/60"
+        >
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <span className="text-eyebrow shrink-0">{t('result:details.header')}</span>
+            <div className="flex items-center gap-2.5 sm:gap-3 text-[12px] text-[color:var(--color-text-soft)]">
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Stars className="h-3 w-3 shrink-0 text-[color:var(--color-star)]" strokeWidth={2.2} />
+                {counts.stars}
+              </span>
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Compass className="h-3 w-3 shrink-0 text-[color:var(--color-aurora)]" strokeWidth={2.2} />
+                {counts.constellations}
+              </span>
+              <span className="inline-flex items-center gap-1 tabular-nums">
+                <Telescope className="h-3 w-3 shrink-0 text-[color:var(--color-nebula)]" strokeWidth={2.2} />
+                {counts.dso}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2.5 shrink-0">
-          {anyFilter && open && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                clearAllFilters();
-              }}
-              className="text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--color-star)]/60"
-            >
-              {t('result:filterBar.resetAll')}
-            </button>
-          )}
-          <span className="hidden sm:inline text-mono text-[10.5px] text-[color:var(--color-text-muted)] tabular-nums">
-            {(result.processingMs / 1000).toFixed(2)}s
-          </span>
-          <ChevronUp
-            className={cn(
-              'h-4 w-4 shrink-0 text-[color:var(--color-text-soft)] transition-transform duration-300',
-              open ? 'rotate-180' : 'rotate-0',
-            )}
-            strokeWidth={2.2}
-          />
-        </div>
-      </button>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="hidden sm:inline text-mono text-[10.5px] text-[color:var(--color-text-muted)] tabular-nums">
+              {(result.processingMs / 1000).toFixed(2)}s
+            </span>
+            <ChevronUp
+              className={cn(
+                'h-4 w-4 shrink-0 text-[color:var(--color-text-soft)] transition-transform duration-300',
+                open ? 'rotate-180' : 'rotate-0',
+              )}
+              strokeWidth={2.2}
+            />
+          </div>
+        </button>
+        {anyFilter && open && (
+          <button
+            type="button"
+            onClick={clearAllFilters}
+            className="shrink-0 text-[11px] text-[color:var(--color-text-soft)] hover:text-[color:var(--color-text)] transition-colors px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--color-star)]/60"
+          >
+            {t('result:filterBar.resetAll')}
+          </button>
+        )}
+      </div>
 
       <div
         id="result-details-content"

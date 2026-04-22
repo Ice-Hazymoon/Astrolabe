@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowDownToLine, ExternalLink, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { InstallPlatform } from '@/pwa/usePwaInstall';
 import { Button } from './ui/Button';
 import { IconButton } from './ui/IconButton';

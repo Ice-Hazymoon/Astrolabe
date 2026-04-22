@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { History, Trash2, X } from 'lucide-react';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useSky } from '@/state/store';
 import { IconButton } from './ui/IconButton';
 import { cn } from '@/lib/cn';
@@ -20,7 +20,7 @@ interface HistoryStripProps {
 }
 
 export function HistoryStrip({ onClose }: HistoryStripProps = {}) {
-  const { t, i18n } = useTranslation('history');
+  const { locale, t } = useTranslation('history');
   const entries = useSky((s) => s.history);
   const restore = useSky((s) => s.restoreFromHistory);
   const remove = useSky((s) => s.removeFromHistory);
@@ -30,8 +30,8 @@ export function HistoryStrip({ onClose }: HistoryStripProps = {}) {
   // Recreate the formatter whenever the active UI language changes so relative
   // timestamps read naturally in the user's locale without a full remount.
   const relativeFormatter = useMemo(
-    () => new Intl.RelativeTimeFormat(i18n.resolvedLanguage || i18n.language, { numeric: 'auto' }),
-    [i18n.resolvedLanguage, i18n.language],
+    () => new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }),
+    [locale],
   );
 
   return (

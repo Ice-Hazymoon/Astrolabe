@@ -32,8 +32,46 @@ export function applyDetailsFilters(
   const starsActive = starsHidden.size > 0 || starSolo !== null;
   const constActive = constellationsHidden.size > 0 || constellationSolo !== null;
   const dsoActive = dsosHidden.size > 0 || dsoSolo !== null;
+  const activeSolo =
+    starSolo !== null
+      ? { category: 'stars' as const, id: starSolo }
+      : constellationSolo !== null
+        ? { category: 'constellations' as const, id: constellationSolo }
+        : dsoSolo !== null
+          ? { category: 'dsos' as const, id: dsoSolo }
+          : null;
 
   if (!starsActive && !constActive && !dsoActive) return scene;
+
+  if (activeSolo) {
+    return {
+      ...scene,
+      constellation_figures:
+        activeSolo.category === 'constellations'
+          ? scene.constellation_figures.filter((figure) => figure.id === activeSolo.id)
+          : [],
+      constellation_labels:
+        activeSolo.category === 'constellations'
+          ? scene.constellation_labels.filter((label) => label.constellation === activeSolo.id)
+          : [],
+      star_markers:
+        activeSolo.category === 'stars'
+          ? scene.star_markers.filter((marker) => marker.id === activeSolo.id)
+          : [],
+      star_labels:
+        activeSolo.category === 'stars'
+          ? scene.star_labels.filter((label) => label.entity_id === activeSolo.id)
+          : [],
+      deep_sky_markers:
+        activeSolo.category === 'dsos'
+          ? scene.deep_sky_markers.filter((marker) => marker.id === activeSolo.id)
+          : [],
+      deep_sky_labels:
+        activeSolo.category === 'dsos'
+          ? scene.deep_sky_labels.filter((label) => label.entity_id === activeSolo.id)
+          : [],
+    };
+  }
 
   const keepByKey = (key: string | undefined, hidden: Set<string>, solo: string | null): boolean => {
     if (!key) return solo === null;

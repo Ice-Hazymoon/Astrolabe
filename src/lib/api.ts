@@ -13,7 +13,7 @@ import type {
 } from '@/types/api';
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/+$/, '') ||
+  (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.VITE_API_BASE_URL)?.replace(/\/+$/, '') ||
   'https://constellate-api.imiku.me';
 
 interface RawHealth {

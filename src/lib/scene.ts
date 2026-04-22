@@ -1,4 +1,3 @@
-import type { TFunction } from 'i18next';
 import type {
   Catalog,
   CatalogConstellation,
@@ -17,6 +16,8 @@ import type {
   OverlayTextItem,
   RgbaTuple,
 } from '@/types/api';
+
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 const LINE_RGBA: RgbaTuple = [212, 222, 236, 135];
 
@@ -404,9 +405,9 @@ function buildLeader(
  * translation. Used by every label spec builder so layout measurement and
  * the rendered DOM both see the same string — no post-layout reflow on
  * language switch, no network round-trip. */
-function translateCelestial(key: string | undefined, fallback: string, t: TFunction): string {
+function translateCelestial(key: string | undefined, fallback: string, t: TranslateFn): string {
   if (!key) return fallback;
-  const hit = t(key, { ns: 'celestial', defaultValue: '' });
+  const hit = t(key, { defaultValue: '' });
   return typeof hit === 'string' && hit.length > 0 ? hit : fallback;
 }
 
@@ -421,7 +422,7 @@ function normalizeLookup(value: string): string {
 /** DSO detailed labels mirror annotate_scene.compose_dso_display_label:
  * prefix the translated common name with "M42" / "NGC6543" when they differ,
  * else fall back to the catalog id on its own. */
-function composeDsoText(d: CatalogDso, detailed: boolean, t: TFunction): string {
+function composeDsoText(d: CatalogDso, detailed: boolean, t: TranslateFn): string {
   const rawFallback = detailed ? d.detailed_label : d.primary_label;
   if (!d.i18n_key) return rawFallback;
   const translated = translateCelestial(d.i18n_key, '', t);
@@ -441,7 +442,7 @@ function composeDsoText(d: CatalogDso, detailed: boolean, t: TFunction): string 
   return translated;
 }
 
-function buildConstellationSpec(c: CatalogConstellation, scale: number, t: TFunction): LabelSpec {
+function buildConstellationSpec(c: CatalogConstellation, scale: number, t: TranslateFn): LabelSpec {
   return {
     text: translateCelestial(c.i18n_key, c.display_name, t),
     i18n_key: c.i18n_key,
@@ -466,7 +467,7 @@ function buildConstellationSpec(c: CatalogConstellation, scale: number, t: TFunc
   };
 }
 
-function buildStarSpec(s: CatalogStar, scale: number, t: TFunction): LabelSpec {
+function buildStarSpec(s: CatalogStar, scale: number, t: TranslateFn): LabelSpec {
   const radius = starRadius(s.magnitude) * scale;
   // Bright stars get slightly bigger labels and higher priority.
   const fontSize = (s.magnitude <= 1 ? 18 : s.magnitude <= 2.5 ? 17 : 16) * scale;
@@ -493,7 +494,7 @@ function buildStarSpec(s: CatalogStar, scale: number, t: TFunction): LabelSpec {
   };
 }
 
-function buildDsoSpec(d: CatalogDso, detailed: boolean, scale: number, t: TFunction): LabelSpec {
+function buildDsoSpec(d: CatalogDso, detailed: boolean, scale: number, t: TranslateFn): LabelSpec {
   const text = composeDsoText(d, detailed, t);
   // DSO labels are mono-like and sit inside a subtle chip — the chip is what
   // separates them visually from a star label of the same size.
@@ -536,7 +537,7 @@ function buildDsoSpec(d: CatalogDso, detailed: boolean, scale: number, t: TFunct
  * The backend is queried once with max detail; all filtering and density controls
  * happen here so that parameter changes update the overlay without another round-trip.
  */
-export function buildScene(catalog: Catalog, options: OverlayOptions, t: TFunction): OverlayScene {
+export function buildScene(catalog: Catalog, options: OverlayOptions, t: TranslateFn): OverlayScene {
   const { stars, constellations, dsos, image_width, image_height } = catalog;
   const { layers, detail } = options;
 

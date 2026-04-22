@@ -1,5 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { useLocale, useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { Languages } from 'lucide-react';
+import { usePathname, useRouter } from './navigation';
 import { UI_LANGUAGES } from './languages';
 import { cn } from '@/lib/cn';
 
@@ -13,8 +15,20 @@ interface LanguageSwitcherProps {
  * controls read as a coherent pair without pulling focus.
  */
 export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
-  const { t, i18n } = useTranslation('common');
-  const current = i18n.resolvedLanguage || i18n.language;
+  const t = useTranslations('common');
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const current = locale;
+
+  const changeLanguage = (nextLocale: string) => {
+    const query = Object.fromEntries(searchParams.entries());
+    router.replace(
+      Object.keys(query).length > 0 ? { pathname, query } : pathname,
+      { locale: nextLocale },
+    );
+  };
 
   return (
     <div className={cn('relative', className)}>
@@ -25,7 +39,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
       />
       <select
         value={current}
-        onChange={(event) => void i18n.changeLanguage(event.target.value)}
+        onChange={(event) => changeLanguage(event.target.value)}
         aria-label={t('language.switchAria')}
         className="w-full appearance-none rounded-full bg-[color:var(--color-ink-2)]/80 border border-[color:var(--color-line-soft)] pl-9 pr-9 py-2 text-[12.5px] text-[color:var(--color-text)] hover:bg-[color:var(--color-ink-3)]/50 transition-colors"
       >

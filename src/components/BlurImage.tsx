@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ImgHTMLAttributes } from 'react';
+import { useState, type ImgHTMLAttributes } from 'react';
 import { cn } from '@/lib/cn';
 
 interface BlurImageProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -6,22 +6,14 @@ interface BlurImageProps extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export function BlurImage({ src, className, alt, ...rest }: BlurImageProps) {
-  const [loaded, setLoaded] = useState(false);
-  const ref = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    setLoaded(false);
-    if (ref.current?.complete && ref.current.naturalWidth > 0) {
-      setLoaded(true);
-    }
-  }, [src]);
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const loaded = loadedSrc === src;
 
   return (
     <img
-      ref={ref}
       src={src}
       alt={alt ?? ''}
-      onLoad={() => setLoaded(true)}
+      onLoad={() => setLoadedSrc(src)}
       draggable={false}
       className={cn(
         'transition-[filter,opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',

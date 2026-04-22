@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { useSky } from '@/state/store';
 import { LABEL_LOCALES } from '@/data/defaults';
 import { cn } from '@/lib/cn';
@@ -9,7 +9,7 @@ interface LabelLocaleSwitcherProps {
 }
 
 export function LabelLocaleSwitcher({ className }: LabelLocaleSwitcherProps) {
-  const { t } = useTranslation('common');
+  const t = useTranslations('common');
   const locale = useSky((s) => s.locale);
   const setLocale = useSky((s) => s.setLocale);
 

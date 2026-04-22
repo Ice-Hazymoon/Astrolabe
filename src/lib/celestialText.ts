@@ -1,4 +1,4 @@
-import type { TFunction } from 'i18next';
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 /**
  * Look up a celestial-object key in the `celestial` namespace with a fallback.
@@ -6,12 +6,12 @@ import type { TFunction } from 'i18next';
  * in lockstep with the canvas on language switch.
  */
 export function translateCelestialKey(
-  t: TFunction,
+  t: TranslateFn,
   key: string | undefined,
   fallback: string,
 ): string {
   if (!key) return fallback;
-  const hit = t(key, { ns: 'celestial', defaultValue: '' });
+  const hit = t(key, { defaultValue: '' });
   return typeof hit === 'string' && hit.length > 0 ? hit : fallback;
 }
 

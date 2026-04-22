@@ -1,10 +1,9 @@
 /**
- * Runtime configuration. Values come from Vite env variables (`VITE_*`, which
- * are substituted at build time) with safe defaults for dev/test.
+ * Runtime configuration.
  *
- * Anything that touches a publicly-visible URL — meta tags, OG, hreflang,
- * sitemap, JSON-LD, social share intents — MUST read from here so we never
- * ship a stale hard-coded domain to production.
+ * Next.js exposes public browser-safe variables through `NEXT_PUBLIC_*`.
+ * During the migration away from Vite we still honor legacy `VITE_*` names so
+ * existing local setups do not break mid-refactor.
  */
 
 function trimTrailingSlash(value: string): string {
@@ -13,14 +12,18 @@ function trimTrailingSlash(value: string): string {
 
 const DEFAULT_SITE_URL = 'https://stellaris.app';
 
+function readPublicEnv(nextKey: string, legacyKey?: string): string | undefined {
+  return process.env[nextKey] || (legacyKey ? process.env[legacyKey] : undefined);
+}
+
 /** Public origin (scheme + host, no trailing slash). */
 export const SITE_URL: string = trimTrailingSlash(
-  (import.meta.env.VITE_SITE_URL as string | undefined) || DEFAULT_SITE_URL,
+  readPublicEnv('NEXT_PUBLIC_SITE_URL', 'VITE_SITE_URL') || DEFAULT_SITE_URL,
 );
 
 /** Short brand name — used in `og:site_name` and `application-name`. */
 export const SITE_NAME: string =
-  (import.meta.env.VITE_SITE_NAME as string | undefined) || 'Stellaris';
+  readPublicEnv('NEXT_PUBLIC_SITE_NAME', 'VITE_SITE_NAME') || 'Stellaris';
 
 /** Bare host (no scheme). Handy for small UI chrome like the share-dialog footer. */
 export const SITE_HOST: string = (() => {
@@ -42,4 +45,9 @@ export function resolveOrigin(): string {
     return window.location.origin;
   }
   return SITE_URL;
+}
+
+export function absoluteUrl(pathname: string): string {
+  const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  return `${SITE_URL}${path}`;
 }

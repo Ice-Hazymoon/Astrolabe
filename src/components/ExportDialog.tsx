@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, Download, Film, MapPin, Navigation, Loader2, LocateFixed, Search } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import type { AnalyzeResponse, OverlayOptions, OverlayScene } from '@/types/api';
 import {
   buildStripSvg,
@@ -73,7 +73,7 @@ export function ExportDialog({
   layers,
   result,
 }: ExportDialogProps) {
-  const { t, i18n } = useTranslation(['export', 'common', 'result']);
+  const { locale, t } = useTranslation(['export', 'common', 'result']);
   // Mirror the live overlay's per-item hide/solo selections in the exported PNG.
   // Read through the store so updates made while the dialog is open re-bind on
   // the next save click without needing the parent to re-thread props.
@@ -116,8 +116,6 @@ export function ExportDialog({
 
   useEffect(() => {
     if (!open) return;
-    setSavingError(null);
-    setGeoError(null);
     const prev = document.activeElement;
     if (prev instanceof HTMLElement) restoreFocusRef.current = prev;
     const prevOverflow = document.body.style.overflow;
@@ -166,8 +164,6 @@ export function ExportDialog({
     }
     const q = locationName.trim();
     if (q.length < 2) {
-      setSuggestions([]);
-      setSearching(false);
       return;
     }
     const controller = new AbortController();
@@ -176,7 +172,7 @@ export function ExportDialog({
       try {
         const hits = await searchPlaces(q, {
           signal: controller.signal,
-          language: i18n.resolvedLanguage ?? i18n.language,
+          language: locale,
         });
         setSuggestions(hits);
       } catch (err) {
@@ -192,7 +188,10 @@ export function ExportDialog({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [i18n.language, i18n.resolvedLanguage, locationName, open]);
+  }, [locale, locationName, open]);
+
+  const visibleSuggestions = locationName.trim().length < 2 ? [] : suggestions;
+  const isSearching = locationName.trim().length < 2 ? false : searching;
 
   // Show the live host on the strip so screenshots from a preview deploy don't
   // silently claim to come from production.
@@ -263,7 +262,7 @@ export function ExportDialog({
         setLng(lo.toFixed(4));
         try {
           const hit = await reverseLookup(la, lo, {
-            language: i18n.resolvedLanguage ?? i18n.language,
+            language: locale,
           });
           if (hit?.label) {
             skipNextSearchRef.current = true;
@@ -515,9 +514,9 @@ export function ExportDialog({
                         )}
                       >
                         <span className="text-[color:var(--color-text-muted)] shrink-0">
-                          {searching ? (
+                          {isSearching ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2.2} />
-                          ) : suggestions.length > 0 && searchOpen ? (
+                          ) : visibleSuggestions.length > 0 && searchOpen ? (
                             <Search className="h-3.5 w-3.5" strokeWidth={2.2} />
                           ) : (
                             <MapPin className="h-3.5 w-3.5" strokeWidth={2.2} />
@@ -563,7 +562,7 @@ export function ExportDialog({
                     </label>
 
                     <AnimatePresence>
-                      {searchOpen && (searching || suggestions.length > 0) && (
+                      {searchOpen && (isSearching || visibleSuggestions.length > 0) && (
                         <motion.div
                           key="suggest"
                           initial={{ opacity: 0, y: -4 }}
@@ -577,17 +576,18 @@ export function ExportDialog({
                           )}
                           role="listbox"
                         >
-                          {searching && suggestions.length === 0 ? (
+                          {isSearching && visibleSuggestions.length === 0 ? (
                             <div className="px-3 py-2.5 text-[12px] text-[color:var(--color-text-muted)]">
                               {t('export:location.searching')}
                             </div>
                           ) : (
                             <ul className="max-h-64 overflow-y-auto">
-                              {suggestions.map((hit, i) => (
+                              {visibleSuggestions.map((hit, i) => (
                                 <li key={`${hit.lat}-${hit.lon}-${i}`}>
                                   <button
                                     type="button"
                                     role="option"
+                                    aria-selected="false"
                                     onClick={() => pickSuggestion(hit)}
                                     className={cn(
                                       'w-full text-left px-3 py-2 flex flex-col gap-0.5',

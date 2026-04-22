@@ -3,10 +3,9 @@ import {
   History,
   Languages,
   ArrowDownToLine,
-  AlertTriangle,
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useSky } from '@/state/store';
+import dynamic from 'next/dynamic';
+import { useTranslation } from '@/i18n/useTranslation';
 import { IconButton } from './ui/IconButton';
 import { Logo } from './ui/Logo';
 import { XGlyph } from './ui/XGlyph';
@@ -24,6 +23,16 @@ interface TopbarProps {
   installPromptAvailable: boolean;
 }
 
+const TopbarApiWarning = dynamic(
+  () => import('./TopbarApiWarning').then((m) => m.TopbarApiWarning),
+  { ssr: false, loading: () => null },
+);
+
+const TopbarHistoryBadge = dynamic(
+  () => import('./TopbarHistoryBadge').then((m) => m.TopbarHistoryBadge),
+  { ssr: false, loading: () => null },
+);
+
 export function Topbar({
   onOpenSettings,
   onOpenLanguageSettings,
@@ -34,10 +43,6 @@ export function Topbar({
   installPromptAvailable,
 }: TopbarProps) {
   const { t } = useTranslation(['app', 'common']);
-  const historyCount = useSky((s) => s.history.length);
-  const apiStatus = useSky((s) => s.apiStatus);
-  const refreshApi = useSky((s) => s.refreshApi);
-
   const followLabel = t('common:social.followOnX');
 
   return (
@@ -58,22 +63,7 @@ export function Topbar({
       </div>
 
       <div className="flex items-center gap-2">
-        {apiStatus === 'offline' && (
-          <button
-            type="button"
-            onClick={() => void refreshApi()}
-            className={cn(
-              'inline-flex h-8 max-w-[220px] items-center gap-2 rounded-[8px] border px-2.5 text-[11.5px] transition-colors',
-              'border-[color:var(--color-star)]/28 bg-[color:var(--color-star)]/10 text-[color:var(--color-star)]',
-              'hover:bg-[color:var(--color-star)]/14',
-            )}
-            title={t('topbar.apiWarning')}
-            aria-label={t('topbar.apiWarning')}
-          >
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-            <span className="hidden truncate sm:inline">{t('topbar.apiWarningShort')}</span>
-          </button>
-        )}
+        <TopbarApiWarning />
         <div className="relative">
           <IconButton
             label={historyOpen ? t('topbar.closeHistory') : t('topbar.openHistory')}
@@ -83,18 +73,7 @@ export function Topbar({
           >
             <History />
           </IconButton>
-          {historyCount > 0 && !historyOpen && (
-            <span
-              aria-hidden
-              className={cn(
-                'pointer-events-none absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-1',
-                'rounded-full grid place-items-center',
-                'bg-[color:var(--color-star)] text-[9px] font-medium text-black/80 tabular-nums',
-              )}
-            >
-              {historyCount > 9 ? '9+' : historyCount}
-            </span>
-          )}
+          <TopbarHistoryBadge historyOpen={historyOpen} />
         </div>
         <a
           href={FOLLOW_URL}
@@ -149,4 +128,3 @@ export function Topbar({
     </header>
   );
 }
-

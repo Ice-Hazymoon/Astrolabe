@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Download, Eye, EyeOff, RefreshCw } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import {
+  useCelestialTranslation,
+  useTranslation,
+} from '@/i18n/useTranslation';
 import { useSky } from '@/state/store';
 import type { StripMeta } from '@/lib/composite';
 import { buildScene } from '@/lib/scene';
@@ -14,19 +17,26 @@ import { ExportDialog } from './ExportDialog';
 import { ShareDialog } from './ShareDialog';
 
 export function ResultView() {
-  const { t, i18n } = useTranslation(['result', 'app']);
+  const { t } = useTranslation(['result', 'app']);
   const result = useSky((s) => s.result);
   const current = useSky((s) => s.current);
   const options = useSky((s) => s.options);
   const labelLocale = useSky((s) => s.locale);
   const reset = useSky((s) => s.reset);
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [showOriginalState, setShowOriginalState] = useState<{
+    sourceKey: string | null;
+    value: boolean;
+  }>({ sourceKey: null, value: false });
   const [fullscreen, setFullscreen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareMeta, setShareMeta] = useState<StripMeta | null>(null);
   const [exportedUrl, setExportedUrl] = useState<string | null>(null);
+  const labelT = useCelestialTranslation(labelLocale);
+  const showOriginal = showOriginalState.sourceKey === current?.sourceKey
+    ? showOriginalState.value
+    : false;
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -42,21 +52,16 @@ export function ResultView() {
     };
   }, [fullscreen]);
 
-  // Reset showOriginal when the result itself changes (e.g. switching history entries).
-  useEffect(() => {
-    setShowOriginal(false);
-  }, [current?.sourceKey]);
-
   // Celestial labels are driven by the label locale (store.locale) so users
   // can pick a different language for star/DSO names than the UI. Changing the
   // label locale — whether by switching UI language (useLocaleSync mirrors it
   // into the store) or via the LabelLocaleSwitcher — rebuilds the scene with
   // fresh translations. No re-POST to /api/analyze: client-side only.
+  const catalog = result?.catalog;
   const scene = useMemo(() => {
-    if (!result?.catalog || !result.catalog.image_width) return null;
-    const localizedT = i18n.getFixedT(labelLocale);
-    return buildScene(result.catalog, options, localizedT);
-  }, [result?.catalog, options, i18n, labelLocale]);
+    if (!catalog || !catalog.image_width) return null;
+    return buildScene(catalog, options, labelT);
+  }, [catalog, options, labelT]);
 
   // Keyed to the result so a fresh analysis (or history restore) remounts the
   // overlay and replays entrance animations + the breathing glow filters.
@@ -90,6 +95,13 @@ export function ResultView() {
     setExportOpen(true);
   };
 
+  const toggleShowOriginal = () => {
+    setShowOriginalState({
+      sourceKey: current.sourceKey,
+      value: !showOriginal,
+    });
+  };
+
   const handleExported = (href: string, meta: StripMeta) => {
     // The browser already grabbed the download via the anchor tag. We hold
     // onto the blob URL so it can be revoked when the share flow closes.
@@ -114,7 +126,7 @@ export function ResultView() {
             <EyeOff className="h-3.5 w-3.5" strokeWidth={2.2} />
           )
         }
-        onClick={() => setShowOriginal((v) => !v)}
+        onClick={toggleShowOriginal}
       >
         {showOriginal ? t('toggleAnnotated') : t('toggleOriginal')}
       </Button>
@@ -211,9 +223,9 @@ export function ResultView() {
         )}
       </AnimatePresence>
 
-      {scene && (
+      {scene && exportOpen && (
         <ExportDialog
-          open={exportOpen}
+          open
           onClose={() => setExportOpen(false)}
           onExported={handleExported}
           imageSrc={current.inputDisplayUrl}

@@ -112,6 +112,7 @@ interface SkyState {
     value: OverlayOptions['detail'][K],
   ): void;
   setLocale(locale: Locale): void;
+  hydrateHistory(entries?: HistoryEntry[]): void;
 
   refreshApi(): Promise<void>;
 
@@ -145,16 +146,6 @@ function inferPreset(options: OverlayOptions): Preset {
 }
 
 export const useSky = create<SkyState>((set, get) => {
-  const initialHistory = history.list();
-  history.subscribe((entries) => set({ history: entries }));
-
-  // Kick off the API probe immediately and keep state in sync. Guarded for SSR:
-  // `probeApi` calls `fetch`, and we don't want the server / prerenderer to hit
-  // the real backend during build. The client picks it up on first render.
-  if (typeof window !== 'undefined') {
-    void refreshApiStatus().then((status) => set({ apiStatus: status }));
-  }
-
   return {
     phase: 'idle',
     options: DEFAULT_OPTIONS,
@@ -164,7 +155,7 @@ export const useSky = create<SkyState>((set, get) => {
     result: null,
     progress: { phaseId: 'ready', pct: 0 },
     error: null,
-    history: initialHistory,
+    history: [],
     abortController: null,
     detailsFilters: cloneFilters(EMPTY_FILTERS),
 
@@ -196,6 +187,10 @@ export const useSky = create<SkyState>((set, get) => {
 
     setLocale(locale) {
       set({ locale });
+    },
+
+    hydrateHistory(entries = history.list()) {
+      set({ history: entries });
     },
 
     async refreshApi() {
@@ -374,14 +369,20 @@ export const useSky = create<SkyState>((set, get) => {
       const next = cloneFilters(get().detailsFilters);
       if (category === 'stars') {
         next.starSolo = next.starSolo === id ? null : id;
+        next.constellationSolo = null;
+        next.dsoSolo = null;
         // Soloing an item that was hidden is almost certainly an explicit intent
         // to see it — clear its hidden flag so the solo actually shows something.
         if (next.starSolo === id) next.starsHidden.delete(id);
       } else if (category === 'constellations') {
         next.constellationSolo = next.constellationSolo === id ? null : id;
+        next.starSolo = null;
+        next.dsoSolo = null;
         if (next.constellationSolo === id) next.constellationsHidden.delete(id);
       } else {
         next.dsoSolo = next.dsoSolo === id ? null : id;
+        next.starSolo = null;
+        next.constellationSolo = null;
         if (next.dsoSolo === id) next.dsosHidden.delete(id);
       }
       set({ detailsFilters: next });

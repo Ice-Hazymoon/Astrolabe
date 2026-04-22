@@ -7,7 +7,7 @@ import type { Locale as ApiLocale } from '../types/api';
  * label locale independently in settings.
  */
 export interface UiLanguage {
-  /** BCP-47 code used by i18next (and for <html lang="…">). */
+  /** BCP-47 code used by Next.js routing and `<html lang="…">`. */
   code: string;
   /** Native self-designation (e.g. "日本語"). */
   nativeLabel: string;
@@ -41,10 +41,11 @@ export const UI_LANGUAGES: UiLanguage[] = [
   { code: 'ar', nativeLabel: 'العربية', englishLabel: 'Arabic', dir: 'rtl', apiLocale: 'ar' },
 ];
 
-/** i18next-compatible list of supported language codes. */
+/** Locale list shared by routing, metadata, and UI selectors. */
 export const SUPPORTED_CODES = UI_LANGUAGES.map((l) => l.code);
 
 export const DEFAULT_UI_LANGUAGE = 'en';
+export type UiLanguageCode = (typeof SUPPORTED_CODES)[number];
 
 /** Ordered list of i18n module namespaces. The order also drives fallback lookup. */
 export const NAMESPACES = [
@@ -71,4 +72,8 @@ export function findUiLanguage(code: string | undefined | null): UiLanguage | un
   if (!code) return undefined;
   const lower = code.toLowerCase();
   return UI_LANGUAGES.find((l) => l.code.toLowerCase() === lower);
+}
+
+export function isSupportedUiLanguage(code: string | undefined | null): code is UiLanguageCode {
+  return !!findUiLanguage(code);
 }
