@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Annulla",
     "save": "Salva immagine",
-    "saving": "Generazione…"
+    "saving": "Generazione…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Includi striscia di firma",
+    "description": "Aggiunge un piè di pagina scuro con posizione, coordinate e statistiche."
   }
 }

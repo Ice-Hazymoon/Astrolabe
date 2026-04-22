@@ -4,14 +4,18 @@
   "presets": {
     "header": "Préréglage d'affichage",
     "ariaLabel": "Préréglage d'affichage",
-    "balanced": { "label": "Équilibré", "hint": "Densité recommandée" },
-    "detailed": { "label": "Détaillé", "hint": "Plus de ciel profond et de constellations" },
-    "max": { "label": "Complet", "hint": "Afficher toutes les détections" }
-  },
-  "labelLocale": {
-    "header": "Langue des étiquettes",
-    "ariaLabel": "Langue des étiquettes",
-    "driftHint": "Le changement nécessite une nouvelle analyse"
+    "balanced": {
+      "label": "Équilibré",
+      "hint": "Densité recommandée"
+    },
+    "detailed": {
+      "label": "Détaillé",
+      "hint": "Plus de ciel profond et de constellations"
+    },
+    "max": {
+      "label": "Complet",
+      "hint": "Afficher toutes les détections"
+    }
   },
   "layers": {
     "header": "Calques",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Afficher tous les noms de constellations",
     "detailedDsoLabels": "Utiliser les noms complets du ciel profond",
     "live": "Les modifications s'appliquent immédiatement."
-  },
-  "reanalyze": {
-    "message": "Langue des étiquettes modifiée — relancez l'analyse pour l'appliquer.",
-    "button": "Réanalyser"
   }
 }

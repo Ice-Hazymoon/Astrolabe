@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Скасувати",
     "save": "Зберегти зображення",
-    "saving": "Генерація…"
+    "saving": "Генерація…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Додати смугу підпису",
+    "description": "Додає темний футер із місцем, координатами та статистикою."
   }
 }

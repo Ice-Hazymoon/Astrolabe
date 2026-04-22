@@ -75,8 +75,8 @@ function rgba(tuple: RgbaTuple, alphaScale = 1): string {
 
 // Visual tuning constants for the overlay — tweaked so lines read crisp and
 // stars feel lively without losing the underlying photograph.
-const LINE_ALPHA_BOOST = 1.45;
-const LINE_WIDTH_BOOST = 1.3;
+const LINE_ALPHA_BOOST = 0.95;
+const LINE_WIDTH_BOOST = 1.1;
 // How far to mix constellation-line color toward pure white (0 = server color,
 // 1 = white). Keeps a hint of the source tint while reading cleaner on photos.
 const LINE_WHITEN = 0.6;
@@ -140,7 +140,7 @@ const Lines = memo(function Lines({
 }) {
   if (!animate) {
     return (
-      <g>
+      <g filter="url(#overlay-line-glow)">
         {segments.map((s, i) => (
           <line
             key={i}
@@ -570,19 +570,21 @@ export const OverlayCanvas = memo(function OverlayCanvas({
         <clipPath id={clipId}>
           <rect x={0} y={0} width={W} height={H} />
         </clipPath>
-        {/* Soft bloom for constellation lines — keeps stars visible underneath. */}
+        {/* Two-stage bloom: wide halo + tight soft edge, then the line on top. */}
         <filter
           id="overlay-line-glow"
-          x="-20%"
-          y="-20%"
-          width="140%"
-          height="140%"
+          x="-50%"
+          y="-50%"
+          width="200%"
+          height="200%"
           filterUnits="objectBoundingBox"
         >
-          <feGaussianBlur stdDeviation="1.2" result="blur" />
+          <feGaussianBlur stdDeviation="2.6" result="blurWide" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="blurTight" />
           <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="blurWide" />
+            <feMergeNode in="blurWide" />
+            <feMergeNode in="blurTight" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>

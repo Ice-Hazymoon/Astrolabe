@@ -4,14 +4,18 @@
   "presets": {
     "header": "显示预设",
     "ariaLabel": "显示预设",
-    "balanced": { "label": "均衡", "hint": "推荐的视觉密度" },
-    "detailed": { "label": "详细", "hint": "展示更多深空与星座" },
-    "max": { "label": "完整", "hint": "展示全部识别结果" }
-  },
-  "labelLocale": {
-    "header": "标签语言",
-    "ariaLabel": "标签语言",
-    "driftHint": "切换后需重新解析"
+    "balanced": {
+      "label": "均衡",
+      "hint": "推荐的视觉密度"
+    },
+    "detailed": {
+      "label": "详细",
+      "hint": "展示更多深空与星座"
+    },
+    "max": {
+      "label": "完整",
+      "hint": "展示全部识别结果"
+    }
   },
   "layers": {
     "header": "图层",
@@ -40,9 +44,5 @@
     "showAllConstellations": "显示全部星座名称",
     "detailedDsoLabels": "使用完整的深空名称",
     "live": "调整后会立即生效。"
-  },
-  "reanalyze": {
-    "message": "标签语言已更改，重新解析后生效。",
-    "button": "重新解析"
   }
 }

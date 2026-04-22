@@ -4,6 +4,15 @@ import path from 'node:path';
 const localesDir = new URL('../src/i18n/locales/', import.meta.url);
 const baseline = 'en';
 
+/**
+ * Namespaces whose per-locale coverage is intentionally partial. Translations
+ * come from the upstream Stardroid bundles, which ship different subsets of
+ * celestial-object names per language. i18next's fallbackLng chain covers
+ * whatever is missing, so we only validate that non-`en` locales never add
+ * *extra* keys that English doesn't know about.
+ */
+const SPARSE_NAMESPACES = new Set(['celestial.json']);
+
 function listJsonFiles(dirPath) {
   return fs
     .readdirSync(dirPath)
@@ -38,9 +47,11 @@ function compareNamespace(refJson, targetJson, fileName) {
   const issues = [];
   const refMap = flattenJson(refJson);
   const targetMap = flattenJson(targetJson);
+  const sparse = SPARSE_NAMESPACES.has(fileName);
 
   for (const [key, type] of refMap) {
     if (!targetMap.has(key)) {
+      if (sparse) continue;
       issues.push(`${fileName}: missing ${key}`);
       continue;
     }

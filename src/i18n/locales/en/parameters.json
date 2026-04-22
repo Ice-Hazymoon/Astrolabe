@@ -4,14 +4,18 @@
   "presets": {
     "header": "Display preset",
     "ariaLabel": "Display preset",
-    "balanced": { "label": "Balanced", "hint": "Recommended density" },
-    "detailed": { "label": "Detailed", "hint": "More deep-sky and constellations" },
-    "max": { "label": "Complete", "hint": "Show every detection" }
-  },
-  "labelLocale": {
-    "header": "Label language",
-    "ariaLabel": "Label language",
-    "driftHint": "Switching requires re-analysis"
+    "balanced": {
+      "label": "Balanced",
+      "hint": "Recommended density"
+    },
+    "detailed": {
+      "label": "Detailed",
+      "hint": "More deep-sky and constellations"
+    },
+    "max": {
+      "label": "Complete",
+      "hint": "Show every detection"
+    }
   },
   "layers": {
     "header": "Layers",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Show all constellation names",
     "detailedDsoLabels": "Use full deep-sky names",
     "live": "Changes apply immediately."
-  },
-  "reanalyze": {
-    "message": "Label language changed — re-analyze to apply.",
-    "button": "Re-analyze"
   }
 }

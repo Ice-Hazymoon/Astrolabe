@@ -96,9 +96,6 @@ interface SkyState {
   apiStatus: ApiStatus;
   current: UploadInput | null;
   result: AnalyzeResponse | null;
-  /** Locale that produced `result`. Labels are localized server-side, so changing locale
-   * triggers a re-analysis; layer/detail changes are applied live on the client. */
-  resultLocale: Locale | null;
   progress: ProcessingProgress;
   error: string | null;
   history: HistoryEntry[];
@@ -165,7 +162,6 @@ export const useSky = create<SkyState>((set, get) => {
     apiStatus: getApiStatus(),
     current: null,
     result: null,
-    resultLocale: null,
     progress: { phaseId: 'ready', pct: 0 },
     error: null,
     history: initialHistory,
@@ -285,7 +281,6 @@ export const useSky = create<SkyState>((set, get) => {
         set({
           phase: 'result',
           result: response,
-          resultLocale: requestLocale,
           progress: { phaseId: 'done', pct: 1 },
           abortController: null,
           detailsFilters: cloneFilters(EMPTY_FILTERS),
@@ -314,7 +309,6 @@ export const useSky = create<SkyState>((set, get) => {
         phase: 'idle',
         current: null,
         result: null,
-        resultLocale: null,
         error: null,
         progress: { phaseId: 'ready', pct: 0 },
         abortController: null,
@@ -340,7 +334,6 @@ export const useSky = create<SkyState>((set, get) => {
           blob: new Blob(),
         },
         result: entry.result,
-        resultLocale: (entry.result.resolvedLocale as Locale | undefined) ?? get().locale,
         options: entry.options,
         error: null,
         progress: { phaseId: 'restored', pct: 1 },

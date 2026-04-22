@@ -54,43 +54,110 @@ export interface OverlayBuildInfo {
   buildEnd: number;
 }
 
+/**
+ * Stable identifier for each animated overlay layer. Order here is the
+ * intended back-to-front draw order — the video worker uses it to decide
+ * which layers can be safely baked into the cumulative overlay cache.
+ */
+export type OverlayLayerId =
+  | 'lines'
+  | 'leaders'
+  | 'dso_markers'
+  | 'stars'
+  | 'const_labels'
+  | 'star_labels'
+  | 'dso_labels';
+
+export type OverlayLayerFilter = (id: OverlayLayerId) => boolean;
+
+/** One enabled, non-empty layer plus the time at which its build animation
+ * finishes (i.e. every element's `buildProgress` returns 1 from this time
+ * on). The worker bakes layers one-by-one as their endTime is crossed. */
+export interface OverlayLayerPlan {
+  id: OverlayLayerId;
+  endTime: number;
+}
+
+/**
+ * Walk the scene + enabled-layer flags and return the layers that will
+ * actually render something, in draw order, with their animation end
+ * times. Layers that are disabled or empty are omitted entirely so the
+ * worker doesn't waste a slot on them.
+ */
+export function planOverlayLayers(
+  scene: OverlayScene,
+  layers: OverlayOptions['layers'],
+): OverlayLayerPlan[] {
+  const plan: OverlayLayerPlan[] = [];
+
+  if (layers.constellation_lines) {
+    let lineCount = 0;
+    for (const f of scene.constellation_figures) lineCount += f.segments.length;
+    if (lineCount > 0) {
+      plan.push({
+        id: 'lines',
+        endTime: staggeredEnd(lineCount, LINE_BUILD.baseDelay, LINE_BUILD.perItem, LINE_BUILD.duration),
+      });
+    }
+  }
+
+  if (layers.label_leaders) {
+    let end = 0;
+    if (layers.star_markers && layers.star_labels && scene.star_labels.length > 0) {
+      end = Math.max(end, staggeredEnd(scene.star_labels.length, LEADER_BUILD.starBase, LEADER_BUILD.perItem, LEADER_BUILD.duration));
+    }
+    if (layers.deep_sky_markers && layers.deep_sky_labels && scene.deep_sky_labels.length > 0) {
+      end = Math.max(end, staggeredEnd(scene.deep_sky_labels.length, LEADER_BUILD.dsoBase, LEADER_BUILD.perItem, LEADER_BUILD.duration));
+    }
+    if (end > 0) plan.push({ id: 'leaders', endTime: end });
+  }
+
+  if (layers.deep_sky_markers && scene.deep_sky_markers.length > 0) {
+    plan.push({
+      id: 'dso_markers',
+      endTime: staggeredEnd(scene.deep_sky_markers.length, DSO_BUILD.baseDelay, DSO_BUILD.perItem, DSO_BUILD.duration),
+    });
+  }
+
+  if (layers.star_markers && scene.star_markers.length > 0) {
+    const last = staggered(scene.star_markers.length - 1, STAR_HALO_BUILD.baseDelay, STAR_HALO_BUILD.perItem);
+    const end = Math.max(
+      last + STAR_HALO_BUILD.duration,
+      last + STAR_RING_BUILD.postDelay + STAR_RING_BUILD.duration,
+    );
+    plan.push({ id: 'stars', endTime: end });
+  }
+
+  if (layers.constellation_labels && scene.constellation_labels.length > 0) {
+    plan.push({
+      id: 'const_labels',
+      endTime: staggeredEnd(scene.constellation_labels.length, LABEL_BUILD.constBase, LABEL_BUILD.perItem, LABEL_BUILD.duration),
+    });
+  }
+  if (layers.star_markers && layers.star_labels && scene.star_labels.length > 0) {
+    plan.push({
+      id: 'star_labels',
+      endTime: staggeredEnd(scene.star_labels.length, LABEL_BUILD.starBase, LABEL_BUILD.perItem, LABEL_BUILD.duration),
+    });
+  }
+  if (layers.deep_sky_markers && layers.deep_sky_labels && scene.deep_sky_labels.length > 0) {
+    plan.push({
+      id: 'dso_labels',
+      endTime: staggeredEnd(scene.deep_sky_labels.length, LABEL_BUILD.dsoBase, LABEL_BUILD.perItem, LABEL_BUILD.duration),
+    });
+  }
+
+  return plan;
+}
+
 export function computeOverlayBuildInfo(
   scene: OverlayScene,
   layers: OverlayOptions['layers'],
 ): OverlayBuildInfo {
   let end = 0;
-
-  if (layers.constellation_lines) {
-    let lineCount = 0;
-    for (const f of scene.constellation_figures) lineCount += f.segments.length;
-    end = Math.max(end, staggeredEnd(lineCount, LINE_BUILD.baseDelay, LINE_BUILD.perItem, LINE_BUILD.duration));
+  for (const p of planOverlayLayers(scene, layers)) {
+    if (p.endTime > end) end = p.endTime;
   }
-  if (layers.star_markers) {
-    const last = staggered(scene.star_markers.length - 1, STAR_HALO_BUILD.baseDelay, STAR_HALO_BUILD.perItem);
-    end = Math.max(end, last + STAR_HALO_BUILD.duration);
-    end = Math.max(end, last + STAR_RING_BUILD.postDelay + STAR_RING_BUILD.duration);
-  }
-  if (layers.deep_sky_markers) {
-    end = Math.max(end, staggeredEnd(scene.deep_sky_markers.length, DSO_BUILD.baseDelay, DSO_BUILD.perItem, DSO_BUILD.duration));
-  }
-  if (layers.label_leaders) {
-    if (layers.star_markers && layers.star_labels) {
-      end = Math.max(end, staggeredEnd(scene.star_labels.length, LEADER_BUILD.starBase, LEADER_BUILD.perItem, LEADER_BUILD.duration));
-    }
-    if (layers.deep_sky_markers && layers.deep_sky_labels) {
-      end = Math.max(end, staggeredEnd(scene.deep_sky_labels.length, LEADER_BUILD.dsoBase, LEADER_BUILD.perItem, LEADER_BUILD.duration));
-    }
-  }
-  if (layers.constellation_labels) {
-    end = Math.max(end, staggeredEnd(scene.constellation_labels.length, LABEL_BUILD.constBase, LABEL_BUILD.perItem, LABEL_BUILD.duration));
-  }
-  if (layers.star_markers && layers.star_labels) {
-    end = Math.max(end, staggeredEnd(scene.star_labels.length, LABEL_BUILD.starBase, LABEL_BUILD.perItem, LABEL_BUILD.duration));
-  }
-  if (layers.deep_sky_markers && layers.deep_sky_labels) {
-    end = Math.max(end, staggeredEnd(scene.deep_sky_labels.length, LABEL_BUILD.dsoBase, LABEL_BUILD.perItem, LABEL_BUILD.duration));
-  }
-
   return { buildEnd: end };
 }
 
@@ -120,6 +187,10 @@ type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
  * @param strokeBoost Multiplies lineWidths for strokes — used when the render
  * target is significantly smaller than the source image so thin lines don't
  * collapse to sub-pixel and wash out. 1 = no change.
+ * @param include Optional layer filter. When set, only layers for which the
+ * predicate returns true are drawn. Used by the worker to skip layers it
+ * has already baked into its cumulative overlay cache, and conversely to
+ * render one layer at a time when building the cache.
  */
 export function drawOverlayFrame(
   ctx: Ctx2D,
@@ -128,7 +199,10 @@ export function drawOverlayFrame(
   layers: OverlayOptions['layers'],
   labels: LabelBitmapBundle,
   strokeBoost = 1,
+  include?: OverlayLayerFilter,
 ): void {
+  const includes = (id: OverlayLayerId): boolean => !include || include(id);
+
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -136,7 +210,7 @@ export function drawOverlayFrame(
   // Lines — bloom + crisp pass. Flatten the grouped figures so the existing
   // stagger-indexed draw routine stays unchanged; figures are only grouped at
   // the filter/data layer, not at the pixel level.
-  if (layers.constellation_lines) {
+  if (layers.constellation_lines && includes('lines')) {
     const flatLines = scene.constellation_figures.flatMap((f) => f.segments);
     if (flatLines.length > 0) {
       drawConstellationLines(ctx, t, flatLines, 'bloom', strokeBoost);
@@ -144,7 +218,7 @@ export function drawOverlayFrame(
     }
   }
 
-  if (layers.label_leaders) {
+  if (layers.label_leaders && includes('leaders')) {
     if (layers.star_markers && layers.star_labels) {
       drawLeaders(ctx, t, scene.star_labels, LEADER_BUILD.starBase, strokeBoost);
     }
@@ -153,22 +227,22 @@ export function drawOverlayFrame(
     }
   }
 
-  if (layers.deep_sky_markers && scene.deep_sky_markers.length > 0) {
+  if (layers.deep_sky_markers && scene.deep_sky_markers.length > 0 && includes('dso_markers')) {
     drawDeepSkyMarkers(ctx, t, scene.deep_sky_markers, strokeBoost);
   }
 
-  if (layers.star_markers && scene.star_markers.length > 0) {
+  if (layers.star_markers && scene.star_markers.length > 0 && includes('stars')) {
     drawStarMarkers(ctx, t, scene.star_markers, 'bloom', strokeBoost);
     drawStarMarkers(ctx, t, scene.star_markers, 'crisp', strokeBoost);
   }
 
-  if (layers.constellation_labels) {
+  if (layers.constellation_labels && includes('const_labels')) {
     drawPrerenderedLabels(ctx, t, labels.constellation, LABEL_BUILD.constBase);
   }
-  if (layers.star_markers && layers.star_labels) {
+  if (layers.star_markers && layers.star_labels && includes('star_labels')) {
     drawPrerenderedLabels(ctx, t, labels.star, LABEL_BUILD.starBase);
   }
-  if (layers.deep_sky_markers && layers.deep_sky_labels) {
+  if (layers.deep_sky_markers && layers.deep_sky_labels && includes('dso_labels')) {
     drawPrerenderedLabels(ctx, t, labels.deepSky, LABEL_BUILD.dsoBase);
   }
 
@@ -176,6 +250,26 @@ export function drawOverlayFrame(
 }
 
 // ---------- Per-element renderers ----------
+
+// Stacked-stroke approximation of a gaussian glow. Three wide-to-narrow
+// passes with rising alpha, composited source-over. We used to do this
+// with `ctx.filter = 'blur(4.4px)'` which is visually smoother but
+// triggers a separate Skia compositor-layer blur per stroke in Chrome —
+// when multiple render workers all issue filter ops concurrently, the
+// GPU command queue serializes them and the pool parallelism collapses.
+// This multi-stroke path is pure stroke ops, stays parallel across
+// workers, and in 30fps motion is essentially indistinguishable from
+// the true blur.
+const LINE_GLOW_STEPS: ReadonlyArray<{ widthMul: number; alphaMul: number }> = [
+  { widthMul: 4.2, alphaMul: 0.10 },
+  { widthMul: 2.6, alphaMul: 0.22 },
+  { widthMul: 1.7, alphaMul: 0.36 },
+];
+
+const STAR_GLOW_STEPS: ReadonlyArray<{ widthMul: number; alphaMul: number }> = [
+  { widthMul: 3.2, alphaMul: 0.15 },
+  { widthMul: 1.8, alphaMul: 0.35 },
+];
 
 function drawConstellationLines(
   ctx: Ctx2D,
@@ -185,9 +279,6 @@ function drawConstellationLines(
   strokeBoost: number,
 ): void {
   ctx.save();
-  if (pass === 'bloom') {
-    ctx.filter = 'blur(4.4px)';
-  }
 
   for (let i = 0; i < segments.length; i++) {
     const s = segments[i];
@@ -195,11 +286,10 @@ function drawConstellationLines(
     const progress = buildProgress(t, delay, LINE_BUILD.duration, EASE_OUT);
     if (progress <= 0) continue;
 
-    // Alpha ramps in with the path draw, then holds at the scene's native
-    // rgba alpha. No breath, no loop.
-    ctx.strokeStyle = rgbaStr(s.rgba, progress);
-    ctx.lineWidth = s.line_width * strokeBoost;
+    const baseWidth = s.line_width * strokeBoost;
 
+    // Dash pattern is per-segment (tied to draw-in progress). Set once,
+    // then stroke the path 1 or N times with different styles.
     if (progress >= 1) {
       ctx.setLineDash([]);
     } else {
@@ -210,7 +300,20 @@ function drawConstellationLines(
     ctx.beginPath();
     ctx.moveTo(s.x1, s.y1);
     ctx.lineTo(s.x2, s.y2);
-    ctx.stroke();
+
+    if (pass === 'bloom') {
+      for (const step of LINE_GLOW_STEPS) {
+        ctx.strokeStyle = rgbaStr(s.rgba, progress * step.alphaMul);
+        ctx.lineWidth = baseWidth * step.widthMul;
+        ctx.stroke();
+      }
+    } else {
+      // Alpha ramps in with the path draw, then holds at the scene's native
+      // rgba alpha. No breath, no loop.
+      ctx.strokeStyle = rgbaStr(s.rgba, progress);
+      ctx.lineWidth = baseWidth;
+      ctx.stroke();
+    }
   }
   ctx.setLineDash([]);
   ctx.restore();
@@ -271,9 +374,6 @@ function drawStarMarkers(
   strokeBoost: number,
 ): void {
   ctx.save();
-  if (pass === 'bloom') {
-    ctx.filter = 'blur(2.8px)';
-  }
   for (let i = 0; i < stars.length; i++) {
     const m = stars[i];
     const ringR = m.radius + 2.6;
@@ -285,18 +385,37 @@ function drawStarMarkers(
 
     if (haloP > 0) {
       // Halo fades + expands in together, then holds at the resting alpha.
-      ctx.strokeStyle = rgbaStr(m.fill_rgba, haloP * STAR_HALO_REST_ALPHA);
-      ctx.lineWidth = 1.2 * strokeBoost;
+      const baseWidth = 1.2 * strokeBoost;
+      const baseAlpha = haloP * STAR_HALO_REST_ALPHA;
       ctx.beginPath();
       ctx.arc(m.x, m.y, Math.max(0.01, haloR * haloP), 0, Math.PI * 2);
-      ctx.stroke();
+      if (pass === 'bloom') {
+        for (const step of STAR_GLOW_STEPS) {
+          ctx.strokeStyle = rgbaStr(m.fill_rgba, baseAlpha * step.alphaMul);
+          ctx.lineWidth = baseWidth * step.widthMul;
+          ctx.stroke();
+        }
+      } else {
+        ctx.strokeStyle = rgbaStr(m.fill_rgba, baseAlpha);
+        ctx.lineWidth = baseWidth;
+        ctx.stroke();
+      }
     }
     if (ringP > 0) {
-      ctx.strokeStyle = rgbaStr(m.outline_rgba, 1);
-      ctx.lineWidth = 1.4 * strokeBoost;
+      const baseWidth = 1.4 * strokeBoost;
       ctx.beginPath();
       ctx.arc(m.x, m.y, Math.max(0.01, ringR * ringP), 0, Math.PI * 2);
-      ctx.stroke();
+      if (pass === 'bloom') {
+        for (const step of STAR_GLOW_STEPS) {
+          ctx.strokeStyle = rgbaStr(m.outline_rgba, step.alphaMul);
+          ctx.lineWidth = baseWidth * step.widthMul;
+          ctx.stroke();
+        }
+      } else {
+        ctx.strokeStyle = rgbaStr(m.outline_rgba, 1);
+        ctx.lineWidth = baseWidth;
+        ctx.stroke();
+      }
     }
   }
   ctx.restore();

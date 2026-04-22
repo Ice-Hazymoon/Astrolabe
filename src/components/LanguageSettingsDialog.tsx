@@ -1,11 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { RefreshCw, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/i18n/LanguageSwitcher';
 import { LabelLocaleSwitcher } from '@/i18n/LabelLocaleSwitcher';
-import { useSky } from '@/state/store';
-import { Button } from './ui/Button';
 import { IconButton } from './ui/IconButton';
 
 interface LanguageSettingsDialogProps {
@@ -14,17 +12,9 @@ interface LanguageSettingsDialogProps {
 }
 
 export function LanguageSettingsDialog({ open, onClose }: LanguageSettingsDialogProps) {
-  const { t } = useTranslation(['common', 'parameters']);
-  const current = useSky((s) => s.current);
-  const phase = useSky((s) => s.phase);
-  const locale = useSky((s) => s.locale);
-  const resultLocale = useSky((s) => s.resultLocale);
-  const startAnalysis = useSky((s) => s.startAnalysis);
+  const { t } = useTranslation(['common']);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
-
-  const canReanalyze = phase === 'result' && !!current && current.blob.size > 0 && !!resultLocale;
-  const localeDrifted = !!resultLocale && locale !== resultLocale;
 
   useEffect(() => {
     if (!open) return;
@@ -92,38 +82,11 @@ export function LanguageSettingsDialog({ open, onClose }: LanguageSettingsDialog
               </section>
 
               <section className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[10.5px] uppercase tracking-[0.16em] text-[color:var(--color-text-faint)]">
-                    {t('common:language.apiLabel')}
-                  </span>
-                  {localeDrifted && (
-                    <span className="text-[10.5px] text-[color:var(--color-text-faint)]">
-                      {t('parameters:labelLocale.driftHint')}
-                    </span>
-                  )}
-                </div>
+                <span className="text-[10.5px] uppercase tracking-[0.16em] text-[color:var(--color-text-faint)]">
+                  {t('common:language.apiLabel')}
+                </span>
                 <LabelLocaleSwitcher />
               </section>
-
-              {canReanalyze && localeDrifted && (
-                <div className="flex flex-col gap-2 pt-1">
-                  <p className="text-[11.5px] leading-[1.5] text-[color:var(--color-text-soft)]">
-                    {t('parameters:reanalyze.message')}
-                  </p>
-                  <Button
-                    variant="subtle"
-                    size="sm"
-                    leading={<RefreshCw className="h-3.5 w-3.5" strokeWidth={2.2} />}
-                    onClick={() => {
-                      void startAnalysis();
-                      onClose();
-                    }}
-                    className="self-start"
-                  >
-                    {t('parameters:reanalyze.button')}
-                  </Button>
-                </div>
-              )}
             </div>
           </motion.div>
         </div>

@@ -12,15 +12,97 @@ import type { DetailsFilters } from '../state/store';
 import { buildStripSvg, stripHeightFor, type StripMeta } from './composite';
 import { applyDetailsFilters } from './detailsFilter';
 import {
+  computeOverlayBuildInfo,
   prerenderLabel,
   type LabelBitmap,
   type LabelBitmapBundle,
 } from './videoFrame';
 import type {
-  VideoWorkerInMessage,
+  TimingEntry,
   VideoWorkerOutMessage,
-  VideoWorkerStartMessage,
 } from './videoWorker';
+import type { VideoRenderWorkerOutMessage } from './videoRenderWorker';
+
+// ---------- Perf instrumentation ----------
+//
+// Each export records stage markers, merges the worker's timing events in,
+// and logs a single `console.table` on success. Keep permanently enabled —
+// cost is negligible (one `performance.now` per mark), and when users
+// report "feels slow" we have an actual breakdown instead of guesswork.
+class ExportTimings {
+  private readonly t0 = performance.now();
+  private readonly entries: TimingEntry[] = [];
+  mark(stage: string): void {
+    this.entries.push({ stage, t: performance.now() - this.t0 });
+  }
+  /** ms since construction — useful to stamp "worker started now" against
+   * the main-thread clock so worker-local timings can be rebased. */
+  elapsed(): number {
+    return performance.now() - this.t0;
+  }
+  /**
+   * Merge worker-reported timings in. Worker marks are emitted relative to
+   * the worker's own start, so we rebase them against the main-thread
+   * offset captured when we sent the start message — giving one unified
+   * timeline rather than two disjoint clocks.
+   */
+  mergeWorker(workerTimings: TimingEntry[], workerStartOffsetMs: number): void {
+    for (const e of workerTimings) {
+      this.entries.push({ stage: `w:${e.stage}`, t: workerStartOffsetMs + e.t });
+    }
+    this.entries.sort((a, b) => a.t - b.t);
+  }
+  log(extra: Record<string, unknown>): void {
+    const rows: Array<Record<string, string | number>> = [];
+    let prev = 0;
+    for (const e of this.entries) {
+      rows.push({
+        stage: e.stage,
+        elapsed_ms: Math.round(e.t),
+        delta_ms: Math.round(e.t - prev),
+      });
+      prev = e.t;
+    }
+    console.groupCollapsed(
+      `[video-export] total=${Math.round(prev)}ms`,
+      extra,
+    );
+    console.table(rows);
+    console.groupEnd();
+  }
+}
+
+async function yieldToMain(): Promise<void> {
+  const sch = (globalThis as { scheduler?: { yield?(): Promise<void> } }).scheduler;
+  if (sch?.yield) {
+    await sch.yield();
+  } else {
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+  }
+}
+
+/**
+ * Downscale a photo onto an ImageBitmap via Canvas 2D. All modern browsers
+ * back Canvas 2D `drawImage` with GPU-accelerated scaling, which is 10–100×
+ * faster than `createImageBitmap(img, { resizeQuality: 'high' })` on
+ * mobile — that path runs CPU lanczos and can take 500–2000ms for large
+ * photos on iOS Safari. Visual quality is indistinguishable for photo
+ * downscales in our ratio range (1×–3×); any sub-pixel differences are
+ * erased by H.264/HEVC compression anyway.
+ */
+function resizePhotoViaCanvas(
+  img: HTMLImageElement,
+  w: number,
+  h: number,
+): ImageBitmap {
+  const canvas = new OffscreenCanvas(w, h);
+  const ctx = canvas.getContext('2d', { alpha: false });
+  if (!ctx) throw new Error('photo resize ctx unavailable');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.transferToImageBitmap();
+}
 
 // "No filter active" sentinel — same pattern as composite.ts so callers that
 // don't pass filters get an identity-return fast path in applyDetailsFilters.
@@ -45,6 +127,11 @@ export interface VideoExportOptions {
    * Optional — when absent, all items in `scene` are rendered.
    */
   filters?: DetailsFilters;
+  /**
+   * When false, the bottom attribution strip is omitted and the output is
+   * sized to just the photo + overlay. Defaults to true.
+   */
+  includeStrip?: boolean;
   /** Max output width in px. Height scales to preserve aspect. Default 1920 (1080p). */
   maxWidth?: number;
   /** Frames per second. Default 30. */
@@ -96,6 +183,9 @@ export async function exportAnnotatedVideo(
     throw new WebCodecsUnsupportedError();
   }
 
+  const T = new ExportTimings();
+  T.mark('start');
+
   const fps = opts.fps ?? 30;
 
   // Apply per-item hide/solo filters once, up-front. Downstream steps
@@ -105,6 +195,7 @@ export async function exportAnnotatedVideo(
 
   // --- 1. Load inputs, pick sizes ---------------------------------------
   const photoImg = await loadImage(opts.imageSrc);
+  T.mark('image-loaded');
   const srcW = scene.image_width > 0 ? scene.image_width : photoImg.naturalWidth;
   const srcH = scene.image_height > 0 ? scene.image_height : photoImg.naturalHeight;
   if (!srcW || !srcH) throw new Error('missing image dimensions');
@@ -113,7 +204,8 @@ export async function exportAnnotatedVideo(
   const scale = Math.min(1, maxW / srcW);
   const overlayW = makeEven(Math.round(srcW * scale));
   const overlayH = makeEven(Math.round(srcH * scale));
-  const stripH = makeEven(stripHeightFor(overlayW));
+  const includeStrip = opts.includeStrip !== false;
+  const stripH = includeStrip ? makeEven(stripHeightFor(overlayW)) : 0;
   const outW = overlayW;
   const outH = overlayH + stripH;
   // Boost stroke widths when the output is smaller than the source photo so
@@ -121,56 +213,125 @@ export async function exportAnnotatedVideo(
   // at 1.8x — beyond that lines look comically thick.
   const strokeBoost = Math.min(1.8, Math.max(1, srcW / overlayW));
 
+  // Kick off codec probing as soon as dimensions are known. The probe is
+  // I/O against the platform's codec registry (100–500ms/candidate on
+  // mobile) and has no dependency on fonts, bitmaps, or labels — so let
+  // it race with the rasterization work below.
+  const bitrate = opts.bitrate ?? pickBitrate(outW, outH);
+  const codecKey = codecCacheKey(outW, outH, fps, bitrate);
+  const codecPromise = pickSupportedCodec(outW, outH, fps, bitrate);
+
   await ensureFontsReady();
+  T.mark('fonts-ready');
 
   // --- 2. Rasterize static assets (main thread) -------------------------
-  const [photoBitmap, stripBitmap] = await Promise.all([
-    createImageBitmap(photoImg, {
-      resizeWidth: overlayW,
-      resizeHeight: overlayH,
-      resizeQuality: 'high',
-    }),
-    rasterizeStrip(overlayW, stripH, opts.meta),
-  ]);
+  // Photo goes through Canvas 2D + GPU scale instead of createImageBitmap's
+  // CPU lanczos — on iOS Safari with a 24MP source that's 500–2000ms vs
+  // ~20ms, and visual quality is imperceptible after compression.
+  const photoBitmap = resizePhotoViaCanvas(photoImg, overlayW, overlayH);
+  const stripBitmap = includeStrip
+    ? await rasterizeStrip(overlayW, stripH, opts.meta)
+    : null;
+  T.mark('bitmaps-ready');
 
   if (opts.signal?.aborted) {
     photoBitmap.close?.();
-    stripBitmap.close?.();
+    stripBitmap?.close?.();
     throw new DOMException('Video export aborted', 'AbortError');
   }
 
   // --- 3. Pre-rasterize labels (main thread — fonts are here) -----------
   const labels = await prerenderAllLabels(scene, opts.layers, opts.signal);
+  T.mark('labels-ready');
 
   if (opts.signal?.aborted) {
     releaseBitmaps(labels, photoBitmap, stripBitmap);
     throw new DOMException('Video export aborted', 'AbortError');
   }
 
-  // --- 4. Pick codec + bitrate ------------------------------------------
-  const bitrate = opts.bitrate ?? pickBitrate(outW, outH);
-  const pick = await pickSupportedCodec(outW, outH, fps, bitrate);
+  // --- 4. Await the codec probe (kicked off in parallel above) ----------
+  const pick = await codecPromise;
+  T.mark('codec-picked');
+  // Re-check abort after the codec probe. `addEventListener('abort', ...)`
+  // does not replay prior events, so any abort that fired during one of
+  // the awaits above must be caught here before we spin up the worker.
+  if (opts.signal?.aborted) {
+    releaseBitmaps(labels, photoBitmap, stripBitmap);
+    throw new DOMException('Video export aborted', 'AbortError');
+  }
   if (!pick) {
     releaseBitmaps(labels, photoBitmap, stripBitmap);
     throw new WebCodecsUnsupportedError();
   }
   const { codec, family: codecFamily } = pick;
 
-  // --- 5. Spawn worker + send start message -----------------------------
-  const worker = new Worker(new URL('./videoWorker.ts', import.meta.url), { type: 'module' });
+  // --- 5. Compute timing params (was done inside the old worker) -------
+  const introDuration = 1.0;
+  const holdDuration = 2.0;
+  const { buildEnd } = computeOverlayBuildInfo(scene, opts.layers);
+  const totalDuration = introDuration + buildEnd + holdDuration;
+  const totalFrames = Math.max(1, Math.round(totalDuration * fps));
+  const usPerFrame = Math.round(1_000_000 / fps);
+  const keyEvery = fps * 2;
+  const durationMs = Math.round(totalDuration * 1000);
+
+  // --- 6. Spawn encoder worker + render-worker pool --------------------
+  const N = pickRenderPoolSize();
+  // Log the pool decision up-front so "is the pool actually engaged?" is
+  // answerable at a glance when users paste back their console output.
+  console.log(
+    `[video-export] pool: N=${N} (`,
+    `hardwareConcurrency=${navigator.hardwareConcurrency},`,
+    `deviceMemory=${(navigator as { deviceMemory?: number }).deviceMemory ?? 'unknown'})`,
+  );
+  // Keep each render worker's in-flight output bounded so the main thread's
+  // message queue (and encoder's pendingFrames map) can't balloon if the
+  // encoder falls behind. 2 pipelines render/encode without wasting cores.
+  const INFLIGHT_WINDOW = 2;
+
+  const encoderWorker = new Worker(
+    new URL('./videoWorker.ts', import.meta.url),
+    { type: 'module' },
+  );
+  const renderWorkers: Worker[] = [];
+  for (let k = 0; k < N; k++) {
+    renderWorkers.push(
+      new Worker(new URL('./videoRenderWorker.ts', import.meta.url), { type: 'module' }),
+    );
+  }
+  T.mark('workers-spawned');
+
+  interface WorkerReport {
+    timings: TimingEntry[];
+    framesEncoded: number;
+  }
+  let workerReport: WorkerReport | null = null;
+  let workerStartOffsetMs = 0;
 
   const onAbort = () => {
-    const msg: VideoWorkerInMessage = { type: 'cancel' };
-    worker.postMessage(msg);
+    for (const w of renderWorkers) w.postMessage({ type: 'cancel' });
+    encoderWorker.postMessage({ type: 'cancel' });
   };
   opts.signal?.addEventListener('abort', onAbort);
+  if (opts.signal?.aborted) {
+    opts.signal.removeEventListener('abort', onAbort);
+    terminateAll(encoderWorker, renderWorkers);
+    releaseBitmaps(labels, photoBitmap, stripBitmap);
+    throw new DOMException('Video export aborted', 'AbortError');
+  }
 
   const resultPromise = new Promise<VideoExportResult>((resolve, reject) => {
-    worker.addEventListener('message', (ev: MessageEvent<VideoWorkerOutMessage>) => {
+    // Encoder → main. Frame-encoded events become acks routed back to the
+    // render worker that produced that index (idx % N = producer).
+    encoderWorker.addEventListener('message', (ev: MessageEvent<VideoWorkerOutMessage>) => {
       const data = ev.data;
-      if (data.type === 'progress') {
+      if (data.type === 'encoded') {
+        const producerIdx = data.idx % N;
+        renderWorkers[producerIdx]?.postMessage({ type: 'ack' });
+      } else if (data.type === 'progress') {
         opts.onProgress?.(data.pct);
       } else if (data.type === 'done') {
+        workerReport = { timings: data.timings, framesEncoded: data.framesEncoded };
         const blob = new Blob([data.buffer], { type: 'video/mp4' });
         const blobUrl = URL.createObjectURL(blob);
         resolve({
@@ -186,46 +347,153 @@ export async function exportAnnotatedVideo(
         reject(err);
       }
     });
-    worker.addEventListener('error', (ev) => {
-      reject(new Error(ev.message || 'worker error'));
+    encoderWorker.addEventListener('error', (ev) => {
+      reject(new Error(ev.message || 'encoder worker error'));
     });
+
+    // Render workers → main. Frames forwarded straight to the encoder
+    // worker (bitmap transferred each hop). Render-worker 'done' just
+    // signals stripe completion; we wait on the encoder's 'done'.
+    for (const rw of renderWorkers) {
+      rw.addEventListener('message', (ev: MessageEvent<VideoRenderWorkerOutMessage>) => {
+        const data = ev.data;
+        if (data.type === 'frame') {
+          encoderWorker.postMessage(
+            { type: 'frame', idx: data.idx, bitmap: data.bitmap },
+            [data.bitmap],
+          );
+        } else if (data.type === 'error') {
+          const err = data.name === 'AbortError'
+            ? new DOMException(data.message, 'AbortError')
+            : new Error(data.message);
+          reject(err);
+        }
+      });
+      rw.addEventListener('error', (ev) => {
+        reject(new Error(ev.message || 'render worker error'));
+      });
+    }
   });
 
-  const startMessage: VideoWorkerStartMessage = {
-    type: 'start',
-    photo: photoBitmap,
-    strip: stripBitmap,
-    scene,
-    layers: opts.layers,
-    labels,
+  // Send encoder init first so it's ready before render bitmaps arrive.
+  encoderWorker.postMessage({
+    type: 'init',
     outW,
     outH,
-    overlayW,
-    overlayH,
-    stripH,
-    srcW,
-    srcH,
     fps,
     bitrate,
     codec,
     codecFamily,
-    strokeBoost,
-  };
+    totalFrames,
+    keyEvery,
+    usPerFrame,
+    durationMs,
+  });
 
-  // Transfer all bitmaps into the worker — they're unusable on the main
-  // thread afterwards, which is fine since we're done with them here.
-  const transferList: Transferable[] = [photoBitmap, stripBitmap];
-  for (const arr of [labels.constellation, labels.star, labels.deepSky]) {
-    for (const l of arr) transferList.push(l.bitmap);
+  // Dispatch init to every render worker. We structured-clone the
+  // shared assets for all but the last worker, then transfer to the last
+  // one so the main thread releases its copies. `postMessage` is synchronous
+  // with respect to its transfer-list handling, so cloning before transfer
+  // stays consistent.
+  for (let k = 0; k < N; k++) {
+    const isLast = k === N - 1;
+    const xfer: Transferable[] = [];
+    if (isLast) {
+      xfer.push(photoBitmap);
+      if (stripBitmap) xfer.push(stripBitmap);
+      for (const arr of [labels.constellation, labels.star, labels.deepSky]) {
+        for (const l of arr) xfer.push(l.bitmap);
+      }
+    }
+    renderWorkers[k].postMessage(
+      {
+        type: 'init',
+        photo: photoBitmap,
+        strip: stripBitmap,
+        scene,
+        layers: opts.layers,
+        labels,
+        outW,
+        outH,
+        overlayW,
+        overlayH,
+        stripH,
+        srcW,
+        srcH,
+        fps,
+        strokeBoost,
+        introDuration,
+        buildEnd,
+        totalFrames,
+        stripeOffset: k,
+        stripeStride: N,
+        inFlightWindow: INFLIGHT_WINDOW,
+      },
+      xfer,
+    );
   }
-  worker.postMessage(startMessage, transferList);
+  T.mark('workers-init-posted');
+  workerStartOffsetMs = T.elapsed();
 
   try {
-    return await resultPromise;
+    const result = await resultPromise;
+    T.mark('workers-done');
+    const report = workerReport as WorkerReport | null;
+    if (report) {
+      T.mergeWorker(report.timings, workerStartOffsetMs);
+      T.log({
+        codec,
+        codecFamily,
+        outW,
+        outH,
+        fps,
+        bitrate,
+        renderPoolSize: N,
+        framesEncoded: report.framesEncoded,
+        totalFrames,
+      });
+    }
+    return result;
+  } catch (err) {
+    // Cached codec pick that fails at configure/encode time would keep
+    // failing on retries. Flush on non-abort so the next attempt re-probes.
+    if (!(err instanceof DOMException && err.name === 'AbortError')) {
+      clearCachedCodec(codecKey);
+    }
+    throw err;
   } finally {
     opts.signal?.removeEventListener('abort', onAbort);
-    worker.terminate();
+    terminateAll(encoderWorker, renderWorkers);
   }
+}
+
+function terminateAll(encoder: Worker, renderPool: Worker[]): void {
+  encoder.terminate();
+  for (const w of renderPool) w.terminate();
+}
+
+/**
+ * Pick how many render workers to spawn. Caps at 3 because peak memory
+ * (each worker holds its own base bitmap + frame canvas + overlay cache)
+ * starts crowding the ~4 GB per-tab budget on mobile beyond that.
+ *
+ * Floor at **2** (not 1) as long as memory isn't actively constrained.
+ * Safari intentionally under-reports `hardwareConcurrency` (commonly 2)
+ * as an anti-fingerprinting measure; honoring that literally collapsed
+ * the pool to a single render worker on iPhones, wiping out every bit
+ * of parallelism. Main and encoder threads are near-idle during render
+ * (pure message routing + async encode calls), so oversubscribing by 1
+ * on a true 2-core device just means some OS scheduling — not contention
+ * that actually hurts. Low-memory devices (<3 GB) still fall back to
+ * N=1 because there the risk is OOM, not scheduling overhead.
+ */
+function pickRenderPoolSize(): number {
+  const cores = navigator.hardwareConcurrency ?? 4;
+  const memGB = (navigator as { deviceMemory?: number }).deviceMemory ?? 4;
+  if (memGB < 3) return 1;
+  if (memGB < 4) return 2;
+  // 4+ GB memory — let core count pick between 2 and 3.
+  return cores >= 6 ? 3 : 2;
 }
 
 // ---------- Helpers ----------
@@ -250,12 +518,83 @@ interface CodecPick {
   family: 'avc' | 'hevc';
 }
 
+// Session-scoped cache for the codec decision. Each isConfigSupported call
+// can take 100–500ms on mobile; probing ~10 candidates serially used to
+// stall the export dialog for multiple seconds. Cached per
+// (width, height, fps, bitrate) so different export settings don't collide.
+const CODEC_CACHE_PREFIX = 'sky-video-codec-v1';
+
+function codecCacheKey(w: number, h: number, fps: number, bitrate: number): string {
+  return `${CODEC_CACHE_PREFIX}:${w}x${h}@${fps}:${bitrate}`;
+}
+
+function readCachedCodec(key: string): CodecPick | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<CodecPick>;
+    if (
+      parsed &&
+      typeof parsed.codec === 'string' &&
+      (parsed.family === 'avc' || parsed.family === 'hevc')
+    ) {
+      return { codec: parsed.codec, family: parsed.family };
+    }
+  } catch {
+    /* sessionStorage disabled or corrupt — fall through to probe */
+  }
+  return null;
+}
+
+function writeCachedCodec(key: string, pick: CodecPick): void {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(pick));
+  } catch {
+    /* quota or storage disabled — caching is best-effort */
+  }
+}
+
+function clearCachedCodec(key: string): void {
+  try {
+    sessionStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}
+
+function buildProbeConfig(
+  pick: CodecPick,
+  w: number,
+  h: number,
+  fps: number,
+  bitrate: number,
+): VideoEncoderConfig {
+  const config: VideoEncoderConfig = {
+    codec: pick.codec,
+    width: w,
+    height: h,
+    bitrate,
+    framerate: fps,
+    // Match the hint we use when actually configuring the encoder so the
+    // probe result reflects the real runtime pick — otherwise a codec that
+    // probes supported via software could still fail to configure with
+    // prefer-hardware on a device that only has HW decode support.
+    hardwareAcceleration: 'prefer-hardware',
+  };
+  if (pick.family === 'avc') {
+    (config as VideoEncoderConfig & { avc?: { format: 'avc' } }).avc = { format: 'avc' };
+  } else {
+    (config as VideoEncoderConfig & { hevc?: { format: 'hevc' } }).hevc = { format: 'hevc' };
+  }
+  return config;
+}
+
 /**
- * Try each codec string in our preference list (HEVC first for best
- * clarity-per-bit, then H.264 for compatibility). Returns the first one
- * `VideoEncoder.isConfigSupported` accepts with the requested resolution
- * and bitrate. If every candidate is rejected, returns null and we surface
- * `WebCodecsUnsupportedError` to the caller.
+ * Pick the best-supported codec (HEVC preferred for clarity-per-bit, then
+ * H.264 for compatibility). Probes all candidates concurrently — Promise.all
+ * preserves input order so we can still return the first supported entry
+ * in preference order. Result is cached in sessionStorage to make repeat
+ * exports instant. Returns null if nothing works.
  */
 async function pickSupportedCodec(
   w: number,
@@ -263,27 +602,26 @@ async function pickSupportedCodec(
   fps: number,
   bitrate: number,
 ): Promise<CodecPick | null> {
-  for (const pick of codecCandidates(w, h, fps)) {
-    const config: VideoEncoderConfig = {
-      codec: pick.codec,
-      width: w,
-      height: h,
-      bitrate,
-      framerate: fps,
-    };
-    if (pick.family === 'avc') {
-      (config as VideoEncoderConfig & { avc?: { format: 'avc' } }).avc = { format: 'avc' };
-    } else {
-      (config as VideoEncoderConfig & { hevc?: { format: 'hevc' } }).hevc = { format: 'hevc' };
-    }
-    try {
-      const res = await VideoEncoder.isConfigSupported(config);
-      if (res.supported) return pick;
-    } catch {
-      /* try next */
-    }
-  }
-  return null;
+  const cacheKey = codecCacheKey(w, h, fps, bitrate);
+  const cached = readCachedCodec(cacheKey);
+  if (cached) return cached;
+
+  const candidates = codecCandidates(w, h, fps);
+  const results = await Promise.all(
+    candidates.map(async (pick): Promise<CodecPick | null> => {
+      try {
+        const res = await VideoEncoder.isConfigSupported(
+          buildProbeConfig(pick, w, h, fps, bitrate),
+        );
+        return res.supported ? pick : null;
+      } catch {
+        return null;
+      }
+    }),
+  );
+  const chosen = results.find((r): r is CodecPick => r !== null) ?? null;
+  if (chosen) writeCachedCodec(cacheKey, chosen);
+  return chosen;
 }
 
 function codecCandidates(w: number, h: number, fps: number): CodecPick[] {
@@ -380,20 +718,20 @@ async function prerenderInChunks<T extends Parameters<typeof prerenderLabel>[0]>
   signal?: AbortSignal,
 ): Promise<LabelBitmap[]> {
   const out: LabelBitmap[] = [];
-  const CHUNK = 40;
+  // 8 labels ≈ 16–40ms of work on mobile, inside one animation-frame
+  // budget. The old value (40) blocked the main thread for up to ~200ms
+  // per chunk, which is what caused the UI jank during "preparing
+  // export". Smaller chunks yield more often; `scheduler.yield()` makes
+  // those yields cheap (no 4ms setTimeout floor).
+  const CHUNK = 8;
   for (let i = 0; i < items.length; i += CHUNK) {
     if (signal?.aborted) return out;
     for (let k = i; k < Math.min(i + CHUNK, items.length); k++) {
       out.push(prerenderLabel(items[k]));
     }
-    // Yield so the progress UI can paint and Escape still works.
-    await nextTick();
+    await yieldToMain();
   }
   return out;
-}
-
-function nextTick(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 async function ensureFontsReady(): Promise<void> {
@@ -409,7 +747,7 @@ async function ensureFontsReady(): Promise<void> {
 
 function releaseBitmaps(
   labels: LabelBitmapBundle,
-  ...extra: (ImageBitmap | undefined)[]
+  ...extra: (ImageBitmap | null | undefined)[]
 ): void {
   for (const arr of [labels.constellation, labels.star, labels.deepSky]) {
     for (const l of arr) l.bitmap.close?.();

@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Cancelar",
     "save": "Guardar imagen",
-    "saving": "Generando…"
+    "saving": "Generando…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Incluir franja de firma",
+    "description": "Agrega un pie oscuro con ubicación, coordenadas y estadísticas."
   }
 }

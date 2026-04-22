@@ -3,6 +3,10 @@
   "title": "Signed export",
   "description": "Add the observing location and coordinates to create a shareable print of this star-annotated photograph. Field of view {{field}}.",
   "previewAlt": "Preview",
+  "strip": {
+    "label": "Include signature strip",
+    "description": "Adds a dark footer with location, coordinates, and stats."
+  },
   "location": {
     "header": "Observing location",
     "placeholder": "Enter a place name (search supported)",
@@ -28,6 +32,7 @@
     "save": "Save image",
     "saving": "Generating…",
     "saveVideo": "Save video",
-    "savingVideo": "Rendering video… {{pct}}%"
+    "savingVideo": "Rendering video… {{pct}}%",
+    "savingVideoShort": "{{pct}}%"
   }
 }

@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Batal",
     "save": "Simpan gambar",
-    "saving": "Membuat…"
+    "saving": "Membuat…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Sertakan bilah tanda tangan",
+    "description": "Menambahkan footer gelap dengan lokasi, koordinat, dan statistik."
   }
 }

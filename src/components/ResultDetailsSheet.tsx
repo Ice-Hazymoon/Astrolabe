@@ -9,6 +9,7 @@ import {
   Stars,
   Telescope,
 } from 'lucide-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   detailsCategoryActive,
@@ -18,6 +19,7 @@ import {
 } from '@/state/store';
 import { Stat } from './ui/Stat';
 import { cn } from '@/lib/cn';
+import { composeCelestialDetailName, translateCelestialKey } from '@/lib/celestialText';
 
 const TABS = [
   { id: 'stars', category: 'stars', icon: Stars },
@@ -59,14 +61,18 @@ interface RowItem {
 }
 
 export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetProps) {
-  const { t } = useTranslation(['result', 'catalog']);
+  const { t, i18n } = useTranslation(['result', 'catalog']);
   const result = useSky((s) => s.result);
   const filters = useSky((s) => s.detailsFilters);
+  const labelLocale = useSky((s) => s.locale);
   const toggleItemHidden = useSky((s) => s.toggleItemHidden);
   const toggleItemSolo = useSky((s) => s.toggleItemSolo);
   const clearCategoryFilters = useSky((s) => s.clearCategoryFilters);
   const clearAllFilters = useSky((s) => s.clearAllFilters);
   const [tab, setTab] = useState<TabId>('stars');
+  // Celestial-name lookups use the label locale (not the UI language) so
+  // swapping the label locale dropdown updates the sheet in real time.
+  const labelT = useMemo(() => i18n.getFixedT(labelLocale), [i18n, labelLocale]);
 
   if (!result) return null;
 
@@ -84,7 +90,10 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
         return result.visible_named_stars.map((s) => ({
           id: s.id,
           filterKey: s.id,
-          primary: s.name,
+          // Prefer the active locale's celestial translation; fall back to the
+          // English proper name so the sheet updates in lockstep with the
+          // canvas overlay when the UI language changes.
+          primary: translateCelestialKey(labelT, s.i18n_key, s.name),
           secondary: s.constellation ?? '',
           meta: `mag ${s.magnitude.toFixed(2)}`,
         }));
@@ -95,19 +104,22 @@ export function ResultDetailsSheet({ open, onOpenChange }: ResultDetailsSheetPro
           // and joins precisely against scene.constellation_figures[].id and
           // constellation labels' `.constellation` field.
           filterKey: c.id,
-          primary: c.name,
+          primary: translateCelestialKey(labelT, c.i18n_key, c.english_name ?? c.name),
           secondary: '',
           meta: t('result:details.mainStarsCount', { count: c.starCount }),
         }));
       case 'dso':
-        return result.visible_deep_sky_objects.map((d) => ({
-          id: d.id,
-          filterKey: d.id,
-          primary: d.name,
-          // d.type is a raw backend code (e.g. "OCl"); translate via catalog with fallback to raw.
-          secondary: t(`catalog:dsoTypes.${d.type}`, { defaultValue: d.type }),
-          meta: `mag ${d.magnitude.toFixed(1)}`,
-        }));
+        return result.visible_deep_sky_objects.map((d) => {
+          const base = translateCelestialKey(labelT, d.i18n_key, d.english_name ?? d.name);
+          return {
+            id: d.id,
+            filterKey: d.id,
+            primary: composeCelestialDetailName(base, d.messier, d.catalog_id),
+            // d.type is a raw backend code (e.g. "OCl"); translate via catalog with fallback to raw.
+            secondary: t(`catalog:dsoTypes.${d.type}`, { defaultValue: d.type }),
+            meta: `mag ${d.magnitude.toFixed(1)}`,
+          };
+        });
     }
   })();
 

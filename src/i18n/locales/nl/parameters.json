@@ -4,14 +4,18 @@
   "presets": {
     "header": "Weergavevoorinstelling",
     "ariaLabel": "Weergavevoorinstelling",
-    "balanced": { "label": "Gebalanceerd", "hint": "Aanbevolen dichtheid" },
-    "detailed": { "label": "Gedetailleerd", "hint": "Meer deep-sky en sterrenbeelden" },
-    "max": { "label": "Volledig", "hint": "Toon elke detectie" }
-  },
-  "labelLocale": {
-    "header": "Labeltaal",
-    "ariaLabel": "Labeltaal",
-    "driftHint": "Wisselen vereist heranalyse"
+    "balanced": {
+      "label": "Gebalanceerd",
+      "hint": "Aanbevolen dichtheid"
+    },
+    "detailed": {
+      "label": "Gedetailleerd",
+      "hint": "Meer deep-sky en sterrenbeelden"
+    },
+    "max": {
+      "label": "Volledig",
+      "hint": "Toon elke detectie"
+    }
   },
   "layers": {
     "header": "Lagen",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Alle namen van sterrenbeelden tonen",
     "detailedDsoLabels": "Volledige deep-sky-namen gebruiken",
     "live": "Wijzigingen worden direct toegepast."
-  },
-  "reanalyze": {
-    "message": "Labeltaal gewijzigd — voer opnieuw analyse uit om toe te passen.",
-    "button": "Opnieuw analyseren"
   }
 }

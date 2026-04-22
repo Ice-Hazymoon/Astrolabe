@@ -4,14 +4,18 @@
   "presets": {
     "header": "Praset tampilan",
     "ariaLabel": "Praset tampilan",
-    "balanced": { "label": "Seimbang", "hint": "Kepadatan disarankan" },
-    "detailed": { "label": "Terperinci", "hint": "Lebih banyak langit dalam dan rasi bintang" },
-    "max": { "label": "Lengkap", "hint": "Tampilkan setiap deteksi" }
-  },
-  "labelLocale": {
-    "header": "Bahasa label",
-    "ariaLabel": "Bahasa label",
-    "driftHint": "Pergantian memerlukan analisis ulang"
+    "balanced": {
+      "label": "Seimbang",
+      "hint": "Kepadatan disarankan"
+    },
+    "detailed": {
+      "label": "Terperinci",
+      "hint": "Lebih banyak langit dalam dan rasi bintang"
+    },
+    "max": {
+      "label": "Lengkap",
+      "hint": "Tampilkan setiap deteksi"
+    }
   },
   "layers": {
     "header": "Lapisan",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Tampilkan semua nama rasi bintang",
     "detailedDsoLabels": "Gunakan nama langit dalam lengkap",
     "live": "Perubahan diterapkan segera."
-  },
-  "reanalyze": {
-    "message": "Bahasa label berubah — analisis ulang untuk menerapkan.",
-    "button": "Analisis ulang"
   }
 }

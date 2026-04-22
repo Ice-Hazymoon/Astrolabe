@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "ยกเลิก",
     "save": "บันทึกภาพ",
-    "saving": "กำลังสร้าง…"
+    "saving": "กำลังสร้าง…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "รวมแถบลายเซ็น",
+    "description": "เพิ่มส่วนท้ายสีเข้มพร้อมสถานที่ พิกัด และสถิติ"
   }
 }

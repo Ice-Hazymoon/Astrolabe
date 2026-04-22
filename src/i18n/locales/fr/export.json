@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Annuler",
     "save": "Enregistrer l'image",
-    "saving": "Génération…"
+    "saving": "Génération…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Inclure le bandeau signature",
+    "description": "Ajoute un pied sombre avec lieu, coordonnées et statistiques."
   }
 }

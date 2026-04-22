@@ -4,14 +4,18 @@
   "presets": {
     "header": "Preajuste de visualización",
     "ariaLabel": "Preajuste de visualización",
-    "balanced": { "label": "Equilibrado", "hint": "Densidad recomendada" },
-    "detailed": { "label": "Detallado", "hint": "Más cielo profundo y constelaciones" },
-    "max": { "label": "Completo", "hint": "Mostrar todas las detecciones" }
-  },
-  "labelLocale": {
-    "header": "Idioma de las etiquetas",
-    "ariaLabel": "Idioma de las etiquetas",
-    "driftHint": "Cambiarlo requiere volver a analizar"
+    "balanced": {
+      "label": "Equilibrado",
+      "hint": "Densidad recomendada"
+    },
+    "detailed": {
+      "label": "Detallado",
+      "hint": "Más cielo profundo y constelaciones"
+    },
+    "max": {
+      "label": "Completo",
+      "hint": "Mostrar todas las detecciones"
+    }
   },
   "layers": {
     "header": "Capas",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Mostrar todos los nombres de constelaciones",
     "detailedDsoLabels": "Usar nombres completos de cielo profundo",
     "live": "Los cambios se aplican al instante."
-  },
-  "reanalyze": {
-    "message": "Idioma de etiquetas cambiado — vuelve a analizar para aplicarlo.",
-    "button": "Reanalizar"
   }
 }

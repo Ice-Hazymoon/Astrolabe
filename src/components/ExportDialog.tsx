@@ -19,6 +19,7 @@ import { SITE_HOST, SITE_NAME } from '@/lib/config';
 import { useSky } from '@/state/store';
 import { Button } from './ui/Button';
 import { IconButton } from './ui/IconButton';
+import { Switch } from './ui/Switch';
 import { OverlayCanvas } from './OverlayCanvas';
 import { cn } from '@/lib/cn';
 
@@ -80,6 +81,7 @@ export function ExportDialog({
   const [locationName, setLocationName] = useState('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
+  const [includeStrip, setIncludeStrip] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingError, setSavingError] = useState<string | null>(null);
   // `null` = still feature-detecting, `true`/`false` once the probe resolves.
@@ -313,7 +315,14 @@ export function ExportDialog({
     setSaving(true);
     setSavingError(null);
     try {
-      const href = await composeAnnotatedWithStrip(imageSrc, scene, layers, meta, detailsFilters);
+      const href = await composeAnnotatedWithStrip(
+        imageSrc,
+        scene,
+        layers,
+        meta,
+        detailsFilters,
+        includeStrip,
+      );
       const anchor = document.createElement('a');
       anchor.href = href;
       anchor.download = `stellaris-${Date.now()}.png`;
@@ -341,6 +350,7 @@ export function ExportDialog({
         layers,
         meta,
         filters: detailsFilters,
+        includeStrip,
         onProgress: (p) => setVideoPct(p),
         signal: controller.signal,
       });
@@ -428,12 +438,12 @@ export function ExportDialog({
                       '[--preview-cap-h:36vh] sm:[--preview-cap-h:52vh]',
                     )}
                     style={{
-                      aspectRatio: `${imgW} / ${imgH + stripH}`,
+                      aspectRatio: `${imgW} / ${imgH + (includeStrip ? stripH : 0)}`,
                       // Cap the width so the height (derived from aspect-ratio) can
                       // never exceed the target max — otherwise max-height alone
                       // squashes the box and the nested aspect-ratio children
                       // overflow behind `overflow-hidden`, cropping the photo.
-                      maxWidth: `calc(var(--preview-cap-h) * ${(imgW / (imgH + stripH)).toFixed(4)})`,
+                      maxWidth: `calc(var(--preview-cap-h) * ${(imgW / (imgH + (includeStrip ? stripH : 0))).toFixed(4)})`,
                       maxHeight: 'var(--preview-cap-h)',
                     }}
                   >
@@ -463,15 +473,34 @@ export function ExportDialog({
                       />
                       <OverlayCanvas scene={scene} layers={layers} animate={false} />
                     </div>
-                    <div
-                      className="relative w-full [&>svg]:block [&>svg]:w-full [&>svg]:h-full"
-                      style={{ aspectRatio: `${imgW} / ${stripH}` }}
-                      dangerouslySetInnerHTML={{ __html: stripMarkup }}
-                    />
+                    {includeStrip && (
+                      <div
+                        className="relative w-full [&>svg]:block [&>svg]:w-full [&>svg]:h-full"
+                        style={{ aspectRatio: `${imgW} / ${stripH}` }}
+                        dangerouslySetInnerHTML={{ __html: stripMarkup }}
+                      />
+                    )}
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
+                  <div
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-[var(--radius-sm)]',
+                      'bg-[color:var(--color-ink-0)]/40 border border-[color:var(--color-line-soft)]',
+                    )}
+                  >
+                    <Switch
+                      checked={includeStrip}
+                      onChange={setIncludeStrip}
+                      label={t('export:strip.label')}
+                      description={t('export:strip.description')}
+                      disabled={saving}
+                    />
+                  </div>
+
+                  {includeStrip && (
+                  <>
                   <div className="relative" ref={locationWrapRef}>
                     <label className="flex flex-col gap-1.5">
                       <span className="text-eyebrow">{t('export:location.header')}</span>
@@ -603,6 +632,8 @@ export function ExportDialog({
                       maxLength={16}
                     />
                   </div>
+                  </>
+                  )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1">
@@ -615,6 +646,10 @@ export function ExportDialog({
                       t('export:hints.default')
                     )}
                   </span>
+                  {/* Mobile: buttons stretch with flex-1 so the video button's
+                      progress label (which widens the pill mid-render) can't
+                      push the primary save off-screen. sm+: shrink to content
+                      and right-align as before. */}
                   <div className="flex items-center justify-end gap-2 sm:shrink-0">
                     {/* Cancel hidden on mobile — the top-right X already dismisses, keeping
                         thumb focus on the primary Save (and optional Save video) CTA. */}
@@ -633,6 +668,7 @@ export function ExportDialog({
                         size="md"
                         onClick={handleSaveVideo}
                         disabled={saving}
+                        className="flex-1 sm:flex-none"
                         leading={
                           saving && videoPct > 0 ? (
                             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.2} />
@@ -641,9 +677,18 @@ export function ExportDialog({
                           )
                         }
                       >
-                        {saving && videoPct > 0
-                          ? t('export:buttons.savingVideo', { pct: Math.round(videoPct * 100) })
-                          : t('export:buttons.saveVideo')}
+                        {saving && videoPct > 0 ? (
+                          <>
+                            <span className="hidden sm:inline">
+                              {t('export:buttons.savingVideo', { pct: Math.round(videoPct * 100) })}
+                            </span>
+                            <span className="sm:hidden">
+                              {t('export:buttons.savingVideoShort', { pct: Math.round(videoPct * 100) })}
+                            </span>
+                          </>
+                        ) : (
+                          t('export:buttons.saveVideo')
+                        )}
                       </Button>
                     )}
                     <Button
@@ -651,6 +696,7 @@ export function ExportDialog({
                       size="md"
                       onClick={handleSave}
                       disabled={saving}
+                      className="flex-1 sm:flex-none"
                       leading={
                         saving && videoPct === 0 ? (
                           <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.2} />

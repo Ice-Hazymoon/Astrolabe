@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "キャンセル",
     "save": "画像を保存",
-    "saving": "生成中…"
+    "saving": "生成中…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "署名ストリップを含める",
+    "description": "観測地・座標・統計を表示する暗色のフッターを追加します。"
   }
 }

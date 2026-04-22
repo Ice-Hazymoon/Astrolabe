@@ -46,6 +46,9 @@ interface RawAnalyzeResponse {
   visible_named_stars: Array<{
     hip?: number;
     name: string;
+    /** Normalized slug of `name` (e.g. "betelgeuse") — frontend looks this up
+     * in the `celestial` i18n namespace so labels translate without a re-POST. */
+    name_key?: string | null;
     magnitude: number | null;
     x?: number;
     y?: number;
@@ -55,6 +58,8 @@ interface RawAnalyzeResponse {
     english_name?: string;
     native_name?: string;
     display_name?: string;
+    /** Stable i18n key (e.g. "orion") for the `celestial` namespace. */
+    resource_key?: string | null;
     label_x?: number;
     label_y?: number;
     show_label?: boolean;
@@ -67,8 +72,11 @@ interface RawAnalyzeResponse {
     x?: number;
     y?: number;
     messier?: string;
+    catalog_id?: string;
     common_name?: string;
     label?: string;
+    /** Stable i18n key (e.g. "m42", "andromeda_galaxy") for the `celestial` namespace. */
+    label_key?: string | null;
     display_label?: string;
     curated?: boolean;
   }>;
@@ -96,6 +104,7 @@ function normalizeStar(raw: RawAnalyzeResponse['visible_named_stars'][number]): 
   return {
     id: raw.hip != null ? `hip-${raw.hip}` : `star-${raw.name}`,
     name: raw.name,
+    i18n_key: raw.name_key || undefined,
     magnitude: raw.magnitude ?? UNKNOWN_MAGNITUDE,
   };
 }
@@ -114,6 +123,8 @@ function normalizeConstellation(
     id: raw.abbr,
     abbr: raw.abbr,
     name: `${primary}${secondary}`,
+    i18n_key: raw.resource_key || undefined,
+    english_name: english ?? undefined,
     starCount: Array.isArray(raw.segments) ? raw.segments.length : 0,
   };
 }
@@ -127,6 +138,10 @@ function normalizeDso(raw: RawAnalyzeResponse['visible_deep_sky_objects'][number
   return {
     id: raw.name,
     name: `${primary}${secondary}`,
+    i18n_key: raw.label_key || undefined,
+    messier: raw.messier?.trim() || undefined,
+    catalog_id: raw.catalog_id?.trim() || undefined,
+    english_name: raw.common_name?.trim() || raw.messier?.trim() || raw.name,
     type: dsoTypeLabel(raw.type),
     magnitude: raw.magnitude ?? UNKNOWN_MAGNITUDE,
   };
@@ -138,6 +153,7 @@ function toCatalogStar(raw: RawAnalyzeResponse['visible_named_stars'][number]): 
     id: raw.hip != null ? `hip-${raw.hip}` : `star-${raw.name}`,
     hip: raw.hip,
     name: raw.name,
+    i18n_key: raw.name_key || undefined,
     magnitude: raw.magnitude ?? UNKNOWN_MAGNITUDE,
     x: raw.x,
     y: raw.y,
@@ -164,6 +180,7 @@ function toCatalogConstellation(
     id: raw.abbr,
     abbr: raw.abbr,
     display_name: raw.display_name?.trim() || raw.native_name?.trim() || raw.english_name?.trim() || raw.abbr,
+    i18n_key: raw.resource_key || undefined,
     native_name: raw.native_name?.trim() || undefined,
     english_name: raw.english_name?.trim() || undefined,
     label_x: raw.label_x,
@@ -176,12 +193,15 @@ function toCatalogConstellation(
 function toCatalogDso(raw: RawAnalyzeResponse['visible_deep_sky_objects'][number]): CatalogDso | null {
   if (raw.x == null || raw.y == null) return null;
   const messier = raw.messier?.trim() || undefined;
+  const catalogId = raw.catalog_id?.trim() || undefined;
   const common = raw.common_name?.trim() || undefined;
   const detailed = raw.display_label?.trim() || raw.label?.trim() || messier || common || raw.name;
   const primary = messier || common || raw.name;
   return {
     id: raw.name,
     name: raw.name,
+    i18n_key: raw.label_key || undefined,
+    catalog_id: catalogId,
     type_code: raw.type,
     type_label: dsoTypeLabel(raw.type),
     magnitude: raw.magnitude ?? UNKNOWN_MAGNITUDE,
@@ -238,7 +258,6 @@ function normalize(raw: RawAnalyzeResponse): AnalyzeResponse {
     visible_named_stars: raw.visible_named_stars.map(normalizeStar),
     visible_constellations: raw.visible_constellations.map(normalizeConstellation),
     visible_deep_sky_objects: raw.visible_deep_sky_objects.map(normalizeDso),
-    resolvedLocale: raw.localization?.resolved_locale,
   };
 }
 

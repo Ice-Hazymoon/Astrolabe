@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Annuleren",
     "save": "Afbeelding opslaan",
-    "saving": "Genereren…"
+    "saving": "Genereren…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Signatuurstrook opnemen",
+    "description": "Voegt een donkere voettekst toe met locatie, coördinaten en statistieken."
   }
 }

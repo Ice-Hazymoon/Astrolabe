@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Abbrechen",
     "save": "Bild speichern",
-    "saving": "Wird erstellt…"
+    "saving": "Wird erstellt…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Signaturleiste einbeziehen",
+    "description": "Fügt eine dunkle Fußzeile mit Ort, Koordinaten und Statistiken hinzu."
   }
 }

@@ -4,14 +4,18 @@
   "presets": {
     "header": "Preset di visualizzazione",
     "ariaLabel": "Preset di visualizzazione",
-    "balanced": { "label": "Bilanciato", "hint": "Densità consigliata" },
-    "detailed": { "label": "Dettagliato", "hint": "Più cielo profondo e costellazioni" },
-    "max": { "label": "Completo", "hint": "Mostra tutte le rilevazioni" }
-  },
-  "labelLocale": {
-    "header": "Lingua delle etichette",
-    "ariaLabel": "Lingua delle etichette",
-    "driftHint": "Il cambio richiede una nuova analisi"
+    "balanced": {
+      "label": "Bilanciato",
+      "hint": "Densità consigliata"
+    },
+    "detailed": {
+      "label": "Dettagliato",
+      "hint": "Più cielo profondo e costellazioni"
+    },
+    "max": {
+      "label": "Completo",
+      "hint": "Mostra tutte le rilevazioni"
+    }
   },
   "layers": {
     "header": "Livelli",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Mostra tutti i nomi delle costellazioni",
     "detailedDsoLabels": "Usa i nomi completi del cielo profondo",
     "live": "Le modifiche vengono applicate subito."
-  },
-  "reanalyze": {
-    "message": "Lingua delle etichette cambiata — rianalizza per applicarla.",
-    "button": "Rianalizza"
   }
 }

@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "إلغاء",
     "save": "حفظ الصورة",
-    "saving": "جارٍ الإنشاء…"
+    "saving": "جارٍ الإنشاء…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "تضمين شريط التوقيع",
+    "description": "يضيف تذييلاً داكناً يعرض الموقع والإحداثيات والإحصاءات."
   }
 }

@@ -3,6 +3,10 @@
   "title": "落款匯出",
   "description": "加入觀測地與座標，為這張星空標註生成一張可分享的作品。視場 {{field}}。",
   "previewAlt": "預覽",
+  "strip": {
+    "label": "包含落款區域",
+    "description": "在底部加入觀測地、座標與條目統計的落款條。"
+  },
   "location": {
     "header": "觀測地",
     "placeholder": "輸入地點名稱（支援搜尋）",
@@ -26,6 +30,7 @@
   "buttons": {
     "saveVideo": "Save video",
     "savingVideo": "Rendering video… {{pct}}%",
+    "savingVideoShort": "{{pct}}%",
     "cancel": "取消",
     "save": "儲存圖像",
     "saving": "生成中…"

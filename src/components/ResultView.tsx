@@ -14,10 +14,11 @@ import { ExportDialog } from './ExportDialog';
 import { ShareDialog } from './ShareDialog';
 
 export function ResultView() {
-  const { t } = useTranslation(['result', 'app']);
+  const { t, i18n } = useTranslation(['result', 'app']);
   const result = useSky((s) => s.result);
   const current = useSky((s) => s.current);
   const options = useSky((s) => s.options);
+  const labelLocale = useSky((s) => s.locale);
   const reset = useSky((s) => s.reset);
   const [showOriginal, setShowOriginal] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -46,10 +47,16 @@ export function ResultView() {
     setShowOriginal(false);
   }, [current?.sourceKey]);
 
+  // Celestial labels are driven by the label locale (store.locale) so users
+  // can pick a different language for star/DSO names than the UI. Changing the
+  // label locale — whether by switching UI language (useLocaleSync mirrors it
+  // into the store) or via the LabelLocaleSwitcher — rebuilds the scene with
+  // fresh translations. No re-POST to /api/analyze: client-side only.
   const scene = useMemo(() => {
     if (!result?.catalog || !result.catalog.image_width) return null;
-    return buildScene(result.catalog, options);
-  }, [result?.catalog, options]);
+    const localizedT = i18n.getFixedT(labelLocale);
+    return buildScene(result.catalog, options, localizedT);
+  }, [result?.catalog, options, i18n, labelLocale]);
 
   // Keyed to the result so a fresh analysis (or history restore) remounts the
   // overlay and replays entrance animations + the breathing glow filters.

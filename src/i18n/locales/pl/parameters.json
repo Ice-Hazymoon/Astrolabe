@@ -4,14 +4,18 @@
   "presets": {
     "header": "Ustawienie wyświetlania",
     "ariaLabel": "Ustawienie wyświetlania",
-    "balanced": { "label": "Zrównoważone", "hint": "Zalecana gęstość" },
-    "detailed": { "label": "Szczegółowe", "hint": "Więcej obiektów dalekiego nieba i gwiazdozbiorów" },
-    "max": { "label": "Pełne", "hint": "Pokaż wszystkie wykrycia" }
-  },
-  "labelLocale": {
-    "header": "Język etykiet",
-    "ariaLabel": "Język etykiet",
-    "driftHint": "Zmiana wymaga ponownej analizy"
+    "balanced": {
+      "label": "Zrównoważone",
+      "hint": "Zalecana gęstość"
+    },
+    "detailed": {
+      "label": "Szczegółowe",
+      "hint": "Więcej obiektów dalekiego nieba i gwiazdozbiorów"
+    },
+    "max": {
+      "label": "Pełne",
+      "hint": "Pokaż wszystkie wykrycia"
+    }
   },
   "layers": {
     "header": "Warstwy",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Pokaż wszystkie nazwy gwiazdozbiorów",
     "detailedDsoLabels": "Używaj pełnych nazw obiektów dalekiego nieba",
     "live": "Zmiany są stosowane natychmiast."
-  },
-  "reanalyze": {
-    "message": "Zmieniono język etykiet — uruchom ponowną analizę, aby zastosować.",
-    "button": "Analizuj ponownie"
   }
 }

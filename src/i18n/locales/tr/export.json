@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "İptal",
     "save": "Görseli kaydet",
-    "saving": "Oluşturuluyor…"
+    "saving": "Oluşturuluyor…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "İmza şeridini dahil et",
+    "description": "Konum, koordinatlar ve istatistiklerle birlikte koyu bir altlık ekler."
   }
 }

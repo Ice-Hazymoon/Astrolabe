@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Zrušit",
     "save": "Uložit obrázek",
-    "saving": "Generování…"
+    "saving": "Generování…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Zahrnout podpisový pruh",
+    "description": "Přidá tmavé zápatí s polohou, souřadnicemi a statistikami."
   }
 }

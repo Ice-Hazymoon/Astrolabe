@@ -61,6 +61,7 @@ export const NAMESPACES = [
   'export',
   'share',
   'catalog',
+  'celestial',
   'seo',
 ] as const;
 

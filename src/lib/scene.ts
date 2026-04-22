@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type {
   Catalog,
   CatalogConstellation,
@@ -159,6 +160,15 @@ function boxesOverlap(a: LabelBox, b: LabelBox, pad: number): boolean {
 
 interface LabelSpec {
   text: string;
+  /** i18n key (stardroid slug) for the `celestial` namespace, when known. */
+  i18n_key?: string;
+  /** Messier prefix for DSOs (e.g. "M42") — lets the renderer recompose the
+   * detailed form "M42 <translated>" when the i18n hit strips the prefix. */
+  messier?: string;
+  /** NGC/IC identifier, same use as `messier` for detailed DSO labels. */
+  catalog_id?: string;
+  /** For DSO labels only: whether the detailed prefix composition applies. */
+  detailed?: boolean;
   entity_id?: string;
   constellation_ids?: string[];
   variant: LabelVariant;
@@ -332,6 +342,10 @@ function layoutLabels(
 
     const item: OverlayTextItem = {
       text: spec.text,
+      i18n_key: spec.i18n_key,
+      messier: spec.messier,
+      catalog_id: spec.catalog_id,
+      detailed: spec.detailed,
       entity_id: spec.entity_id,
       constellation_ids: spec.constellation_ids,
       x: picked.x,
@@ -385,9 +399,52 @@ function buildLeader(
 
 // --- Spec builders ---------------------------------------------------------
 
-function buildConstellationSpec(c: CatalogConstellation, scale: number): LabelSpec {
+/** Look up a catalog-object i18n key in the `celestial` namespace, falling
+ * back to a human-readable English-ish label when the active locale has no
+ * translation. Used by every label spec builder so layout measurement and
+ * the rendered DOM both see the same string — no post-layout reflow on
+ * language switch, no network round-trip. */
+function translateCelestial(key: string | undefined, fallback: string, t: TFunction): string {
+  if (!key) return fallback;
+  const hit = t(key, { ns: 'celestial', defaultValue: '' });
+  return typeof hit === 'string' && hit.length > 0 ? hit : fallback;
+}
+
+function normalizeLookup(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+/** DSO detailed labels mirror annotate_scene.compose_dso_display_label:
+ * prefix the translated common name with "M42" / "NGC6543" when they differ,
+ * else fall back to the catalog id on its own. */
+function composeDsoText(d: CatalogDso, detailed: boolean, t: TFunction): string {
+  const rawFallback = detailed ? d.detailed_label : d.primary_label;
+  if (!d.i18n_key) return rawFallback;
+  const translated = translateCelestial(d.i18n_key, '', t);
+  if (!translated) return rawFallback;
+  if (!detailed) return translated;
+  if (d.messier && normalizeLookup(translated) !== normalizeLookup(d.messier)) {
+    return `${d.messier} ${translated}`;
+  }
+  if (d.messier) return d.messier;
+  if (
+    d.catalog_id &&
+    /^(ngc|ic)/i.test(d.catalog_id) &&
+    normalizeLookup(translated) !== normalizeLookup(d.catalog_id)
+  ) {
+    return `${d.catalog_id} ${translated}`;
+  }
+  return translated;
+}
+
+function buildConstellationSpec(c: CatalogConstellation, scale: number, t: TFunction): LabelSpec {
   return {
-    text: c.display_name,
+    text: translateCelestial(c.i18n_key, c.display_name, t),
+    i18n_key: c.i18n_key,
     entity_id: c.id,
     constellation_ids: [c.abbr],
     variant: 'constellation',
@@ -409,12 +466,13 @@ function buildConstellationSpec(c: CatalogConstellation, scale: number): LabelSp
   };
 }
 
-function buildStarSpec(s: CatalogStar, scale: number): LabelSpec {
+function buildStarSpec(s: CatalogStar, scale: number, t: TFunction): LabelSpec {
   const radius = starRadius(s.magnitude) * scale;
   // Bright stars get slightly bigger labels and higher priority.
   const fontSize = (s.magnitude <= 1 ? 18 : s.magnitude <= 2.5 ? 17 : 16) * scale;
   return {
-    text: s.name,
+    text: translateCelestial(s.i18n_key, s.name, t),
+    i18n_key: s.i18n_key,
     entity_id: s.id,
     constellation_ids: s.constellation_ids,
     variant: 'star',
@@ -435,7 +493,8 @@ function buildStarSpec(s: CatalogStar, scale: number): LabelSpec {
   };
 }
 
-function buildDsoSpec(d: CatalogDso, text: string, scale: number): LabelSpec {
+function buildDsoSpec(d: CatalogDso, detailed: boolean, scale: number, t: TFunction): LabelSpec {
+  const text = composeDsoText(d, detailed, t);
   // DSO labels are mono-like and sit inside a subtle chip — the chip is what
   // separates them visually from a star label of the same size.
   const chip: LabelChip = {
@@ -448,6 +507,10 @@ function buildDsoSpec(d: CatalogDso, text: string, scale: number): LabelSpec {
   };
   return {
     text,
+    i18n_key: d.i18n_key,
+    messier: d.messier,
+    catalog_id: d.catalog_id,
+    detailed,
     entity_id: d.id,
     variant: 'dso',
     // Curated (Messier etc.) beat generic; brighter beat fainter.
@@ -473,7 +536,7 @@ function buildDsoSpec(d: CatalogDso, text: string, scale: number): LabelSpec {
  * The backend is queried once with max detail; all filtering and density controls
  * happen here so that parameter changes update the overlay without another round-trip.
  */
-export function buildScene(catalog: Catalog, options: OverlayOptions): OverlayScene {
+export function buildScene(catalog: Catalog, options: OverlayOptions, t: TFunction): OverlayScene {
   const { stars, constellations, dsos, image_width, image_height } = catalog;
   const { layers, detail } = options;
 
@@ -563,12 +626,9 @@ export function buildScene(catalog: Catalog, options: OverlayOptions): OverlaySc
   // Collect all labels, run a shared layout pass, then split back by variant
   // so the render order and per-type visibility controls keep working.
   const allSpecs: LabelSpec[] = [];
-  for (const c of constellationsToShow) allSpecs.push(buildConstellationSpec(c, scale));
-  for (const s of keptStars) allSpecs.push(buildStarSpec(s, scale));
-  for (const d of keptDsos) {
-    const text = detail.detailed_dso_labels ? d.detailed_label : d.primary_label;
-    allSpecs.push(buildDsoSpec(d, text, scale));
-  }
+  for (const c of constellationsToShow) allSpecs.push(buildConstellationSpec(c, scale, t));
+  for (const s of keptStars) allSpecs.push(buildStarSpec(s, scale, t));
+  for (const d of keptDsos) allSpecs.push(buildDsoSpec(d, detail.detailed_dso_labels, scale, t));
 
   const laid = layoutLabels(allSpecs, image_width, image_height, scale);
 

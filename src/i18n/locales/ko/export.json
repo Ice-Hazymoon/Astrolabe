@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "취소",
     "save": "이미지 저장",
-    "saving": "생성 중…"
+    "saving": "생성 중…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "서명 스트립 포함",
+    "description": "위치, 좌표, 통계가 포함된 어두운 푸터를 추가합니다."
   }
 }

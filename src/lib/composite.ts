@@ -99,9 +99,10 @@ export interface StripMeta {
 }
 
 /**
- * Rasterize the annotated image AND a white attribution strip at the bottom
- * (location name, coordinates, site logo + wordmark + URL) as a single PNG
- * blob URL. This is the "share-ready" export used by the save dialog.
+ * Rasterize the annotated image AND (optionally) a dark attribution strip at
+ * the bottom (location name, coordinates, site logo + wordmark + URL) as a
+ * single PNG blob URL. This is the "share-ready" export used by the save
+ * dialog. When `includeStrip` is false, only the photo + overlay is produced.
  */
 export async function composeAnnotatedWithStrip(
   imageSrc: string,
@@ -109,13 +110,14 @@ export async function composeAnnotatedWithStrip(
   layers: OverlayOptions['layers'],
   meta: StripMeta,
   filters: DetailsFilters = NO_FILTERS,
+  includeStrip = true,
 ): Promise<string> {
   const img = await loadImage(imageSrc);
   const W = scene.image_width > 0 ? scene.image_width : img.naturalWidth;
   const H = scene.image_height > 0 ? scene.image_height : img.naturalHeight;
   if (!W || !H) throw new Error('missing image dimensions');
 
-  const stripH = stripHeightFor(W);
+  const stripH = includeStrip ? stripHeightFor(W) : 0;
 
   const canvas = document.createElement('canvas');
   canvas.width = W;
@@ -142,15 +144,17 @@ export async function composeAnnotatedWithStrip(
     URL.revokeObjectURL(overlayUrl);
   }
 
-  // Bottom attribution strip
-  await ensureFontsReady();
-  const stripSvg = buildStripSvg(W, stripH, meta);
-  const stripUrl = svgToObjectUrl(stripSvg);
-  try {
-    const stripImg = await loadImage(stripUrl);
-    ctx.drawImage(stripImg, 0, H, W, stripH);
-  } finally {
-    URL.revokeObjectURL(stripUrl);
+  if (includeStrip) {
+    // Bottom attribution strip
+    await ensureFontsReady();
+    const stripSvg = buildStripSvg(W, stripH, meta);
+    const stripUrl = svgToObjectUrl(stripSvg);
+    try {
+      const stripImg = await loadImage(stripUrl);
+      ctx.drawImage(stripImg, 0, H, W, stripH);
+    } finally {
+      URL.revokeObjectURL(stripUrl);
+    }
   }
 
   const blob = await new Promise<Blob | null>((resolve) =>
@@ -681,8 +685,8 @@ function rgba(t: RgbaTuple, alphaScale = 1): string {
 
 // Must stay in lockstep with OverlayCanvas — the export is meant to mirror
 // what the live viewer paints. If you tune one, tune the other.
-const LINE_ALPHA_BOOST = 1.45;
-const LINE_WIDTH_BOOST = 1.3;
+const LINE_ALPHA_BOOST = 0.95;
+const LINE_WIDTH_BOOST = 1.1;
 const LINE_WHITEN = 0.6;
 
 function lineStroke(tuple: RgbaTuple): string {
@@ -927,9 +931,10 @@ function buildOverlaySvg(scene: OverlayScene, layers: OverlayOptions['layers']):
     `<defs>` +
       `<clipPath id="overlay-clip"><rect x="0" y="0" width="${W}" height="${H}" /></clipPath>` +
       // Match the live overlay's filters so the exported image carries the same bloom.
-      `<filter id="overlay-line-glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">` +
-      `<feGaussianBlur stdDeviation="1.2" result="blur" />` +
-      `<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /><feMergeNode in="SourceGraphic" /></feMerge>` +
+      `<filter id="overlay-line-glow" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">` +
+      `<feGaussianBlur stdDeviation="2.6" result="blurWide" />` +
+      `<feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="blurTight" />` +
+      `<feMerge><feMergeNode in="blurWide" /><feMergeNode in="blurWide" /><feMergeNode in="blurTight" /><feMergeNode in="SourceGraphic" /></feMerge>` +
       `</filter>` +
       `<filter id="overlay-star-glow" x="-30%" y="-30%" width="160%" height="160%" filterUnits="objectBoundingBox">` +
       `<feGaussianBlur stdDeviation="2" result="blur" />` +

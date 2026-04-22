@@ -4,14 +4,18 @@
   "presets": {
     "header": "Görüntü ön ayarı",
     "ariaLabel": "Görüntü ön ayarı",
-    "balanced": { "label": "Dengeli", "hint": "Önerilen yoğunluk" },
-    "detailed": { "label": "Ayrıntılı", "hint": "Daha fazla derin gök ve takımyıldız" },
-    "max": { "label": "Eksiksiz", "hint": "Her algılamayı göster" }
-  },
-  "labelLocale": {
-    "header": "Etiket dili",
-    "ariaLabel": "Etiket dili",
-    "driftHint": "Değiştirmek için yeniden analiz gerekir"
+    "balanced": {
+      "label": "Dengeli",
+      "hint": "Önerilen yoğunluk"
+    },
+    "detailed": {
+      "label": "Ayrıntılı",
+      "hint": "Daha fazla derin gök ve takımyıldız"
+    },
+    "max": {
+      "label": "Eksiksiz",
+      "hint": "Her algılamayı göster"
+    }
   },
   "layers": {
     "header": "Katmanlar",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Tüm takımyıldız adlarını göster",
     "detailedDsoLabels": "Tam derin gök adlarını kullan",
     "live": "Değişiklikler anında uygulanır."
-  },
-  "reanalyze": {
-    "message": "Etiket dili değişti — uygulamak için yeniden analiz edin.",
-    "button": "Yeniden analiz et"
   }
 }

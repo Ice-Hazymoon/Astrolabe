@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Cancelar",
     "save": "Guardar imagem",
-    "saving": "A gerar…"
+    "saving": "A gerar…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Incluir faixa de assinatura",
+    "description": "Adiciona um rodapé escuro com localização, coordenadas e estatísticas."
   }
 }

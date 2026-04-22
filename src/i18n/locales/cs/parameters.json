@@ -4,14 +4,18 @@
   "presets": {
     "header": "Předvolba zobrazení",
     "ariaLabel": "Předvolba zobrazení",
-    "balanced": { "label": "Vyvážené", "hint": "Doporučená hustota" },
-    "detailed": { "label": "Detailní", "hint": "Více vzdáleného vesmíru a souhvězdí" },
-    "max": { "label": "Úplné", "hint": "Zobrazit všechny detekce" }
-  },
-  "labelLocale": {
-    "header": "Jazyk popisků",
-    "ariaLabel": "Jazyk popisků",
-    "driftHint": "Změna vyžaduje opětovnou analýzu"
+    "balanced": {
+      "label": "Vyvážené",
+      "hint": "Doporučená hustota"
+    },
+    "detailed": {
+      "label": "Detailní",
+      "hint": "Více vzdáleného vesmíru a souhvězdí"
+    },
+    "max": {
+      "label": "Úplné",
+      "hint": "Zobrazit všechny detekce"
+    }
   },
   "layers": {
     "header": "Vrstvy",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Zobrazit všechny názvy souhvězdí",
     "detailedDsoLabels": "Použít úplné názvy vzdáleného vesmíru",
     "live": "Změny se aplikují okamžitě."
-  },
-  "reanalyze": {
-    "message": "Jazyk popisků byl změněn — pro použití spusťte opětovnou analýzu.",
-    "button": "Analyzovat znovu"
   }
 }

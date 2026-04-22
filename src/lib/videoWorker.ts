@@ -1,81 +1,134 @@
 /// <reference lib="webworker" />
 /**
- * Dedicated Worker that performs the entire video encode loop off the main
- * thread. Receives a single `start` message containing pre-baked assets
- * (photo + strip bitmaps, pre-rasterized labels, scene geometry, encoder
- * config) and streams progress + the final MP4 buffer back.
+ * Encoder-only worker. Sets up `VideoEncoder` + `mp4-muxer`, receives
+ * rendered `ImageBitmap`s keyed by frame index from the main thread,
+ * encodes them in sequential order, and streams the finished MP4 buffer
+ * back. All rendering lives in `videoRenderWorker.ts`; the main thread
+ * shuttles bitmaps between them.
  *
- * Why a worker:
- *  - UI stays smooth while rendering (no jank on the dialog's progress bar).
- *  - The encode can push frames as fast as the hardware encoder will accept,
- *    no longer sharing a thread with framer-motion + React.
- *  - OffscreenCanvas + Canvas 2D + VideoEncoder + mp4-muxer are all
- *    available in the worker scope.
+ * Why a dedicated encoder worker (rather than encoding on one of the
+ * render workers): keeping all render workers symmetric — same code, no
+ * "worker 0 is special" asymmetry — is simpler, and isolating the encoder
+ * means encoder backpressure never has to compete with render scheduling
+ * inside a single worker's microtask queue.
  */
 
 import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
-import type { OverlayOptions, OverlayScene } from '../types/api';
-import {
-  computeOverlayBuildInfo,
-  drawOverlayFrame,
-  type LabelBitmapBundle,
-} from './videoFrame';
 
 // ---------- Message contract (must stay in sync with videoExport.ts) ----------
 
-export interface VideoWorkerStartMessage {
-  type: 'start';
-  photo: ImageBitmap;
-  strip: ImageBitmap;
-  scene: OverlayScene;
-  layers: OverlayOptions['layers'];
-  labels: LabelBitmapBundle;
+export interface VideoWorkerInitMessage {
+  type: 'init';
   outW: number;
   outH: number;
-  overlayW: number;
-  overlayH: number;
-  stripH: number;
-  srcW: number;
-  srcH: number;
   fps: number;
   bitrate: number;
   codec: string;
   /** Which codec family to tell mp4-muxer about. */
   codecFamily: 'avc' | 'hevc';
-  /** Multiplier applied to all overlay stroke widths. */
-  strokeBoost: number;
+  totalFrames: number;
+  /** Insert a keyframe every N frames (callers choose, typically fps*2). */
+  keyEvery: number;
+  /** Microseconds per frame — constant, precomputed for timestamp math. */
+  usPerFrame: number;
+  /** Authoritative video duration, independent of encoder rounding. */
+  durationMs: number;
+}
+
+export interface VideoWorkerFrameMessage {
+  type: 'frame';
+  idx: number;
+  bitmap: ImageBitmap;
 }
 
 export interface VideoWorkerCancelMessage {
   type: 'cancel';
 }
 
-export type VideoWorkerInMessage = VideoWorkerStartMessage | VideoWorkerCancelMessage;
+export type VideoWorkerInMessage =
+  | VideoWorkerInitMessage
+  | VideoWorkerFrameMessage
+  | VideoWorkerCancelMessage;
+
+export interface TimingEntry {
+  stage: string;
+  t: number;
+}
 
 export type VideoWorkerOutMessage =
   | { type: 'progress'; pct: number }
-  | { type: 'done'; buffer: ArrayBuffer; durationMs: number; width: number; height: number }
+  /** Emitted after each frame is accepted into the encoder — the main
+   * thread turns this into an 'ack' back to the producing render worker
+   * so render throughput is rate-limited by encoder throughput. */
+  | { type: 'encoded'; idx: number }
+  | {
+      type: 'done';
+      buffer: ArrayBuffer;
+      durationMs: number;
+      width: number;
+      height: number;
+      timings: TimingEntry[];
+      framesEncoded: number;
+    }
   | { type: 'error'; message: string; name?: string };
 
 // ---------- Worker state ----------
 
 const scope = self as unknown as DedicatedWorkerGlobalScope;
+
+class WorkerTimings {
+  private readonly t0 = performance.now();
+  private readonly entries: TimingEntry[] = [];
+  mark(stage: string): void {
+    this.entries.push({ stage, t: performance.now() - this.t0 });
+  }
+  toArray(): TimingEntry[] {
+    return this.entries.slice();
+  }
+}
+
+// Set by the 'init' message. All subsequent state is initialised inside
+// setup(); before that point everything is null.
 let cancelled = false;
+let config: VideoWorkerInitMessage | null = null;
+let encoder: VideoEncoder | null = null;
+let muxer: Muxer<ArrayBufferTarget> | null = null;
+const encoderErrors: Error[] = [];
+const T = new WorkerTimings();
+
+/** Out-of-order frames arrive as render workers finish each stripe in
+ * parallel. We buffer by index and drain in strict order since encode()
+ * has temporal dependencies (key-frame scheduling, delta compression). */
+const pendingFrames = new Map<number, ImageBitmap>();
+let nextEncodeIdx = 0;
+let framesEncoded = 0;
+let isDraining = false;
+let finalized = false;
 
 scope.addEventListener('message', (event: MessageEvent<VideoWorkerInMessage>) => {
   const data = event.data;
   if (data.type === 'cancel') {
     cancelled = true;
+    tryAbort();
     return;
   }
-  if (data.type === 'start') {
-    void run(data).catch((err) => {
-      postOut({
-        type: 'error',
-        message: (err as Error).message,
-        name: (err as Error).name,
-      });
-    });
+  if (data.type === 'init') {
+    try {
+      setup(data);
+    } catch (err) {
+      postErr(err);
+    }
+    return;
+  }
+  if (data.type === 'frame') {
+    if (cancelled || finalized) {
+      // Drop stragglers — we're winding down.
+      data.bitmap.close();
+      return;
+    }
+    pendingFrames.set(data.idx, data.bitmap);
+    void drain();
+    return;
   }
 });
 
@@ -83,196 +136,139 @@ function postOut(msg: VideoWorkerOutMessage, transfer?: Transferable[]): void {
   scope.postMessage(msg, transfer ?? []);
 }
 
-async function run(msg: VideoWorkerStartMessage): Promise<void> {
-  const {
-    outW,
-    outH,
-    overlayW,
-    overlayH,
-    stripH,
-    srcW,
-    srcH,
-    fps,
-    bitrate,
-    codec,
-    codecFamily,
-    strokeBoost,
-  } = msg;
+function postErr(err: unknown): void {
+  postOut({
+    type: 'error',
+    message: (err as Error).message ?? String(err),
+    name: (err as Error).name,
+  });
+}
 
-  // --- 1. Pre-composite the static base (photo + strip) -----------------
-  // Drawn into its own offscreen canvas ONCE, then blitted per frame.
-  // Avoids re-scaling the photo every frame.
-  const baseCanvas = new OffscreenCanvas(outW, outH);
-  const baseCtx = baseCanvas.getContext('2d');
-  if (!baseCtx) throw new Error('base ctx unavailable');
-  baseCtx.imageSmoothingEnabled = true;
-  baseCtx.imageSmoothingQuality = 'high';
-  baseCtx.fillStyle = '#000';
-  baseCtx.fillRect(0, 0, outW, outH);
-  baseCtx.drawImage(msg.photo, 0, 0, overlayW, overlayH);
-  baseCtx.drawImage(msg.strip, 0, overlayH, overlayW, stripH);
-  const baseBitmap = baseCanvas.transferToImageBitmap();
+function setup(init: VideoWorkerInitMessage): void {
+  T.mark('worker:start');
+  config = init;
 
-  // --- 2. Frame canvas ---------------------------------------------------
-  const frameCanvas = new OffscreenCanvas(outW, outH);
-  const frameCtx = frameCanvas.getContext('2d', { alpha: false });
-  if (!frameCtx) throw new Error('frame ctx unavailable');
-  frameCtx.imageSmoothingEnabled = true;
-  frameCtx.imageSmoothingQuality = 'high';
-
-  // --- 3. Encoder + muxer -----------------------------------------------
-  const muxer = new Muxer({
+  muxer = new Muxer({
     target: new ArrayBufferTarget(),
-    video: { codec: codecFamily, width: outW, height: outH, frameRate: fps },
+    video: {
+      codec: init.codecFamily,
+      width: init.outW,
+      height: init.outH,
+      frameRate: init.fps,
+    },
     fastStart: 'in-memory',
   });
 
-  const encoderErrors: Error[] = [];
-  const encoder = new VideoEncoder({
-    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+  encoder = new VideoEncoder({
+    output: (chunk, meta) => muxer?.addVideoChunk(chunk, meta),
     error: (err) => encoderErrors.push(err as Error),
   });
   const encoderConfig: VideoEncoderConfig = {
-    codec,
-    width: outW,
-    height: outH,
-    bitrate,
-    framerate: fps,
-    // Use constant bitrate when available — predictable file sizes and
-    // evenly-distributed detail (no first-few-seconds quality dip).
+    codec: init.codec,
+    width: init.outW,
+    height: init.outH,
+    bitrate: init.bitrate,
+    framerate: init.fps,
     bitrateMode: 'constant',
     latencyMode: 'quality',
+    hardwareAcceleration: 'prefer-hardware',
   };
-  if (codecFamily === 'avc') {
-    // mp4-muxer expects AVCC-formatted H.264 chunks.
+  if (init.codecFamily === 'avc') {
     (encoderConfig as VideoEncoderConfig & { avc?: { format: 'avc' } }).avc = { format: 'avc' };
   } else {
-    // Same for HEVC — hvcC bitstream format, not Annex-B.
     (encoderConfig as VideoEncoderConfig & { hevc?: { format: 'hevc' } }).hevc = { format: 'hevc' };
   }
   encoder.configure(encoderConfig);
+  T.mark('encoder-configured');
+}
 
-  // --- 4. Timing ---------------------------------------------------------
-  // Slow cinematic pacing: a longer photo fade-in, then the overlay builds
-  // in, then the composition sits completely still for a beat before the
-  // clip ends. There's no breathing / twinkling to watch during the hold.
-  const introDuration = 1.0;
-  const holdDuration = 2.0;
-  const { buildEnd } = computeOverlayBuildInfo(msg.scene, msg.layers);
-  const totalDuration = introDuration + buildEnd + holdDuration;
-  const totalFrames = Math.max(1, Math.round(totalDuration * fps));
-  const usPerFrame = Math.round(1_000_000 / fps);
-  const keyEvery = fps * 2;
+/**
+ * Consume in-order frames from `pendingFrames` until either (a) the next
+ * index hasn't arrived yet, or (b) the encoder's internal queue is full
+ * and we need to yield. Re-entrancy-safe via `isDraining`: if a 'frame'
+ * message arrives while a drain is suspended on a yield, we just add to
+ * the pending map and the existing drain picks it up on the next loop.
+ */
+async function drain(): Promise<void> {
+  if (isDraining || !encoder || !config) return;
+  isDraining = true;
+  try {
+    while (!cancelled && pendingFrames.has(nextEncodeIdx)) {
+      // Respect encoder backpressure: VideoEncoder's internal queue above
+      // ~8 means the hardware path is saturated, yielding keeps us from
+      // piling chunks into the codec thread's buffer (and on some
+      // browsers, prevents out-of-memory during long exports).
+      while (encoder.encodeQueueSize > 8) {
+        await yieldToWorker();
+        if (cancelled) return;
+      }
 
-  // --- 5. Render + encode loop -------------------------------------------
-  for (let i = 0; i < totalFrames; i++) {
-    if (cancelled) {
-      try { encoder.close(); } catch { /* ignore */ }
-      throw new DOMException('Video export cancelled', 'AbortError');
+      const idx = nextEncodeIdx;
+      const bitmap = pendingFrames.get(idx)!;
+      pendingFrames.delete(idx);
+
+      const frame = new VideoFrame(bitmap, {
+        timestamp: idx * config.usPerFrame,
+        duration: config.usPerFrame,
+      });
+      encoder.encode(frame, { keyFrame: idx % config.keyEvery === 0 });
+      frame.close();
+      bitmap.close();
+
+      nextEncodeIdx++;
+      framesEncoded++;
+
+      // Rate-limit render workers: main thread uses this to hand out an
+      // 'ack' to whichever render worker produced this idx, unblocking
+      // its next stripe step.
+      postOut({ type: 'encoded', idx });
+      postOut({ type: 'progress', pct: framesEncoded / config.totalFrames });
+
+      if (framesEncoded === config.totalFrames) {
+        await finalize();
+        return;
+      }
     }
-
-    const t = i / fps;
-    renderFrame({
-      ctx: frameCtx,
-      t,
-      introDuration,
-      outW,
-      outH,
-      overlayW,
-      overlayH,
-      srcW,
-      srcH,
-      scene: msg.scene,
-      layers: msg.layers,
-      labels: msg.labels,
-      base: baseBitmap,
-      strokeBoost,
-    });
-
-    const frame = new VideoFrame(frameCanvas, {
-      timestamp: i * usPerFrame,
-      duration: usPerFrame,
-    });
-    encoder.encode(frame, { keyFrame: i % keyEvery === 0 });
-    frame.close();
-
-    // Back-pressure so we don't overwhelm the encoder's internal queue.
-    while (encoder.encodeQueueSize > 8) {
-      await yieldToWorker();
-    }
-
-    postOut({ type: 'progress', pct: (i + 1) / totalFrames });
+  } catch (err) {
+    postErr(err);
+  } finally {
+    isDraining = false;
   }
+}
 
+async function finalize(): Promise<void> {
+  if (finalized || !encoder || !muxer || !config) return;
+  finalized = true;
+  T.mark('render-loop-done');
   await encoder.flush();
   encoder.close();
   muxer.finalize();
-  if (encoderErrors.length) throw encoderErrors[0];
-
-  const buffer = (muxer.target as ArrayBufferTarget).buffer;
+  T.mark('encoder-flushed');
+  if (encoderErrors.length) {
+    postErr(encoderErrors[0]);
+    return;
+  }
+  const buffer = muxer.target.buffer;
   postOut(
     {
       type: 'done',
       buffer,
-      durationMs: Math.round(totalDuration * 1000),
-      width: outW,
-      height: outH,
+      durationMs: config.durationMs,
+      width: config.outW,
+      height: config.outH,
+      timings: T.toArray(),
+      framesEncoded,
     },
     [buffer],
   );
-
-  // Free the big static bitmap now that encoding is done.
-  baseBitmap.close();
 }
 
-// ---------- Frame composition ----------
-
-interface FrameRenderArgs {
-  ctx: OffscreenCanvasRenderingContext2D;
-  t: number;
-  introDuration: number;
-  outW: number;
-  outH: number;
-  overlayW: number;
-  overlayH: number;
-  srcW: number;
-  srcH: number;
-  scene: OverlayScene;
-  layers: OverlayOptions['layers'];
-  labels: LabelBitmapBundle;
-  base: ImageBitmap;
-  strokeBoost: number;
-}
-
-function renderFrame(a: FrameRenderArgs): void {
-  const { ctx } = a;
-  // Blit the static base 1:1. No zoom — ken-burns was the biggest source of
-  // perceived blur because the base bitmap was being resampled every frame.
-  ctx.drawImage(a.base, 0, 0);
-
-  const introAlpha = clamp01(a.t / Math.max(0.001, a.introDuration));
-  if (introAlpha < 1) {
-    // Veil with a dissolving black overlay to fade the base in.
-    ctx.save();
-    ctx.globalAlpha = 1 - introAlpha;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, a.outW, a.outH);
-    ctx.restore();
-  }
-
-  // Overlay — scene coords mapped onto the scaled photo area.
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(0, 0, a.overlayW, a.overlayH);
-  ctx.clip();
-  ctx.scale(a.overlayW / a.srcW, a.overlayH / a.srcH);
-  const overlayT = Math.max(0, a.t - a.introDuration);
-  drawOverlayFrame(ctx, overlayT, a.scene, a.layers, a.labels, a.strokeBoost);
-  ctx.restore();
-}
-
-function clamp01(x: number): number {
-  return x < 0 ? 0 : x > 1 ? 1 : x;
+function tryAbort(): void {
+  // Release any bitmaps still sitting in the pending map.
+  for (const bmp of pendingFrames.values()) bmp.close();
+  pendingFrames.clear();
+  try { encoder?.close(); } catch { /* ignore */ }
+  postErr(new DOMException('Video export cancelled', 'AbortError'));
 }
 
 function yieldToWorker(): Promise<void> {

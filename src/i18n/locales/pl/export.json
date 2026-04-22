@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Anuluj",
     "save": "Zapisz obraz",
-    "saving": "Generowanie…"
+    "saving": "Generowanie…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Dołącz pasek podpisu",
+    "description": "Dodaje ciemną stopkę z lokalizacją, współrzędnymi i statystykami."
   }
 }

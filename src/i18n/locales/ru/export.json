@@ -28,6 +28,11 @@
     "savingVideo": "Rendering video… {{pct}}%",
     "cancel": "Отмена",
     "save": "Сохранить изображение",
-    "saving": "Генерация…"
+    "saving": "Генерация…",
+    "savingVideoShort": "{{pct}}%"
+  },
+  "strip": {
+    "label": "Включить строку подписи",
+    "description": "Добавляет тёмный подвал с местом, координатами и статистикой."
   }
 }

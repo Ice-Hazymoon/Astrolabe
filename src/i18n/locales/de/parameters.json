@@ -4,14 +4,18 @@
   "presets": {
     "header": "Anzeige-Voreinstellung",
     "ariaLabel": "Anzeige-Voreinstellung",
-    "balanced": { "label": "Ausgewogen", "hint": "Empfohlene Dichte" },
-    "detailed": { "label": "Detailliert", "hint": "Mehr Deep-Sky und Sternbilder" },
-    "max": { "label": "Vollständig", "hint": "Alle Erkennungen zeigen" }
-  },
-  "labelLocale": {
-    "header": "Beschriftungssprache",
-    "ariaLabel": "Beschriftungssprache",
-    "driftHint": "Ein Wechsel erfordert eine erneute Analyse"
+    "balanced": {
+      "label": "Ausgewogen",
+      "hint": "Empfohlene Dichte"
+    },
+    "detailed": {
+      "label": "Detailliert",
+      "hint": "Mehr Deep-Sky und Sternbilder"
+    },
+    "max": {
+      "label": "Vollständig",
+      "hint": "Alle Erkennungen zeigen"
+    }
   },
   "layers": {
     "header": "Ebenen",
@@ -40,9 +44,5 @@
     "showAllConstellations": "Alle Sternbildnamen anzeigen",
     "detailedDsoLabels": "Vollständige Deep-Sky-Namen verwenden",
     "live": "Änderungen werden sofort übernommen."
-  },
-  "reanalyze": {
-    "message": "Beschriftungssprache geändert — bitte neu analysieren, um sie anzuwenden.",
-    "button": "Neu analysieren"
   }
 }

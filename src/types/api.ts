@@ -38,7 +38,20 @@ export interface LabelChip {
 }
 
 export interface OverlayTextItem {
+  /** Pre-composed label text in the language the backend resolved, or English
+   * when we built it ourselves. Used as the final fallback if i18n lookup misses. */
   text: string;
+  /** Stable i18n key (stardroid resource key) for client-side translation via
+   * the `celestial` namespace. Renderers call `t('celestial:${key}')` and fall
+   * back to `text` / the messier/catalog prefix if the key is missing. */
+  i18n_key?: string;
+  /** For DSO labels: Messier prefix (e.g. "M42") when present. Used to re-compose
+   * "M42 <translated>" client-side in detailed mode. */
+  messier?: string;
+  /** For DSO labels: NGC/IC identifier when present. */
+  catalog_id?: string;
+  /** For DSO labels: whether the composed form should prefix with messier/catalog. */
+  detailed?: boolean;
   /** Stable object id mirrored from the result payload for exact hide/solo matching. */
   entity_id?: string;
   /** Related constellation abbreviations (IAU) for smart constellation-driven filtering. */
@@ -152,7 +165,11 @@ export interface SolveResult {
 
 export interface NamedStar {
   id: string;
+  /** English proper name — used as the fallback when the active locale has
+   * no `celestial` translation for this star. */
   name: string;
+  /** i18n key for the `celestial` namespace (e.g. "betelgeuse"). */
+  i18n_key?: string;
   magnitude: number;
   /** Optional — only present when constellation can be derived (mock data, mostly). */
   constellation?: string;
@@ -160,17 +177,35 @@ export interface NamedStar {
 
 export interface VisibleConstellation {
   id: string;
-  /** Localized display name (e.g. "大熊座") with English in parens for non-Latin scripts. */
+  /** Pre-composed display name using whatever locale the backend resolved at
+   * analyze time. Kept as the final fallback — the details sheet prefers
+   * `i18n_key`-based lookup so a client-side language switch updates instantly. */
   name: string;
   /** IAU 3-letter abbreviation when known. */
   abbr?: string;
+  /** i18n key for the `celestial` namespace (e.g. "orion"). */
+  i18n_key?: string;
+  /** English name kept separately so the details sheet can show it as a
+   * secondary line under the translated name, matching the canvas overlay. */
+  english_name?: string;
   /** Number of plotted line segments — a rough proxy for star count. */
   starCount: number;
 }
 
 export interface DeepSkyObject {
   id: string;
+  /** Pre-composed "M42 · Orion Nebula" style label in the backend-resolved
+   * locale. Used as the fallback when the details sheet can't translate. */
   name: string;
+  /** i18n key for the `celestial` namespace (e.g. "orion_nebula", "m42"). */
+  i18n_key?: string;
+  /** Messier prefix ("M42") carried through for client-side composition. */
+  messier?: string;
+  /** NGC/IC catalog id carried through for client-side composition. */
+  catalog_id?: string;
+  /** English common name — fallback for the translated base when the locale
+   * has no translation. */
+  english_name?: string;
   /** Human-readable type, e.g. "星系", "弥漫星云". */
   type: string;
   magnitude: number;
@@ -179,7 +214,10 @@ export interface DeepSkyObject {
 /** Positional payload the UI draws from — constructed from the raw API response. */
 export interface CatalogStar {
   id: string;
+  /** Always the English proper name from Stellarium's common_star_names catalog. */
   name: string;
+  /** i18n key (slugified English name, e.g. "betelgeuse") for `celestial` namespace lookup. */
+  i18n_key?: string;
   hip?: number;
   /** Constellation abbreviations derived from stick-figure segment membership. */
   constellation_ids?: string[];
@@ -201,6 +239,8 @@ export interface CatalogConstellation {
   id: string;
   abbr: string;
   display_name: string;
+  /** i18n key (e.g. "orion", "ursa_major") for `celestial` namespace lookup. */
+  i18n_key?: string;
   native_name?: string;
   english_name?: string;
   label_x: number;
@@ -212,6 +252,10 @@ export interface CatalogConstellation {
 export interface CatalogDso {
   id: string;
   name: string;
+  /** i18n key (e.g. "m42", "andromeda_galaxy") for `celestial` namespace lookup. */
+  i18n_key?: string;
+  /** NGC/IC identifier when known (used for detailed-label prefix composition). */
+  catalog_id?: string;
   /** Raw backend type code (e.g. "OCl", "PN", "Cl+N"). */
   type_code: string;
   /** Localized, human-readable DSO type. */
@@ -245,6 +289,4 @@ export interface AnalyzeResponse {
   visible_named_stars: NamedStar[];
   visible_constellations: VisibleConstellation[];
   visible_deep_sky_objects: DeepSkyObject[];
-  /** Negotiated locale for labels — may differ from requested when fallback occurred. */
-  resolvedLocale?: Locale | string;
 }
