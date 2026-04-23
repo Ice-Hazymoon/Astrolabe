@@ -6,6 +6,7 @@ import type { AnalyzeResponse, OverlayOptions, OverlayScene } from '@/types/api'
 import {
   buildStripSvg,
   composeAnnotatedWithStrip,
+  ensureStripLogoReady,
   stripHeightFor,
   type StripMeta,
 } from '@/lib/composite';
@@ -230,9 +231,27 @@ export function ExportDialog({
   const imgW = scene.image_width;
   const imgH = scene.image_height;
   const stripH = stripHeightFor(imgW);
+  // Rebuild the preview once the logo SVG has loaded — buildStripSvg reads
+  // the fetched markup through a module-level cache, so without the flag the
+  // first render would miss the glyph and not recover.
+  const [logoReady, setLogoReady] = useState(false);
+  useEffect(() => {
+    if (!open || logoReady) return;
+    let cancelled = false;
+    void ensureStripLogoReady().then(() => {
+      if (!cancelled) setLogoReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, logoReady]);
   const stripMarkup = useMemo(
     () => stripDomSvg(buildStripSvg(imgW, stripH, meta)),
-    [imgW, stripH, meta],
+    // `logoReady` is intentional: buildStripSvg reads the fetched glyph from
+    // a module-level cache, so flipping this flag is what re-triggers the
+    // memo once the icon.svg fetch completes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [imgW, stripH, meta, logoReady],
   );
 
   const pickSuggestion = (hit: NominatimHit) => {
@@ -393,7 +412,7 @@ export function ExportDialog({
             className="absolute inset-0 bg-[color:var(--color-ink-0)]/80 backdrop-blur-xl"
             onClick={saving ? undefined : onClose}
           />
-          <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="absolute inset-0 flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto">
             <motion.div
               ref={(node) => {
                 dialogRef.current = node;
@@ -403,7 +422,7 @@ export function ExportDialog({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: 6 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="surface relative w-full max-w-[920px] rounded-[var(--radius-xl)] outline-none shadow-[var(--shadow-lift)]"
+              className="surface relative w-full max-w-[920px] md:max-w-[1040px] rounded-[var(--radius-xl)] outline-none shadow-[var(--shadow-lift)]"
             >
               <IconButton
                 label={t('common:actions.close')}
@@ -416,25 +435,51 @@ export function ExportDialog({
                 <X />
               </IconButton>
 
-              <div className="px-4 sm:px-7 pt-5 sm:pt-7 pb-4 sm:pb-6 flex flex-col gap-4 sm:gap-5">
-                <header className="flex flex-col gap-1.5 pr-10">
+              <div
+                className={cn(
+                  'px-4 sm:px-7 pt-4 sm:pt-7 pb-4 sm:pb-6',
+                  // Mobile / tablet: single column, natural vertical flow.
+                  'flex flex-col gap-3 sm:gap-5',
+                  // Desktop: two columns — preview on the left, header + form
+                  // + actions stacked on the right. The `auto / auto / 1fr /
+                  // auto` row track inserts a flexible gap between the form
+                  // and the footer so the footer sticks to the bottom of the
+                  // preview when the preview is taller than the right column.
+                  'md:grid md:grid-cols-[1fr_320px] md:grid-rows-[auto_auto_1fr_auto]',
+                  'md:gap-x-7 md:gap-y-4',
+                )}
+              >
+                <header
+                  className={cn(
+                    'flex flex-col gap-1 sm:gap-1.5 pr-10',
+                    'md:col-start-2 md:row-start-1',
+                  )}
+                >
                   <span className="text-eyebrow">{t('export:eyebrow')}</span>
-                  <h2 className="text-display text-[21px] sm:text-[24px] tracking-tight text-[color:var(--color-text)] leading-tight">
+                  <h2 className="text-display text-[18px] sm:text-[24px] tracking-tight text-[color:var(--color-text)] leading-tight">
                     {t('export:title')}
                   </h2>
-                  <p className="text-[12.5px] text-[color:var(--color-text-muted)] leading-relaxed">
+                  <p className="hidden sm:block text-[12.5px] text-[color:var(--color-text-muted)] leading-relaxed">
                     {t('export:description', { field: fieldSummary })}
                   </p>
                 </header>
 
-                <div className="flex flex-col gap-3 min-h-0">
+                <div
+                  className={cn(
+                    'flex flex-col gap-3 min-h-0',
+                    // Left column on desktop. `row-span-4` lets the preview
+                    // own the full vertical stack opposite the right column.
+                    'md:col-start-1 md:row-start-1 md:row-span-4 md:justify-center',
+                  )}
+                >
                   <div
                     className={cn(
                       'relative mx-auto w-full overflow-hidden',
                       'shadow-[var(--shadow-lift)]',
-                      // Preview vertical cap. Smaller on mobile so the form + actions
-                      // below can breathe; goes back to the roomier 52vh on sm+.
-                      '[--preview-cap-h:36vh] sm:[--preview-cap-h:52vh]',
+                      // Preview vertical cap. Mobile stays compact so the
+                      // form + actions below fit; desktop gets a taller cap
+                      // now that nothing sits beneath the preview.
+                      '[--preview-cap-h:38vh] sm:[--preview-cap-h:52vh] md:[--preview-cap-h:68vh]',
                     )}
                     style={{
                       aspectRatio: `${imgW} / ${imgH + (includeStrip ? stripH : 0)}`,
@@ -482,10 +527,10 @@ export function ExportDialog({
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2.5 sm:gap-3 md:col-start-2 md:row-start-2">
                   <div
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-[var(--radius-sm)]',
+                      'flex items-center gap-3 px-3 py-1.5 sm:py-2 rounded-[var(--radius-sm)]',
                       'bg-[color:var(--color-ink-0)]/40 border border-[color:var(--color-line-soft)]',
                     )}
                   >
@@ -636,8 +681,18 @@ export function ExportDialog({
                   )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-1">
-                  <span className="text-[11.5px] text-[color:var(--color-text-muted)] min-h-[16px] leading-snug">
+                <div
+                  className={cn(
+                    'flex flex-col gap-2',
+                    'sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pt-1',
+                    // Two-column desktop: the right column is only 320px wide,
+                    // which isn't enough for the hint text + three buttons on
+                    // a single row — stack the hint above, buttons below.
+                    'md:col-start-2 md:row-start-4 md:pt-0',
+                    'md:flex-col md:items-stretch md:justify-start md:gap-2',
+                  )}
+                >
+                  <span className="hidden sm:inline text-[11.5px] text-[color:var(--color-text-muted)] min-h-[16px] leading-snug">
                     {savingError ? (
                       <span className="text-[color:var(--color-danger)]">{savingError}</span>
                     ) : geoError ? (
@@ -646,6 +701,11 @@ export function ExportDialog({
                       t('export:hints.default')
                     )}
                   </span>
+                  {(savingError || geoError) && (
+                    <span className="sm:hidden text-[11.5px] leading-snug text-[color:var(--color-danger)]">
+                      {savingError ?? geoError}
+                    </span>
+                  )}
                   {/* Mobile: buttons stretch with flex-1 so the video button's
                       progress label (which widens the pill mid-render) can't
                       push the primary save off-screen. sm+: shrink to content

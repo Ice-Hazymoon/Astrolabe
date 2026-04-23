@@ -9,7 +9,12 @@
 
 import type { OverlayOptions, OverlayScene } from '../types/api';
 import type { DetailsFilters } from '../state/store';
-import { buildStripSvg, stripHeightFor, type StripMeta } from './composite';
+import {
+  buildStripSvg,
+  ensureStripLogoReady,
+  stripHeightFor,
+  type StripMeta,
+} from './composite';
 import { applyDetailsFilters } from './detailsFilter';
 import {
   computeOverlayBuildInfo,
@@ -683,6 +688,7 @@ async function rasterizeStrip(
   h: number,
   meta: StripMeta,
 ): Promise<ImageBitmap> {
+  await ensureStripLogoReady();
   const markup = buildStripSvg(w, h, meta);
   const blob = new Blob([markup], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);

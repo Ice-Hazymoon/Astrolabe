@@ -9,7 +9,121 @@ import type {
 } from '../types/api';
 import type { DetailsFilters } from '../state/store';
 import { applyDetailsFilters } from './detailsFilter';
-import { logoSvgMarkup } from './logoMarkup';
+
+// --- Brand glyph for the attribution strip ---------------------------------
+// `public/icon.svg` is the single source of truth. We fetch it once at module
+// init, read its viewBox so the caller's scaling stays in sync, strip the
+// outer <svg> wrapper so the paths can be placed inside the strip SVG's own
+// coordinate space, and scope gradient / clipPath ids so the embedded glyph
+// can't alias ids with any other SVG on the page. Next.js/Turbopack don't
+// have a stable `?raw` story for SVG imports — running this through `fetch`
+// keeps the file itself as the source and avoids bundler-specific glue.
+const ICON_URL = '/icon.svg';
+let LOGO_VIEWBOX = 150;
+let LOGO_INNER_SVG = '';
+let logoLoadPromise: Promise<void> | null = null;
+
+export function ensureStripLogoReady(): Promise<void> {
+  if (LOGO_INNER_SVG) return Promise.resolve();
+  if (!logoLoadPromise) {
+    logoLoadPromise = (async () => {
+      try {
+        const res = await fetch(ICON_URL);
+        if (!res.ok) throw new Error(`icon.svg: ${res.status}`);
+        const text = await res.text();
+        const parsed = parseIconSvg(text);
+        LOGO_VIEWBOX = parsed.viewBox;
+        LOGO_INNER_SVG = parsed.inner;
+      } catch (err) {
+        console.warn('[composite] failed to load icon.svg', err);
+        // Leave LOGO_INNER_SVG empty; callers will render the brand block
+        // without a glyph rather than crashing the export.
+      }
+    })();
+  }
+  return logoLoadPromise;
+}
+
+// Prime the cache as soon as this module is evaluated in the browser so the
+// first preview render usually already has the glyph available.
+if (typeof window !== 'undefined') {
+  void ensureStripLogoReady();
+}
+
+function parseIconSvg(markup: string): { viewBox: number; inner: string } {
+  const viewBoxAttr = markup.match(/<svg[^>]*\sviewBox="([^"]+)"/i)?.[1];
+  const parts = viewBoxAttr?.trim().split(/\s+/).map(Number);
+  const viewBox =
+    parts && parts.length === 4 && Number.isFinite(parts[2]) && parts[2] > 0
+      ? parts[2]
+      : 150;
+
+  const openTagIdx = markup.indexOf('<svg');
+  const afterOpen = openTagIdx >= 0 ? markup.indexOf('>', openTagIdx) + 1 : 0;
+  const closeTagIdx = markup.lastIndexOf('</svg>');
+  let inner =
+    afterOpen > 0 && closeTagIdx > afterOpen
+      ? markup.slice(afterOpen, closeTagIdx)
+      : markup;
+
+  inner = inner.replace(/<!--[\s\S]*?-->/g, '');
+
+  // Pull any `<style>` rule blocks and rewrite each `class="cls-x"` to the
+  // equivalent presentation attributes. SVG's class-based styling is reliable
+  // in standalone documents, but when this markup is spliced into the strip's
+  // outer <svg> (under a `<g transform>`) and then rasterized via an <img>
+  // pipeline, some engines drop the cascade — leaving every path with its
+  // default fill. Inlining side-steps the fragility entirely.
+  inner = inlineClassStyles(inner);
+
+  // Scope any `id="..."` (and matching `url(#...)` references) under a
+  // strip-local prefix so embedding the glyph alongside other SVGs can't
+  // alias ids with an outer document.
+  const idPrefix = 'stripLogo-';
+  inner = inner.replace(/\sid="([^"]+)"/g, ` id="${idPrefix}$1"`);
+  inner = inner.replace(/url\(#([^)]+)\)/g, `url(#${idPrefix}$1)`);
+  return { viewBox, inner: inner.trim() };
+}
+
+function inlineClassStyles(markup: string): string {
+  const classRules = new Map<string, Record<string, string>>();
+  const withoutStyle = markup.replace(
+    /<style[^>]*>([\s\S]*?)<\/style>/gi,
+    (_, body: string) => {
+      const ruleRe = /\.([\w-]+)\s*\{([^}]*)\}/g;
+      let m: RegExpExecArray | null;
+      while ((m = ruleRe.exec(body)) !== null) {
+        const decls: Record<string, string> = {};
+        for (const decl of m[2].split(';')) {
+          const idx = decl.indexOf(':');
+          if (idx < 0) continue;
+          const prop = decl.slice(0, idx).trim();
+          const val = decl.slice(idx + 1).trim();
+          if (prop) decls[prop] = val;
+        }
+        classRules.set(m[1], decls);
+      }
+      return '';
+    },
+  );
+
+  if (classRules.size === 0) return withoutStyle;
+
+  return withoutStyle.replace(/\sclass="([^"]+)"/g, (match, classList: string) => {
+    const merged: Record<string, string> = {};
+    for (const c of classList.split(/\s+/)) {
+      const rule = classRules.get(c);
+      if (rule) Object.assign(merged, rule);
+    }
+    const entries = Object.entries(merged);
+    if (entries.length === 0) return match;
+    return ' ' + entries.map(([k, v]) => `${k}="${escapeAttr(v)}"`).join(' ');
+  });
+}
+
+function escapeAttr(v: string): string {
+  return v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
 
 // Shared "no filter active" sentinel so callers that haven't wired filters yet
 // (and our own default-arg path) skip the filtering step with a single
@@ -146,7 +260,7 @@ export async function composeAnnotatedWithStrip(
 
   if (includeStrip) {
     // Bottom attribution strip
-    await ensureFontsReady();
+    await Promise.all([ensureFontsReady(), ensureStripLogoReady()]);
     const stripSvg = buildStripSvg(W, stripH, meta);
     const stripUrl = svgToObjectUrl(stripSvg);
     try {
@@ -238,13 +352,15 @@ export function buildStripSvg(W: number, H: number, meta: StripMeta): string {
   const row1Cy = hasLocation ? H * 0.32 : H * 0.5;
   const row2Cy = H * 0.72;
 
-  // Brand is always right-anchored; size to content, capped at 50% of innerW
-  // so a long URL can never hog the row.
-  const brandContentW = estimateBrandWidth(fs, H, siteName, siteUrl);
-  const brandMaxW = Math.min(brandContentW, innerW * 0.5);
+  // Brand is always right-anchored. Size is bounded by the wordmark (a short,
+  // fixed brand identifier) — the URL middle-truncates to the wordmark's
+  // width inside buildStripBrandRow, so brandContentW can't runaway even for
+  // very long URLs. No further cap is applied because the wordmark must never
+  // truncate: clipping "STELLARIS" → "STELLARI…" broke the whole point.
+  const brandContentW = estimateBrandWidth(fs, H, siteName);
+  const brandMaxW = brandContentW;
 
   const rowGap = H * 0.3;
-  const statsWidth = meta.stats ? estimateStatsRowWidth(meta.stats, fs, H) : 0;
   const locationMaxW = Math.max(0, innerW - brandMaxW - rowGap);
 
   const parts: string[] = [];
@@ -272,7 +388,6 @@ export function buildStripSvg(W: number, H: number, meta: StripMeta): string {
       buildStripBrandRow({
         rightX: W - padX,
         centerY: row1Cy,
-        maxW: brandMaxW,
         H,
         fs,
         palette,
@@ -306,15 +421,10 @@ export function buildStripSvg(W: number, H: number, meta: StripMeta): string {
         }),
       );
     }
-    const singleRowBrandMaxW = Math.min(
-      brandMaxW,
-      Math.max(H * 2, innerW - statsWidth - rowGap),
-    );
     parts.push(
       buildStripBrandRow({
         rightX: W - padX,
         centerY: H / 2,
-        maxW: singleRowBrandMaxW,
         H,
         fs,
         palette,
@@ -384,46 +494,43 @@ function buildStripLocationRow(args: {
 function buildStripBrandRow(args: {
   rightX: number;
   centerY: number;
-  maxW: number;
   H: number;
   fs: StripFontScale;
   palette: StripPalette;
   siteName: string;
   siteUrl: string;
 }): string {
-  const { rightX, centerY, maxW, H, fs, palette, siteName, siteUrl } = args;
+  const { rightX, centerY, H, fs, palette, siteName, siteUrl } = args;
 
   const logoSize = Math.round(H * 0.3);
-  const logoScale = logoSize / 32;
+  const logoScale = logoSize / LOGO_VIEWBOX;
   const logoGap = Math.round(H * 0.07);
-  const textBudget = Math.max(0, maxW - logoSize - logoGap);
 
-  const wordmarkText = truncateTextEnd(siteName.toUpperCase(), textBudget, {
+  // The wordmark is the site's brand identifier and must render intact. If
+  // the surrounding layout can't give us enough room, we still draw the full
+  // wordmark and let the neighboring block truncate instead — overlapping is
+  // far preferable to "STELLARI…".
+  const wordmarkMetrics = {
     fontSize: fs.wordmark,
-    family: 'serif',
+    family: 'serif' as const,
     letterSpacingEm: 0.26,
-  });
+  };
+  const wordmarkText = siteName.toUpperCase();
+  const wordmarkW = estimateStripTextWidth(wordmarkText, wordmarkMetrics);
+
+  // URL middle-truncates to the wordmark's width so its right edge aligns
+  // with the wordmark above it and it can't widen the brand block beyond the
+  // wordmark's footprint.
+  const urlMetrics = {
+    fontSize: fs.url,
+    family: 'mono' as const,
+    letterSpacingEm: 0.04,
+  };
   const urlText = siteUrl
-    ? truncateTextMiddle(siteUrl, textBudget, {
-        fontSize: fs.url,
-        family: 'mono',
-        letterSpacingEm: 0.04,
-      })
+    ? truncateTextMiddle(siteUrl, wordmarkW, urlMetrics)
     : '';
+  const urlW = urlText ? estimateStripTextWidth(urlText, urlMetrics) : 0;
 
-  // Measure after truncation so the block sizes to what actually renders.
-  const wordmarkW = estimateStripTextWidth(wordmarkText, {
-    fontSize: fs.wordmark,
-    family: 'serif',
-    letterSpacingEm: 0.26,
-  });
-  const urlW = urlText
-    ? estimateStripTextWidth(urlText, {
-        fontSize: fs.url,
-        family: 'mono',
-        letterSpacingEm: 0.04,
-      })
-    : 0;
   const textW = Math.max(wordmarkW, urlW);
   const blockW = logoSize + logoGap + textW;
 
@@ -442,7 +549,7 @@ function buildStripBrandRow(args: {
 
   return (
     `<g transform="translate(${logoX.toFixed(1)} ${logoY.toFixed(1)}) scale(${logoScale.toFixed(3)})">` +
-      logoSvgMarkup() +
+      LOGO_INNER_SVG +
     `</g>` +
     `<text x="${textX.toFixed(1)}" y="${wordmarkCy.toFixed(1)}" text-anchor="start" dominant-baseline="central" ` +
       `font-family="${STRIP_SERIF}" font-size="${fs.wordmark}" font-weight="500" ` +
@@ -455,15 +562,11 @@ function buildStripBrandRow(args: {
   );
 }
 
-// Measures the intrinsic width the brand block wants — logo + gap + the
-// wider of wordmark/URL. Used up-front so the location/stats block knows
-// how much horizontal room is left on the opposite side of the row.
-function estimateBrandWidth(
-  fs: StripFontScale,
-  H: number,
-  siteName: string,
-  siteUrl: string,
-): number {
+// Measures the intrinsic width the brand block wants — logo + gap + wordmark.
+// The URL renders beneath the wordmark and middle-truncates to the wordmark's
+// width, so it never widens the block. Callers use this to know how much
+// horizontal room is left on the opposite side of the row.
+function estimateBrandWidth(fs: StripFontScale, H: number, siteName: string): number {
   const logoSize = Math.round(H * 0.3);
   const logoGap = Math.round(H * 0.07);
   const wordmarkW = estimateStripTextWidth(siteName.toUpperCase(), {
@@ -471,36 +574,7 @@ function estimateBrandWidth(
     family: 'serif',
     letterSpacingEm: 0.26,
   });
-  const urlW = siteUrl
-    ? estimateStripTextWidth(siteUrl, {
-        fontSize: fs.url,
-        family: 'mono',
-        letterSpacingEm: 0.04,
-      })
-    : 0;
-  return logoSize + logoGap + Math.max(wordmarkW, urlW);
-}
-
-// Predicts the width the horizontal stats row will consume, so callers can
-// reserve the remaining space for the brand block when both share a row.
-function estimateStatsRowWidth(
-  stats: NonNullable<StripMeta['stats']>,
-  fs: StripFontScale,
-  H: number,
-): number {
-  const iconR = H * 0.068;
-  const iconToNumber = H * 0.06;
-  const betweenStats = H * 0.22;
-  const numberMetrics = {
-    fontSize: fs.statNumber,
-    family: 'serif' as const,
-    letterSpacingEm: -0.015,
-  };
-  const numbers = [stats.stars, stats.constellations, stats.deepSky].map((n) =>
-    estimateStripTextWidth(String(n), numberMetrics),
-  );
-  const pairs = numbers.reduce((sum, nw) => sum + iconR * 2 + iconToNumber + nw, 0);
-  return pairs + betweenStats * 2;
+  return logoSize + logoGap + wordmarkW;
 }
 
 // Stats laid out horizontally: icon + number pairs with generous gaps
