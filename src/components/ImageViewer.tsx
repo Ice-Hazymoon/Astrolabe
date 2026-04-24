@@ -5,6 +5,8 @@ import { useTranslation } from '@/i18n/useTranslation';
 import { IconButton } from './ui/IconButton';
 import { cn } from '@/lib/cn';
 
+type ViewerOverlay = React.ReactNode | ((isTransforming: boolean) => React.ReactNode);
+
 interface ImageViewerProps {
   src: string;
   alt: string;
@@ -27,7 +29,7 @@ interface ImageViewerProps {
   /** Apply a subtle CSS filter to lift thin annotation lines off a dark sky background. */
   enhance?: boolean;
   /** Arbitrary content layered inside the image box, sharing its aspect ratio and zoom. */
-  overlay?: React.ReactNode;
+  overlay?: ViewerOverlay;
 }
 
 const TWINKLES = [
@@ -67,12 +69,16 @@ export function ImageViewer({
     loaded: false,
     errored: false,
   });
+  const [isTransforming, setIsTransforming] = useState(false);
   const wrapperRef = useRef<ReactZoomPanPinchRef | null>(null);
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const transformIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTransformingRef = useRef(false);
   const currentViewState = viewState.src === src
     ? viewState
     : { src: null, aspectRatio: null, loaded: false, errored: false };
   const { aspectRatio, loaded, errored } = currentViewState;
+  const overlayContent = typeof overlay === 'function' ? overlay(isTransforming) : overlay;
 
   // Probe the image's natural dimensions *before* TransformWrapper mounts.
   // react-zoom-pan-pinch's `centerOnInit` measures the content box once on
@@ -159,6 +165,24 @@ export function ImageViewer({
   const zoomIn = useCallback(() => wrapperRef.current?.zoomIn(0.4), []);
   const zoomOut = useCallback(() => wrapperRef.current?.zoomOut(0.4), []);
   const resetZoom = useCallback(() => wrapperRef.current?.resetTransform(280), []);
+  const markTransforming = useCallback(() => {
+    if (transformIdleTimerRef.current) {
+      clearTimeout(transformIdleTimerRef.current);
+      transformIdleTimerRef.current = null;
+    }
+    if (!isTransformingRef.current) {
+      isTransformingRef.current = true;
+      setIsTransforming(true);
+    }
+  }, []);
+  const markTransformSettled = useCallback(() => {
+    if (transformIdleTimerRef.current) clearTimeout(transformIdleTimerRef.current);
+    transformIdleTimerRef.current = setTimeout(() => {
+      transformIdleTimerRef.current = null;
+      isTransformingRef.current = false;
+      setIsTransforming(false);
+    }, 140);
+  }, []);
 
   useEffect(() => {
     if (!ready) return;
@@ -185,6 +209,12 @@ export function ImageViewer({
       observer.disconnect();
     };
   }, [ready, wrapperKey]);
+
+  useEffect(() => {
+    return () => {
+      if (transformIdleTimerRef.current) clearTimeout(transformIdleTimerRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -229,6 +259,18 @@ export function ImageViewer({
           doubleClick={{ mode: 'zoomIn', step: 0.8, animationTime: 280 }}
           panning={{ velocityDisabled: true }}
           limitToBounds
+          onPanningStart={markTransforming}
+          onPanning={markTransforming}
+          onPanningStop={markTransformSettled}
+          onWheelStart={markTransforming}
+          onWheel={markTransforming}
+          onWheelStop={markTransformSettled}
+          onPinchStart={markTransforming}
+          onPinch={markTransforming}
+          onPinchStop={markTransformSettled}
+          onZoomStart={markTransforming}
+          onZoom={markTransforming}
+          onZoomStop={markTransformSettled}
         >
           {/* TransformComponent's wrapper spans the full viewport so zoom/pan
               bounds live in viewport coordinates — zoomed-in, the image can
@@ -280,9 +322,9 @@ export function ImageViewer({
                 </div>
               )}
 
-              {overlay && loaded && (
+              {overlayContent && loaded && (
                 <div aria-hidden className="absolute inset-0 pointer-events-none">
-                  {overlay}
+                  {overlayContent}
                 </div>
               )}
             </div>

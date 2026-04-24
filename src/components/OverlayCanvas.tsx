@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/i18n/useTranslation';
 import type {
@@ -64,6 +64,8 @@ interface OverlayCanvasProps {
   };
   /** Animate elements on mount. Disable for instant paint (e.g. history restore). */
   animate?: boolean;
+  /** Drop expensive SVG glow filters while the viewer is actively transforming. */
+  performanceMode?: boolean;
   className?: string;
 }
 
@@ -76,7 +78,7 @@ function rgba(tuple: RgbaTuple, alphaScale = 1): string {
 // Visual tuning constants for the overlay — tweaked so lines read crisp and
 // stars feel lively without losing the underlying photograph.
 const LINE_ALPHA_BOOST = 0.95;
-const LINE_WIDTH_BOOST = 1.1;
+const LINE_WIDTH_BOOST = 0.8;
 // How far to mix constellation-line color toward pure white (0 = server color,
 // 1 = white). Keeps a hint of the source tint while reading cleaner on photos.
 const LINE_WHITEN = 0.6;
@@ -134,13 +136,17 @@ function deepSkyPath(m: OverlayDeepSkyMarker): string {
 const Lines = memo(function Lines({
   segments,
   animate,
+  inlineGlow,
 }: {
   segments: OverlayLineSegment[];
   animate: boolean;
+  inlineGlow: boolean;
 }) {
+  const filter = inlineGlow ? 'url(#overlay-line-glow)' : undefined;
+
   if (!animate) {
     return (
-      <g filter="url(#overlay-line-glow)">
+      <g filter={filter}>
         {segments.map((s, i) => (
           <line
             key={i}
@@ -158,7 +164,7 @@ const Lines = memo(function Lines({
   }
 
   return (
-    <g filter="url(#overlay-line-glow)">
+    <g filter={filter}>
       {segments.map((s, i) => (
         <motion.line
           key={i}
@@ -183,6 +189,34 @@ const Lines = memo(function Lines({
         />
       ))}
     </g>
+  );
+});
+
+const LineGlow = memo(function LineGlow({
+  segments,
+}: {
+  segments: OverlayLineSegment[];
+}) {
+  return (
+    <motion.g
+      filter="url(#overlay-line-glow-only)"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {segments.map((s, i) => (
+        <line
+          key={i}
+          x1={s.x1}
+          y1={s.y1}
+          x2={s.x2}
+          y2={s.y2}
+          stroke={lineStroke(s.rgba)}
+          strokeWidth={s.line_width * LINE_WIDTH_BOOST}
+          strokeLinecap="round"
+        />
+      ))}
+    </motion.g>
   );
 });
 
@@ -248,10 +282,12 @@ const StarMarkers = memo(function StarMarkers({
   stars,
   animate,
   delayBase,
+  inlineGlow,
 }: {
   stars: OverlayStarMarker[];
   animate: boolean;
   delayBase: number;
+  inlineGlow: boolean;
 }) {
   if (!animate) {
     return (
@@ -286,7 +322,7 @@ const StarMarkers = memo(function StarMarkers({
   }
 
   return (
-    <g filter="url(#overlay-star-glow)">
+    <g filter={inlineGlow ? 'url(#overlay-star-glow)' : undefined}>
       {stars.map((m, i) => {
         const ringR = m.radius + 2.6;
         const haloR = m.radius + 5.2;
@@ -347,6 +383,47 @@ const StarMarkers = memo(function StarMarkers({
         );
       })}
     </g>
+  );
+});
+
+const StarMarkerGlow = memo(function StarMarkerGlow({
+  stars,
+}: {
+  stars: OverlayStarMarker[];
+}) {
+  return (
+    <motion.g
+      filter="url(#overlay-star-glow-only)"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {stars.map((m, i) => {
+        const ringR = m.radius + 2.6;
+        const haloR = m.radius + 5.2;
+        return (
+          <g key={i}>
+            <circle
+              cx={m.x}
+              cy={m.y}
+              r={haloR}
+              fill="none"
+              stroke={rgba(m.fill_rgba)}
+              strokeOpacity={0.7}
+              strokeWidth={1.6}
+            />
+            <circle
+              cx={m.x}
+              cy={m.y}
+              r={ringR}
+              fill="none"
+              stroke={rgba(m.outline_rgba)}
+              strokeWidth={1.8}
+            />
+          </g>
+        );
+      })}
+    </motion.g>
   );
 });
 
@@ -524,9 +601,11 @@ export const OverlayCanvas = memo(function OverlayCanvas({
   scene,
   layers,
   animate = true,
+  performanceMode = false,
   className,
 }: OverlayCanvasProps) {
   const { t } = useTranslation('viewer');
+  const [fadeRestoredGlow, setFadeRestoredGlow] = useState(false);
   const filters = useSky((s) => s.detailsFilters);
   const filteredScene = useMemo(() => applyDetailsFilters(scene, filters), [scene, filters]);
   const { image_width: W, image_height: H } = filteredScene;
@@ -548,6 +627,12 @@ export const OverlayCanvas = memo(function OverlayCanvas({
     }),
     [filteredScene, layers],
   );
+  const inlineGlow = !performanceMode && !fadeRestoredGlow;
+  const restoredGlow = !performanceMode && fadeRestoredGlow;
+
+  useEffect(() => {
+    if (performanceMode) setFadeRestoredGlow(true);
+  }, [performanceMode]);
 
   return (
     <svg
@@ -588,6 +673,23 @@ export const OverlayCanvas = memo(function OverlayCanvas({
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        {/* Glow-only copies used after pan/zoom; opacity fades in to avoid a flash. */}
+        <filter
+          id="overlay-line-glow-only"
+          x="-50%"
+          y="-50%"
+          width="200%"
+          height="200%"
+          filterUnits="objectBoundingBox"
+        >
+          <feGaussianBlur stdDeviation="2.6" result="blurWide" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="blurTight" />
+          <feMerge>
+            <feMergeNode in="blurWide" />
+            <feMergeNode in="blurWide" />
+            <feMergeNode in="blurTight" />
+          </feMerge>
+        </filter>
         {/* Brighter bloom for star rings so they pop against the photograph. */}
         <filter
           id="overlay-star-glow"
@@ -604,10 +706,25 @@ export const OverlayCanvas = memo(function OverlayCanvas({
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
+        <filter
+          id="overlay-star-glow-only"
+          x="-30%"
+          y="-30%"
+          width="160%"
+          height="160%"
+          filterUnits="objectBoundingBox"
+        >
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="blur" />
+          </feMerge>
+        </filter>
       </defs>
 
       <g clipPath={`url(#${clipId})`}>
-        <Lines segments={visible.lines} animate={animate} />
+        {restoredGlow && <LineGlow segments={visible.lines} />}
+        <Lines segments={visible.lines} animate={animate} inlineGlow={inlineGlow} />
 
         {layers.label_leaders && (
           <>
@@ -617,7 +734,13 @@ export const OverlayCanvas = memo(function OverlayCanvas({
         )}
 
         <DeepSkyMarkers markers={visible.dsos} animate={animate} delayBase={0.36} />
-        <StarMarkers stars={visible.stars} animate={animate} delayBase={0.28} />
+        {restoredGlow && <StarMarkerGlow stars={visible.stars} />}
+        <StarMarkers
+          stars={visible.stars}
+          animate={animate}
+          delayBase={0.28}
+          inlineGlow={inlineGlow}
+        />
 
         <Labels items={visible.constLabels} animate={animate} delayBase={0.56} />
         <Labels items={visible.starLabels} animate={animate} delayBase={0.68} />

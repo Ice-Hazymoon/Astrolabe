@@ -760,7 +760,7 @@ function rgba(t: RgbaTuple, alphaScale = 1): string {
 // Must stay in lockstep with OverlayCanvas — the export is meant to mirror
 // what the live viewer paints. If you tune one, tune the other.
 const LINE_ALPHA_BOOST = 0.95;
-const LINE_WIDTH_BOOST = 1.1;
+const LINE_WIDTH_BOOST = 0.8;
 const LINE_WHITEN = 0.6;
 
 function lineStroke(tuple: RgbaTuple): string {

@@ -35,7 +35,7 @@ export function HistoryStrip({ onClose }: HistoryStripProps = {}) {
   );
 
   return (
-    <section className="relative z-10 shrink-0 px-3 sm:px-4 pb-3 sm:pb-4 pt-1">
+    <section className="relative z-10 shrink-0 px-2 sm:px-4 pb-3 sm:pb-4 pt-1">
       <div className="surface relative overflow-hidden rounded-[var(--radius-lg)] flex flex-col sm:flex-row sm:items-stretch sm:h-[110px]">
         <div
           className={cn(

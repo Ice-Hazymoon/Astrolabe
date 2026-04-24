@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Download, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import {
@@ -70,9 +70,17 @@ export function ResultView() {
     ? `${result.processingMs}-${result.solve.center_ra_deg.toFixed(2)}-${result.solve.center_dec_deg.toFixed(2)}`
     : 'none';
 
-  const overlay = useMemo(() => {
+  const renderOverlay = useCallback((isTransforming: boolean) => {
     if (!scene) return null;
-    return <OverlayCanvas key={overlayKey} scene={scene} layers={options.layers} animate />;
+    return (
+      <OverlayCanvas
+        key={overlayKey}
+        scene={scene}
+        layers={options.layers}
+        animate
+        performanceMode={isTransforming}
+      />
+    );
   }, [scene, options.layers, overlayKey]);
 
   useEffect(() => {
@@ -85,7 +93,7 @@ export function ResultView() {
 
   const activeSrc = current.inputDisplayUrl;
   const activeAlt = showOriginal ? t('altOriginal') : t('altAnnotated');
-  const activeOverlay = !showOriginal ? overlay : null;
+  const activeOverlay = !showOriginal ? renderOverlay : null;
   // Keyed to the result only — NOT to showOriginal — so toggling the overlay keeps
   // the viewer's zoom/pan state instead of remounting the image underneath.
   const resultKey = current.sourceKey;
